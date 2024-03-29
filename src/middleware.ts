@@ -1,21 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PortalService } from './services/portal-service/portal-service';
+import { PortalService, VerifyTokenResponse } from './services/portal-service/portal-service';
 import { Constants } from './constants/constants';
+import { cookies } from 'next/headers';
  
 export async function middleware(request: NextRequest, response: NextResponse) {
   try{
+    /*
+    console.log(`getAll`, cookies().getAll())
+    console.log(`cookies().get(user)`, cookies().get('user')?.value)
+    console.log(`request.cookies.get('user')?.value`, request.cookies.get('user')?.value)
+    */
 
     const _token: string = request.nextUrl.searchParams.get('token') || '';
-    console.log(`_token`, _token)
+    //console.log(`_token`, _token)
     if( _token ){
 
       const portalService = new PortalService(`${Constants.PortalUrl}`);
-      const verifyToken = await portalService.verifyToken(_token);
+      const verifyToken: VerifyTokenResponse = await portalService.verifyToken(_token);
+      //console.log(`verifyToken`, verifyToken)
+      if( verifyToken.status === 'error' ){
+        return Response.redirect(new URL('/login', request.url))
+      }
 
       const response = NextResponse.next();
-      
+      response.cookies.set({ name: "token", value: _token });
+      response.cookies.set({ name: "user", value: verifyToken.data.employeeId });
+      //cookies().set('user', verifyToken.data.employeeId)
 
-      response.cookies.set({ name: "user", value: _token });
       return response;
     }
 

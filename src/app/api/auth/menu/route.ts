@@ -13,12 +13,13 @@ import { PortalService } from "@/services/portal-service/portal-service";
 import { VaultService } from "@/services/vault-service/vault-service";
 import { NextRequest, NextResponse } from "next/server";
 import { Permission } from "../permission/route";
+import { cookies } from "next/headers";
 
 const baseUrl = Constants.APIUrl
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-        
-    const permissionResp = await fetch(`${baseUrl}/api/auth/permission`)
+    
+    const permissionResp = await fetch(`${baseUrl}/api/auth/permission`, { headers: { Cookie: cookies().toString() }, cache: 'no-cache' })
     const permissionJson = await permissionResp.json();
 
     const portalService = new PortalService(`${Constants.PortalUrl}/graphql`);

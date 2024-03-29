@@ -1,5 +1,6 @@
 import { Constants } from "@/constants/constants";
 import { VaultService } from "@/services/vault-service/vault-service";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -8,11 +9,16 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
     const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/UserPermission`
 
+    const employeeID = cookies().get('user')?.value || ''
+    console.log(`employeeID`, employeeID )
+    //console.log(`cookies().get('user')?.value`, _req.cookies.get('user')?.value )
+    //console.log(`cookies().getAll()`, _req.cookies.getAll() )
+
     const payload: PermissionRequest = {
         appCode: Constants.AppCode,
         menuCode: "",
         menuAction: "",
-        userId: "12346"
+        userId: employeeID
     }
 
     const queryParams = Object.keys(payload).map((key) => {

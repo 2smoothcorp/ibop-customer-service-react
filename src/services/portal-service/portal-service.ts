@@ -25,7 +25,7 @@ export class PortalService {
         return responseMenuList;
     }
 
-    async verifyToken(token: string){
+    async verifyToken(token: string): Promise<VerifyTokenResponse>{
         const vaultService = new VaultService(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword);
         const _token = await vaultService.getAuthenJWTToken();
 
@@ -45,4 +45,12 @@ export class PortalService {
         console.log(`responseJson`, responseJson);
         return responseJson;
     }
+}
+
+export interface VerifyTokenResponse{
+    status: 'error' | 'success'
+    data: {
+        employeeId: string
+    }
+    message?: string
 }
