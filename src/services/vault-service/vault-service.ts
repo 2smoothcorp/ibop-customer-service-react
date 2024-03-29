@@ -90,7 +90,7 @@ export class VaultService{
             })
 
             const jsonResp: JWTTokenResponse = await response.json();
-            console.log(`jwt token`, jsonResp.jwtToken)
+            //console.log(`jwt token`, jsonResp.jwtToken)
             return jsonResp.jwtToken;
         }
         catch(e){

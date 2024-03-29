@@ -29,7 +29,7 @@ const SideMenu = (props: SideMenuProps) => {
     setMenuCode(menuItem);
     if( rootLv && url ){
       //console.log(``)
-      router.push(`/${projectApp}/${url}`)
+      router.push(`${url}`)
     }
   };
 

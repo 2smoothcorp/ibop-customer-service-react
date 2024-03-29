@@ -18,7 +18,6 @@ export class AuthService{
         const portalService = new PortalService(Constants.PortalUrl);
         const verifyToken = portalService.verifyToken(token);
 
-
         const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/SearchDirectory/SearchDirectory`;
 
         const formData = new FormData();
