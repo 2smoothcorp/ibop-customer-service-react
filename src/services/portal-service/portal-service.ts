@@ -30,7 +30,6 @@ export class PortalService {
         const _token = await vaultService.getAuthenJWTToken();
 
         const pathUrl = `${VaultService.vaultInfo?.data.data.BaseUrlVerifyToken}`;
-        console.log(`verifyToken ${pathUrl}`)
 
         const formData = new URLSearchParams();
         formData.append('accessToken', token)
@@ -42,7 +41,6 @@ export class PortalService {
         });
 
         const responseJson = await response.json();
-        console.log(`responseJson`, responseJson);
         return responseJson;
     }
 }

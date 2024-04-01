@@ -2,6 +2,9 @@ import { Constants } from "@/constants/constants";
 import { PortalService } from "../portal-service/portal-service";
 import { VaultService } from "../vault-service/vault-service";
 import { cookies } from "next/headers";
+import os from 'os';
+import { lookup } from 'dns/promises';
+import { ironSessionService } from "../iron-session/iron-session";
 
 export class AuthService{
 
@@ -11,28 +14,38 @@ export class AuthService{
         this._pathUrl = pathUrl;
     };
 
-    async searchUserDirectory(token: string){
+    async searchUserDirectory(token: string, employeeID: string): Promise<SearchUserDirectoryResponse>{
+        try{
+            const vaultService = new VaultService(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword);
+            const _token = await vaultService.getAuthenJWTToken();
+            
+            const portalService = new PortalService(Constants.PortalUrl);
+            const verifyToken = portalService.verifyToken(token);
+    
+            const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/SearchDirectory/SearchDirectory`;
 
-        const vaultService = new VaultService(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword);
-        const _token = await vaultService.getAuthenJWTToken();
-        
-        const portalService = new PortalService(Constants.PortalUrl);
-        const verifyToken = portalService.verifyToken(token);
+            console.log(`searchUserDirectory pathUrl`, pathUrl)
+    
+            const formData = new URLSearchParams();
+            formData.append('employeeID', employeeID)
+    
+            const response = await fetch(pathUrl, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${_token}`
+                },
+                body: formData,
+                cache: 'no-cache'
+            });
+            const responseJson = await response.json();
+            console.log(`response`, responseJson)
+            return responseJson;
+        }catch(e)
+        {
+            console.error(e)
+        }
 
-        const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/SearchDirectory/SearchDirectory`;
-
-        const formData = new FormData();
-        formData.append('employeeID', '')
-
-        const response = await fetch(pathUrl, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            body: formData,
-            cache: 'no-cache'
-        });
-        console.log(`response`, await response.json())
+        return {} as SearchUserDirectoryResponse
     }
 
     async getPermission(): Promise<PermissionResponse>{
@@ -41,8 +54,8 @@ export class AuthService{
 
         const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/UserPermission`
 
-        const employeeID = cookies().get('user')?.value || ''
-        console.log(`employeeID`, employeeID )
+        const employeeID = await ironSessionService.getEmployeeId() 
+        console.log(`employeeID`, employeeID)
         if( !employeeID ) return {
             data: [],
             message: '',
@@ -72,6 +85,48 @@ export class AuthService{
         
         return await permissionResp.json();
     }
+
+    async login(username: string, password: string): Promise<LoginResponse> {
+        try{
+            console.log(`AuthService login`, username, password)
+            const vaultService = new VaultService(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword);
+            const token = await vaultService.getAuthenJWTToken();
+
+            const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/Login`;
+
+            username = username.replace("@asiaplus.co.th", "") + "@asiaplus.co.th";
+
+            const ipAddresses = await lookup(os.hostname(), { all: true });
+
+            console.log(`token`, token)
+
+            const formData = new URLSearchParams();
+            formData.append('username', username);
+            formData.append('password', password);
+            formData.append('programcode', Constants.AppName);
+            formData.append('version', Constants.AppVersion);
+            formData.append('hostname', os.hostname());
+            formData.append('ip', '1.1.1.1');
+
+            const loginResp = await fetch(pathUrl, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: formData,
+                cache: 'no-cache'
+            })
+
+            const responseJson = await loginResp.json()
+            console.log(`responseJson`, responseJson)
+            return responseJson;
+
+        }catch(e){
+            console.error(e)
+        }
+
+        return {} as LoginResponse
+    }
 }
 
 export interface PermissionRequest{
@@ -91,4 +146,20 @@ export interface Permission{
     menuCode: string
     menuName: string
     menuAction: string
+}
+
+export interface LoginResponse{
+    status: string
+    message: string
+    sAMAccountName: string
+    employeeID: string
+    displayName: string
+    departmentNumber: string
+    department: string
+    email: string
+    ipPhone: string
+}
+
+export interface SearchUserDirectoryResponse extends LoginResponse{
+
 }

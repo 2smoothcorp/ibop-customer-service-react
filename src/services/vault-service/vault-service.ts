@@ -13,8 +13,8 @@ export class VaultService{
 
     async getVaultToken(): Promise<string> {
         try{
-            const urlPart = `v1/auth/userpass/login/${this._vaultUser}`;
-            const apiUrl = this._vaultHost + urlPart;
+            const urlPath = `v1/auth/userpass/login/${this._vaultUser}`;
+            const apiUrl = this._vaultHost + urlPath;
             console.log(`apiUrl`, apiUrl)
 
             const response = await fetch(apiUrl, {
@@ -38,8 +38,9 @@ export class VaultService{
 
     async getVaultAuthenJWTInfo(): Promise<GetVaultJWTInfoResponse | null> {
         try{
-            const urlPart = `v1/secretv2/data/authen-jwt`;
-            const apiUrl = this._vaultHost + urlPart;
+            // /customer-service-jwt
+            const urlPath = `v1/secretv2/data/authen-jwt`;
+            const apiUrl = this._vaultHost + urlPath;
             console.log(`apiUrl`, apiUrl);
 
             const token = await this.getVaultToken();
@@ -63,8 +64,8 @@ export class VaultService{
 
     async getAuthenJWTToken(){
         try{
-            const urlPart = `v1/secretv2/data/authen-jwt`;
-            const apiUrl = this._vaultHost + urlPart;
+            const urlPath = `v1/secretv2/data/authen-jwt`;
+            const apiUrl = this._vaultHost + urlPath;
             console.log(`apiUrl`, apiUrl);
 
             const jwtInfo: GetVaultJWTInfoResponse | null = await this.getVaultAuthenJWTInfo();

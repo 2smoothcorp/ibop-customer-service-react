@@ -16,11 +16,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   /*
-  const userSession = await cookies().get('user')?.value
+  const UserDataSession = await cookies().get('user')?.value
   const headersList = headers();
   const referer = headersList.get("referer");
   
-  if( !userSession && !(referer||'').includes('/login') ){
+  if( !UserDataSession && !(referer||'').includes('/login') ){
     redirect('/login')
   }
   */

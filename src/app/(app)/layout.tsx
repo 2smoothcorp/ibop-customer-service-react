@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import SideMenu from "@/components/sidemenu/side-menu";
 import Navbar from "@/components/navbar/navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Appbar } from "@/components/appbar/appbar";
 import { Constants } from "@/constants/constants";
 import { cookies } from "next/headers";
@@ -16,7 +16,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const menu = await getData();
+  const menu = await getMenuData();
 
   return (
     <Appbar menu={menu}>
@@ -25,7 +25,9 @@ export default async function RootLayout({
   );
 }
 
-async function getData() {
+async function getMenuData() {
+  console.log(`========================= getMenuData`)
+  console.log(`cookies().toString() `, cookies().toString() )
   const menus = (await fetch(`${Constants.APIUrl}/api/auth/menu`, {
     headers: { Cookie: cookies().toString() },
     cache: 'no-cache'
