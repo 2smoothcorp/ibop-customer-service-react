@@ -16,8 +16,10 @@ const drawerWidth = 250;
 export const Appbar = (props: AppbarProps) => {
     
     const [isOpenMenu, setOpenMenu] = useState(true)
+    const [showMenu, setShowMenu] = useState(false)
 
     return (
+        showMenu ?
         <Box sx={{ display: 'flex' }}>
             <Navbar setOpenMenu={setOpenMenu} isOpenMenu={isOpenMenu}/>
             <SideMenu isOpenMenu={isOpenMenu} setOpenMenu={setOpenMenu} menu={props.menu}/>
@@ -29,5 +31,7 @@ export const Appbar = (props: AppbarProps) => {
                 {props.children}
             </div>
         </Box>
+        :
+        props.children
     )
 }
