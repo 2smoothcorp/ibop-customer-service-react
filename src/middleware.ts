@@ -46,6 +46,13 @@ export async function middleware(request: NextRequest, response: NextResponse) {
     if (!user && !request.nextUrl.pathname.startsWith('/login')) {
       return Response.redirect(new URL('/login', request.url))
     }
+
+    if (request.nextUrl.pathname.startsWith('/logout')) {
+      const _response = NextResponse.redirect(new URL('/login', request.url));
+      _response.cookies.delete('access_token');
+      _response.cookies.delete('user');
+      return _response
+    }
     
   }catch(e){
     console.error(e)
