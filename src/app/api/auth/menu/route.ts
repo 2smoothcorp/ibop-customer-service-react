@@ -1,19 +1,9 @@
-/*
-const getMenuPermission = async () => {
-  const vaultService = new VaultService("https://vault-test.asiaplus.co.th:8200/", "devteam", "asiaplus001");
-  const token = await vaultService.getAuthenJWTToken();
-  console.log(`getMenuPermission token`, token)
-  cookieService(token || '')
-  CONSTANTS.VAULT_TOKEN = token || ''
-}
-*/
-
 import { Constants } from "@/constants/constants";
 import { PortalService } from "@/services/portal-service/portal-service";
 import { VaultService } from "@/services/vault-service/vault-service";
 import { NextRequest, NextResponse } from "next/server";
-import { Permission } from "../permission/route";
 import { cookies } from "next/headers";
+import { Permission } from "@/services/auth-service/auth-service";
 
 const baseUrl = Constants.APIUrl
 
