@@ -17,7 +17,7 @@ export class AuthService{
     async searchUserDirectory(token: string, employeeID: string): Promise<SearchUserDirectoryResponse>{
         try{
             const vaultService = new VaultService(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword);
-            const _token = await vaultService.getAuthenJWTToken();
+            const _token = await vaultService.getJWTTokenByService('authen-jwt');
             
             const portalService = new PortalService(Constants.PortalUrl);
             const verifyToken = portalService.verifyToken(token);
@@ -50,7 +50,7 @@ export class AuthService{
 
     async getPermission(): Promise<PermissionResponse>{
         const vaultService = new VaultService(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword);
-        const token = await vaultService.getAuthenJWTToken();
+        const token = await vaultService.getJWTTokenByService('authen-jwt');
 
         const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/UserPermission`
 
@@ -90,7 +90,7 @@ export class AuthService{
         try{
             console.log(`AuthService login`, username, password)
             const vaultService = new VaultService(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword);
-            const token = await vaultService.getAuthenJWTToken();
+            const token = await vaultService.getJWTTokenByService('authen-jwt');
 
             const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/Login`;
 

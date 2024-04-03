@@ -1,9 +1,12 @@
-export class VaultService{
-    _vaultHost: string;
-    _vaultUser: string;
-    _vaultPass: string;
+export class VaultService<T>{
+    private _vaultHost: string;
+    private _vaultUser: string;
+    private _vaultPass: string;
 
-    static vaultInfo: GetVaultJWTInfoResponse | undefined;
+    private vaultToken?: string;
+    public _vaultInfo?: T;
+
+    static vaultInfo: any;
 
     constructor(vaultHost: string, vaultUser: string, vaultPass: string) {
         this._vaultHost = vaultHost;
@@ -13,6 +16,8 @@ export class VaultService{
 
     async getVaultToken(): Promise<string> {
         try{
+            if( this.vaultToken ) return this.vaultToken;
+
             const urlPath = `v1/auth/userpass/login/${this._vaultUser}`;
             const apiUrl = this._vaultHost + urlPath;
             console.log(`apiUrl`, apiUrl)
@@ -28,6 +33,7 @@ export class VaultService{
             })
             const jsonResp: GetVaultTokenResponse = await response.json();
             const _vaultToken = jsonResp.auth;
+            this.vaultToken = _vaultToken.client_token;
             return _vaultToken.client_token;
         }
         catch(e){
@@ -36,13 +42,10 @@ export class VaultService{
         return '';
     }
 
-    async getVaultAuthenJWTInfo(): Promise<GetVaultJWTInfoResponse | null> {
+    async getVaultInfoByService<T>(service_url: string = ''): Promise<GetVaultJWTInfoResponse<T>>{
         try{
-            // /customer-service-jwt
-            const urlPath = `v1/secretv2/data/authen-jwt`;
+            const urlPath = `v1/secretv2/data/${service_url}`;
             const apiUrl = this._vaultHost + urlPath;
-            console.log(`apiUrl`, apiUrl);
-
             const token = await this.getVaultToken();
 
             const response = await fetch(apiUrl, {
@@ -52,24 +55,26 @@ export class VaultService{
                     "X-Vault-Token": token
                 },
             })
-            const jsonResp: GetVaultJWTInfoResponse = await response.json();
+            const jsonResp: GetVaultJWTInfoResponse<T> = await response.json();
             VaultService.vaultInfo = jsonResp;
             return jsonResp;
         }
         catch(e){
-            console.error(`getVaultAuthenJWTInfo`, e)
+
         }
-        return null;
+
+        return null as any;
     }
 
-    async getAuthenJWTToken(){
+    async getJWTTokenByService(service_url: string = ''){
         try{
-            const urlPath = `v1/secretv2/data/authen-jwt`;
+            const urlPath = `v1/secretv2/data/${service_url}`;
             const apiUrl = this._vaultHost + urlPath;
-            console.log(`apiUrl`, apiUrl);
 
-            const jwtInfo: GetVaultJWTInfoResponse | null = await this.getVaultAuthenJWTInfo();
+            const jwtInfo: GetVaultJWTInfoResponse<T & { ClientCode : string, JWTRequestUserName : string, JWTRequestPassword: string, Baseurl: string } | JWTInfoData> | null = await this.getVaultInfoByService(service_url);
             if( !jwtInfo ) throw ''
+
+            const token = await this.getVaultToken();
 
             const payload = {
                 ClientCode: jwtInfo.data.data.ClientCode,
@@ -81,20 +86,22 @@ export class VaultService{
             {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "X-Vault-Token": token
                 },
                 body: JSON.stringify(payload),
                 next: {
                     // hour 
                     revalidate: 3600
-                }
+                },
+                cache: 'no-cache'
             })
 
             const jsonResp: JWTTokenResponse = await response.json();
-            //console.log(`jwt token`, jsonResp.jwtToken)
             return jsonResp.jwtToken;
         }
         catch(e){
+            console.error(e)
         }
     }
 
@@ -115,10 +122,10 @@ export interface VaultToken{
     policies: Array<string>
 }
 
-export interface GetVaultJWTInfoResponse{
+export interface GetVaultJWTInfoResponse<T>{
     request_id: string
     data: {
-        data: JWTInfoData
+        data: JWTInfoData | T
     }
 }
 

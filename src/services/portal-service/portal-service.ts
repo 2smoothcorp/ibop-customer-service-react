@@ -27,7 +27,7 @@ export class PortalService {
 
     async verifyToken(token: string): Promise<VerifyTokenResponse>{
         const vaultService = new VaultService(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword);
-        const _token = await vaultService.getAuthenJWTToken();
+        const _token = await vaultService.getJWTTokenByService('authen-jwt');
 
         const pathUrl = `${VaultService.vaultInfo?.data.data.BaseUrlVerifyToken}`;
 
