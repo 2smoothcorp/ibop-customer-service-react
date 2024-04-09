@@ -71,10 +71,10 @@ export class VaultService<T>{
             const urlPath = `v1/secretv2/data/${service_url}`;
             const apiUrl = this._vaultHost + urlPath;
 
-            const jwtInfo: GetVaultJWTInfoResponse<T & { ClientCode : string, JWTRequestUserName : string, JWTRequestPassword: string, Baseurl: string } | JWTInfoData> | null = await this.getVaultInfoByService(service_url);
+            const jwtInfo: GetVaultJWTInfoResponse<T & BaseJWTInfoData | JWTInfoData> | null = await this.getVaultInfoByService(service_url);
             if( !jwtInfo ) throw ''
 
-            const token = await this.getVaultToken();
+            //const token = await this.getVaultToken();
 
             const payload = {
                 ClientCode: jwtInfo.data.data.ClientCode,
@@ -82,22 +82,27 @@ export class VaultService<T>{
                 JwtRequestPassword: jwtInfo.data.data.JWTRequestPassword,
             }
 
-            const response = await fetch(jwtInfo.data.data.Baseurl, 
+            console.log(`payload`, payload)
+
+            const response = await fetch(jwtInfo.data.data.BaseUrlGetToken, 
             {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    "X-Vault-Token": token
+                    //"X-Vault-Token": token
                 },
                 body: JSON.stringify(payload),
                 next: {
                     // hour 
-                    revalidate: 3600
+                    //revalidate: 3600
                 },
                 cache: 'no-cache'
             })
 
+            console.log(`response`, response)
+
             const jsonResp: JWTTokenResponse = await response.json();
+            console.log(`jsonResp`, jsonResp)
             return jsonResp.jwtToken;
         }
         catch(e){
@@ -129,6 +134,13 @@ export interface GetVaultJWTInfoResponse<T>{
     }
 }
 
+export interface BaseJWTInfoData{ 
+    ClientCode : string, 
+    JWTRequestUserName : string, 
+    JWTRequestPassword: string, 
+    BaseUrlGetToken: string 
+}
+
 export interface JWTInfoData{
     AuthenADPass: string;
     AuthenADUser: string;
@@ -138,6 +150,7 @@ export interface JWTInfoData{
     BaseUrlPortal: string;
     BaseUrlVerifyToken: string;
     Baseurl: string;
+    BaseUrl: string;
     ClientCode: string;
     JWTRequestPassword: string;
     JWTRequestUserName: string;
