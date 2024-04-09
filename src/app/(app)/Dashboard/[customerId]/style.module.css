@@ -1,0 +1,29 @@
+/**
+ *  Style - Dashboard
+ */
+
+.item-container {
+  @apply relative flex flex-row items-start justify-between
+    p-4 rounded-lg shadow-md text-black
+    border border-neutral-200 cursor-pointer
+    bg-white hover:bg-neutral-100;
+}
+
+.item-status-bar {
+  @apply absolute w-[5px] h-[75px] bottom-0 left-0 rounded-l-lg z-10;
+}
+
+.item-status-bar.open, .item-status-bar.OPEN { @apply bg-info-500; }
+.item-status-bar.progress, .item-status-bar.PROGRESS { @apply bg-warning-500; }
+.item-status-bar.revision, .item-status-bar.REVISION { @apply bg-danger-500; }
+.item-status-bar.completed, .item-status-bar.COMPLETED { @apply bg-success-500; }
+
+.item-icon { @apply text-[48px]; }
+.item-text-title { @apply text-xl font-bold select-none; }
+.item-text-sub-title { @apply text-lg select-none; }
+
+.item-status-text { @apply not-italic text-xl font-bold; }
+.item-status-text.open, .item-status-text.OPEN { @apply text-info-500; }
+.item-status-text.progress, .item-status-text.PROGRESS { @apply text-warning-500; }
+.item-status-text.revision, .item-status-text.REVISION { @apply text-danger-500; }
+.item-status-text.completed, .item-status-text.COMPLETED { @apply text-success-500; }
