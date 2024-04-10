@@ -3,7 +3,7 @@
 import IconLoading from "@/components/custom/icon-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import LabelBase from "@/components/custom/label-base";
-import HeaderCard from "@/components/navbar/header-navbar";
+import HeaderNavbar from "@/components/navbar/header-navbar";
 import HeaderTitle from "@/components/navbar/header-title";
 import { Button } from "@mui/material";
 import { useState } from "react";
@@ -119,7 +119,7 @@ export default function OfficialDocumentPage() {
 
     return (
         <>
-            <HeaderCard title="ช่องทางการจัดส่งเอกสาร" />
+            <HeaderNavbar title="ช่องทางการจัดส่งเอกสาร" />
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mx-[37px]">
                     <HeaderTitle
