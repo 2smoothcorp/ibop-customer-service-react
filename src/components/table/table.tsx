@@ -1,21 +1,20 @@
 "use client";
 
-import { Button } from "@mui/material";
 import {
   DataGrid,
   GridCallbackDetails,
   GridColDef,
   GridFilterModel,
   GridPaginationModel,
-  GridRenderCellParams,
-  GridRowsProp,
-  GridSortModel,
+  GridSortModel
 } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export interface TableProps {
   onPageChange?: (model: GridPaginationModel) => void;
+  rows?: []
+  columns?: GridColDef[]
 }
 
 export interface ColProps {
@@ -35,38 +34,6 @@ const Table = (props: TableProps) => {
   const [filterModel, setFilterModel] = useState<GridFilterModel>({
     items: [],
   });
-
-  const rows: GridRowsProp<ColProps> = [
-    { id: 1, col1: "Hello", col2: "World" },
-    { id: 2, col1: "DataGridPro", col2: "is Awesome" },
-    { id: 3, col1: "MUI", col2: "is Amazing" },
-  ];
-
-  const columns: GridColDef[] = [
-    {
-      field: "actions",
-      headerName: "Action",
-      type: "actions",
-      width: 150,
-      renderCell: (params: GridRenderCellParams<ColProps>) => (
-        //{JSON.stringify(params?.row)}
-        <strong>
-          <Button
-            variant="contained"
-            size="small"
-            className="bg-primary"
-            style={{ marginLeft: 16 }}
-            tabIndex={params.hasFocus ? 0 : -1}
-            onClick={() => router.push(`/CustomerProfile/${params.row.id}`)}
-          >
-            Open 
-          </Button>
-        </strong>
-      ),
-    },
-    { field: "col1", headerName: "Column 1", width: 150 },
-    { field: "col2", headerName: "Column 2", width: 150 },
-  ];
 
   const pageSizeOptions = [1, 5, 10, 25];
 
@@ -97,10 +64,37 @@ const Table = (props: TableProps) => {
     console.log(`details`, details);
   };
 
+  const gridWidth = React.useMemo(() => {
+    return (props.columns || []).reduce((acc, column) => {
+      return acc + (column?.headerName?.length * 8);
+    }, 0);
+  }, [props.columns]);
+
   return (
     <DataGrid
-      rows={rows}
-      columns={columns}
+      sx={{
+        '& .MuiDataGrid-columnHeader': {
+          backgroundColor: '#F0F0F0', 
+          border: '1px solid #B9B9B9', 
+        },
+        '& .MuiDataGrid-filler': {
+          backgroundColor: '#F0F0F0', 
+          border: '1px solid #B9B9B9', 
+        },
+        '& .MuiDataGrid-columnHeaderTitle': {
+          color: '#000000', 
+          fontWeight: 'bold',
+        },
+        '& .MuiDataGrid-topContainer': {
+          borderBottom: '1px solid #B9B9B9', 
+        },
+      }}
+      rows={props.rows || []}
+      //columns={props.columns || []}
+      columns={(props.columns || []).map(column => ({
+        ...column,
+        width: gridWidth > 1000 ? 150 : undefined // Adjust the threshold based on your layout
+      }))}
       pageSizeOptions={pageSizeOptions}
       paginationModel={paginationModel}
       filterModel={filterModel}
@@ -109,6 +103,8 @@ const Table = (props: TableProps) => {
       onPaginationModelChange={onPageChange}
       onFilterModelChange={onFilterChange}
       onSortModelChange={onSortChange}
+      autoHeight 
+      autoPageSize
     />
   );
 };

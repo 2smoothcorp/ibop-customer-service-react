@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Navbar from "../navbar/navbar"
-import SideMenu from "../sidemenu/side-menu"
+import Navbar from "../../components/navbar/navbar"
+import SideMenu from "../../components/sidemenu/side-menu"
 import { Box } from "@mui/material"
 import { MenuGQL } from "@/services/portal-service/menu.type"
 
