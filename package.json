@@ -23,12 +23,13 @@
     "next": "14.1.4",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.51.2",
     "sweetalert2": "^11.10.7"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",
     "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/react": "^18.2.75",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",

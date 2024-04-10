@@ -8,13 +8,13 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
-}
+} */
 
 body {
   color: rgb(var(--foreground-rgb));
@@ -25,4 +25,31 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.font-cordia-new {
+  font-family: 'Cordia New', sans-serif;
+}
+
+@font-face {
+  font-family: 'Cordia New';
+  src: url('../fonts/cordia_new.ttf');
+}
+
+.font-arial {
+  font-family: 'Arial', sans-serif;
+}
+
+@font-face {
+  font-family: 'Arial';
+  src: url('../fonts/arial.ttf');
+}
+
+.font-db-helvethaica {
+  font-family: 'DB Helvethaica', sans-serif;
+}
+
+@font-face {
+  font-family: 'DB Helvethaica';
+  src: url('../fonts/db_helvethaica.ttf');
 }
