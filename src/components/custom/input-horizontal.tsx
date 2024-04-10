@@ -2,6 +2,7 @@
 
 import InputBase from "./input-base";
 import { UseFormRegister } from "react-hook-form";
+import { Property } from "csstype";
 
 export default function InputHorizontal({
     isEditable = false,
@@ -12,6 +13,7 @@ export default function InputHorizontal({
     isRequired = false,
     isLableCols1,
     register,
+    labelAlign = "right",
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -25,7 +27,12 @@ export default function InputHorizontal({
         <div className={`${isLableCols1 ? `grid grid-cols-8` : "flex"} items-center min-h-[46px]`}>
             {
                 labelWidth
-                    ? <div className="font-cordia-new text-lg font-semibold tracking-wide" style={{ width: labelWidth }}>{label} {getRequired()}</div>
+                    ? <div
+                        className="font-cordia-new text-lg px-4 font-semibold tracking-wide"
+                        style={{
+                            width: labelWidth,
+                            textAlign: labelAlign,
+                        }}>{label} {getRequired()}</div>
                     : (
                         isLableCols1 ?
                             <div className="font-cordia-new w-full text-lg font-semibold text-right px-4 tracking-wide">{label} {getRequired()}</div> :
@@ -59,15 +66,18 @@ export default function InputHorizontal({
     )
 }
 
+
+
 interface InputHorizontalProps {
     name: string;
     label: string;
     isEditable?: boolean;
     inputWidth?: number;
-    labelWidth?: number;
+    labelWidth?: number | string;
     isLableCols1?: boolean;
     defaultValue?: string;
     placeholder?: string;
     isRequired?: boolean;
+    labelAlign?: Property.TextAlign | undefined;
     register: UseFormRegister<any>;
 }
