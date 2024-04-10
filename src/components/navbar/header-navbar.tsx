@@ -14,7 +14,7 @@ export default function HeaderNavbar({
             }}
         >
             <Toolbar>
-                <Typography component="span" className="font-db-helvethaica text-[30px]">
+                <Typography component="span" className="font-db-helvethaica text-[30px] tracking-wide">
                     {title}
                 </Typography>
             </Toolbar>

@@ -128,7 +128,6 @@ export default function OfficialDocumentPage() {
                             isEditable
                                 ? <div className="flex gap-2">
                                     <Button
-
                                         type="submit"
                                         // onClick={() => setIsEditable(!isEditable)}
                                         variant="contained"
@@ -160,7 +159,7 @@ export default function OfficialDocumentPage() {
                             register={register}
                             name="documentDeliveryMethod"
                         />
-                        <div className="font-cordia-new text-lg py-6 font-bold">ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย <span className="text-red-500">*</span></div>
+                        <div className="font-cordia-new text-lg py-6 font-bold tracking-wide">ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย <span className="text-red-500">*</span></div>
                         <LabelBase title="ที่อยู่ปัจจุบันที่ติดต่อได้" />
                         <div className="grid grid-cols-4 gap-y-2">
                             {currentAddress.map((item, index) => (
