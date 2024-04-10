@@ -1,6 +1,6 @@
 import DetailSection, {
   Detail,
-} from "@/components/detail-section/detail-section";
+} from "@/containers/detail-section/detail-section";
 import { AppBar, Toolbar, Typography } from "@mui/material";
 
 const OccupationPage = () => {

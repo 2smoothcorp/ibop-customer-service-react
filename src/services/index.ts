@@ -36,6 +36,7 @@ export default class Services {
         const customerServiceVault = new VaultService<JWTInfoData>(Constants.VaultUrl, Constants.VaultUsername, Constants.VaultPassword, 'customer-service-jwt')
         await customerServiceVault.getVaultInfoByService();
         this.customerServiceVault = customerServiceVault;
+        return this.customerServiceVault;
     }
 
     async AuthApi(){
@@ -65,7 +66,9 @@ export default class Services {
         }
 
         const customerServiceVault = await this.getCustomerServiceVaule()
+        console.log('customerServiceVault', customerServiceVault)
         const jwtInfoData: JWTInfoData = (customerServiceVault?._vaultInfo?.data.data as JWTInfoData)
+        console.log(`jwtInfoData`, jwtInfoData)
 
         const authToken = await this.getCustomerServiceToken()
         this.customerProfileV2Service = new CustomerProfileV2Api({
@@ -74,8 +77,6 @@ export default class Services {
             accessToken: `Bearer ${authToken.data.jwtToken}`,
             basePath: jwtInfoData.BaseUrl || ''
         });
-
-        this.customerProfileV2Service.customerProfileCustomerInfoListGet
         
         return this.customerProfileV2Service;
     }
