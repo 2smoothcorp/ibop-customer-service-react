@@ -2,16 +2,18 @@ export class VaultService<T>{
     private _vaultHost: string;
     private _vaultUser: string;
     private _vaultPass: string;
+    private _serviceUrl?: string;
 
     private vaultToken?: string;
-    public _vaultInfo?: T;
+    public _vaultInfo?: GetVaultJWTInfoResponse<any>;
 
     static vaultInfo: any;
 
-    constructor(vaultHost: string, vaultUser: string, vaultPass: string) {
+    constructor(vaultHost: string, vaultUser: string, vaultPass: string, serviceUrl?: string) {
         this._vaultHost = vaultHost;
         this._vaultUser = vaultUser;
         this._vaultPass = vaultPass;
+        this._serviceUrl = serviceUrl;
     };
 
     async getVaultToken(): Promise<string> {
@@ -42,7 +44,7 @@ export class VaultService<T>{
         return '';
     }
 
-    async getVaultInfoByService<T>(service_url: string = ''): Promise<GetVaultJWTInfoResponse<T>>{
+    async getVaultInfoByService<T>(service_url: string = this._serviceUrl || ''): Promise<GetVaultJWTInfoResponse<T>>{
         try{
             const urlPath = `v1/secretv2/data/${service_url}`;
             const apiUrl = this._vaultHost + urlPath;
@@ -57,6 +59,8 @@ export class VaultService<T>{
             })
             const jsonResp: GetVaultJWTInfoResponse<T> = await response.json();
             VaultService.vaultInfo = jsonResp;
+            this._vaultInfo = jsonResp;
+            console.log(`getVaultInfoByService`, jsonResp)
             return jsonResp;
         }
         catch(e){
@@ -66,7 +70,7 @@ export class VaultService<T>{
         return null as any;
     }
 
-    async getJWTTokenByService(service_url: string = ''){
+    async getJWTTokenByService(service_url: string = this._serviceUrl || ''): Promise<string | undefined>{
         try{
             const urlPath = `v1/secretv2/data/${service_url}`;
             const apiUrl = this._vaultHost + urlPath;
@@ -81,8 +85,6 @@ export class VaultService<T>{
                 JwtRequestUserName: jwtInfo.data.data.JWTRequestUserName,
                 JwtRequestPassword: jwtInfo.data.data.JWTRequestPassword,
             }
-
-            console.log(`payload`, payload)
 
             const response = await fetch(jwtInfo.data.data.BaseUrlGetToken, 
             {
@@ -99,15 +101,13 @@ export class VaultService<T>{
                 cache: 'no-cache'
             })
 
-            console.log(`response`, response)
-
             const jsonResp: JWTTokenResponse = await response.json();
-            console.log(`jsonResp`, jsonResp)
             return jsonResp.jwtToken;
         }
         catch(e){
             console.error(e)
         }
+        return undefined
     }
 
 }

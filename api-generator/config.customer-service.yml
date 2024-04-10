@@ -1,0 +1,15 @@
+########################################################
+### Open API Config file
+### - Using root path perspective
+########################################################
+
+generatorName: typescript-axios
+outputDir: ./src/services/rest-api/customer-service
+inputSpec: https://ibop-customer-service-uat.asiaplus.co.th/swagger/develop/swagger.json
+apiPackage: "entity"
+modelPackage: "model"
+enumPropertyNaming: "UPPERCASE"
+stringEnums: false
+supportsES6: true
+useSingleRequestParameter: true
+withSeparateModelsAndApi: true

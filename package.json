@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "apigen": "SET NODE_TLS_REJECT_UNAUTHORIZED=0 && npm run apigen:prepare && npm run apigen:process:api  ",
-    "apigen:prepare": "shx rm -rf ./src/services/rest-api/generated/**",
-    "apigen:process:api": "openapi-generator-cli generate --config ./api-generator.yml --skip-validate-spec"
+    "apigen": "SET NODE_TLS_REJECT_UNAUTHORIZED=0 && npm run apigen:prepare && npm run apigen:process:api-customer-service && npm run apigen:process:api-kyc && npm run apigen:process:correction",
+    "apigen:prepare": "shx rm -rf ./src/services/rest-api/*/",
+    "apigen:process:api-customer-service": "openapi-generator-cli generate --config ./api-generator/config.customer-service.yml --skip-validate-spec",
+    "apigen:process:api-kyc": "openapi-generator-cli generate --config ./api-generator/config.kyc.yml --skip-validate-spec",
+    "apigen:process:correction": "node ./api-generator/corrector.js customer-service kyc"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
