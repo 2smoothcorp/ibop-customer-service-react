@@ -30,6 +30,7 @@ async function getMenuData() {
       cache: 'no-cache'
     }))
     return await menus.json()
+    //
   }catch(e){
     //redirect('/logout')
   }
