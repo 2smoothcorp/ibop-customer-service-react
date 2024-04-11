@@ -6,7 +6,7 @@ import InputDate from "./input-date";
 import moment from "moment";
 import InputTextHook from "./input-text-hook";
 import InputSelectHook, { InputSelectHookValue } from "./input-select-hook";
-import InputNumberHook from "./input-number-hook";
+import InputNumber from "./input-number";
 
 export default function InputHorizontal({
     type = "text",
@@ -62,7 +62,7 @@ export default function InputHorizontal({
                                         list={list}
                                     />
                                     : type === "number"
-                                        ? <InputNumberHook
+                                        ? <InputNumber
                                             name={name}
                                             defaultValue={defaultValue}
                                             className={isLableCols1 ? "col-span-7" : ""}
