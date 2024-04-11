@@ -99,6 +99,7 @@ export default function KycCddPage() {
                             isEditable={isEditable}
                             register={register}
                             name="riskGroup"
+                            onChangeNumber={(val) => setValue("riskGroup", val)}
                         />
                         <InputHorizontal
                             type="number"
@@ -108,6 +109,7 @@ export default function KycCddPage() {
                             isEditable={isEditable}
                             register={register}
                             name="score"
+                            onChangeNumber={(val) => setValue("score", val)}
                         />
                         <InputHorizontal
                             type="date"
