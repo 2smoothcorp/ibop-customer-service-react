@@ -101,7 +101,8 @@ const Consent = (): ReactElement => {
       return (
         <div key={ idx } className={'py-2 border-b border-neutral-200'}>
           <span className={'text-lg'} dangerouslySetInnerHTML={{ __html: question }}></span>
-          <span>{ resolveConsentLabel(isConsent) }</span>
+          <div className={'h-4'}></div>
+          <span className={'text-lg p-2 bg-neutral-200'}>{ resolveConsentLabel(isConsent) }</span>
         </div>
       );
     });
@@ -129,7 +130,7 @@ const Consent = (): ReactElement => {
     <div className={'text-black p-4'}>
       { generatePrefaceText() }
       { (isEditing) ? generateSelectableOptions() : generateTextOptions() }
-      <div className={'h-[12px]'}></div>
+      <div className={'h-4'}></div>
       { generatePostfaceText() }
     </div>
   );
