@@ -21,6 +21,7 @@ export default function InputHorizontal({
     labelAlign = "right",
     list,
     onChange,
+    onChangeNumber,
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -62,10 +63,10 @@ export default function InputHorizontal({
                                     />
                                     : type === "number"
                                         ? <InputNumberHook
-                                            register={register}
                                             name={name}
                                             defaultValue={defaultValue}
                                             className={isLableCols1 ? "col-span-7" : ""}
+                                            onChange={onChangeNumber}
                                         />
                                         : type === "date"
                                             ? <InputDate
@@ -82,9 +83,11 @@ export default function InputHorizontal({
                                             />
                             )
                     )
-                    : type === "date"
-                        ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{moment(defaultValue).format("DD/MM/YYYY").toString()}</div>
-                        : <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{defaultValue}</div>
+                    : type === "number"
+                        ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{String(defaultValue).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')}</div>
+                        : type === "date"
+                            ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{moment(defaultValue).format("DD/MM/YYYY").toString()}</div>
+                            : <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{defaultValue}</div>
             }
         </div>
     )
@@ -107,4 +110,5 @@ interface InputHorizontalProps {
     register: UseFormRegister<any>;
     list?: InputSelectHookValue[];
     onChange?: (value: string) => void;
+    onChangeNumber?: (value: number) => void;
 }
