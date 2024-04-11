@@ -5,7 +5,7 @@ import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderNavbar from "@/components/navbar/header-navbar";
 import HeaderTitle from "@/components/navbar/header-title";
 import { Button } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function KycCddPage() {
@@ -14,10 +14,15 @@ export default function KycCddPage() {
         handleSubmit,
         watch,
         formState: { errors },
+        setValue
     } = useForm<SubmitInput>()
-
+    const labelWidth = "15%";
     const [isEditable, setIsEditable] = useState<boolean>(false);
     const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
+
+    useEffect(() => {
+        console.log(errors);
+    }, [errors]);
 
     const onSubmit: SubmitHandler<SubmitInput> = (data) => {
         if (!isLoadingSubmit) {
@@ -29,6 +34,15 @@ export default function KycCddPage() {
             }, 1500);
         }
     };
+
+    const editData = () => {
+        setValue("riskGroupSummary", "ความเสี่ยงสูง")
+        setValue("riskGroup", 3)
+        setValue("score", 7)
+        setValue("startDate", "04/04/2024")
+        setValue("endDate", "04/04/2026")
+        setIsEditable(!isEditable);
+    }
 
     return (
         <>
@@ -42,7 +56,6 @@ export default function KycCddPage() {
                                 ? <div className="flex gap-2">
                                     <Button
                                         type="submit"
-                                        // onClick={() => setIsEditable(!isEditable)}
                                         variant="contained"
                                         className="bg-[#1F346B] hover:bg-[#1F346B] hover:brightness-95 font-cordia-new text-lg py-0">
                                         {isLoadingSubmit ? <IconLoading color="#fff" /> : "บันทึก"}
@@ -55,7 +68,7 @@ export default function KycCddPage() {
                                     </Button>
                                 </div>
                                 : <Button
-                                    onClick={() => setIsEditable(!isEditable)}
+                                    onClick={editData}
                                     variant="contained"
                                     className="bg-[#43AD9E] hover:bg-[#43AD9E] hover:brightness-95 font-cordia-new text-lg py-0">
                                     แก้ไข
@@ -65,32 +78,41 @@ export default function KycCddPage() {
                     <div className="h-2" />
                     <div className="px-[20px] py-[15px]">
                         <InputHorizontal
+                            type="select"
                             label="สรุปผลกลุ่มเสี่ยงของลูกค้า"
-                            labelWidth={"15%"}
+                            labelWidth={labelWidth}
                             defaultValue="ความเสี่ยงสูง"
                             isEditable={isEditable}
                             register={register}
                             name="riskGroupSummary"
+                            list={[
+                                { value: "ความเสี่ยงสูง", label: "ความเสี่ยงสูง" },
+                                { value: "ความเสี่ยงปานกลาง", label: "ความเสี่ยงปานกลาง" },
+                                { value: "ความเสี่ยงต่ำ", label: "ความเสี่ยงต่ำ" },
+                            ]}
                         />
                         <InputHorizontal
+                            type="number"
                             label="กลุ่ม"
-                            labelWidth={"15%"}
+                            labelWidth={labelWidth}
                             defaultValue="3"
                             isEditable={isEditable}
                             register={register}
                             name="riskGroup"
                         />
                         <InputHorizontal
+                            type="number"
                             label="คะแนน"
-                            labelWidth={"15%"}
+                            labelWidth={labelWidth}
                             defaultValue="7"
                             isEditable={isEditable}
                             register={register}
                             name="score"
                         />
                         <InputHorizontal
+                            type="date"
                             label="วันที่เริ่มต้น"
-                            labelWidth={"15%"}
+                            labelWidth={labelWidth}
                             defaultValue="04/04/2024"
                             isEditable={isEditable}
                             register={register}
@@ -98,7 +120,7 @@ export default function KycCddPage() {
                         />
                         <InputHorizontal
                             label="วันหมดอายุ"
-                            labelWidth={"15%"}
+                            labelWidth={labelWidth}
                             defaultValue="04/04/2026"
                             isEditable={isEditable}
                             register={register}
@@ -122,8 +144,8 @@ export default function KycCddPage() {
 
 type SubmitInput = {
     riskGroupSummary: string;
-    riskGroup: string;
-    score: string;
+    riskGroup: number;
+    score: number;
     startDate: string;
     endDate: string;
 }

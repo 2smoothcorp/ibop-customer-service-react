@@ -1,10 +1,14 @@
 "use client";
 
-import InputBase from "./input-base";
+import InputText from "./input-text";
 import { UseFormRegister } from "react-hook-form";
 import { Property } from "csstype";
+import InputSelect, { InputSelectValue } from "./input-select";
+import InputNumber from "./input-number";
+import InputDate from "./input-date";
 
 export default function InputHorizontal({
+    type = "text",
     isEditable = false,
     label,
     name,
@@ -14,6 +18,7 @@ export default function InputHorizontal({
     isLableCols1,
     register,
     labelAlign = "right",
+    list,
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -24,7 +29,7 @@ export default function InputHorizontal({
     }
 
     return (
-        <div className={`${isLableCols1 ? `grid grid-cols-8` : "flex"} items-center min-h-[46px]`}>
+        <div className={`${isLableCols1 ? "grid grid-cols-8" : "flex"} items-center min-h-[46px]`}>
             {
                 labelWidth
                     ? <div
@@ -45,19 +50,34 @@ export default function InputHorizontal({
                         label === ""
                             ? <></>
                             : (
-                                isLableCols1
-                                    ? <InputBase
+                                type === "select"
+                                    ? <InputSelect
                                         register={register}
                                         name={name}
                                         defaultValue={defaultValue}
-                                        className="col-span-7"
+                                        className={isLableCols1 ? "col-span-7" : ""}
+                                        list={list}
                                     />
-                                    : <InputBase
-                                        register={register}
-                                        name={name}
-                                        defaultValue={defaultValue}
-                                    />
-
+                                    : type === "number"
+                                        ? <InputNumber
+                                            register={register}
+                                            name={name}
+                                            defaultValue={defaultValue}
+                                            className={isLableCols1 ? "col-span-7" : ""}
+                                        />
+                                        : type === "date"
+                                            ? <InputDate
+                                                register={register}
+                                                name={name}
+                                                defaultValue={defaultValue}
+                                                className={isLableCols1 ? "col-span-7" : ""}
+                                            />
+                                            : <InputText
+                                                register={register}
+                                                name={name}
+                                                defaultValue={defaultValue}
+                                                className={isLableCols1 ? "col-span-7" : ""}
+                                            />
                             )
                     )
                     : <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{defaultValue}</div>
@@ -69,6 +89,7 @@ export default function InputHorizontal({
 
 
 interface InputHorizontalProps {
+    type?: "text" | "number" | "select" | "date";
     name: string;
     label: string;
     isEditable?: boolean;
@@ -80,4 +101,5 @@ interface InputHorizontalProps {
     isRequired?: boolean;
     labelAlign?: Property.TextAlign | undefined;
     register: UseFormRegister<any>;
+    list?: InputSelectValue[];
 }
