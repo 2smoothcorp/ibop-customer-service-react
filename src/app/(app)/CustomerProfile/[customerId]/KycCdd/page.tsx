@@ -39,8 +39,8 @@ export default function KycCddPage() {
         setValue("riskGroupSummary", "ความเสี่ยงสูง")
         setValue("riskGroup", 3)
         setValue("score", 7)
-        setValue("startDate", "04/04/2024")
-        setValue("endDate", "04/04/2026")
+        setValue("startDate", "2024-04-06")
+        setValue("endDate", "2026-04-06")
         setIsEditable(!isEditable);
     }
 
@@ -113,18 +113,21 @@ export default function KycCddPage() {
                             type="date"
                             label="วันที่เริ่มต้น"
                             labelWidth={labelWidth}
-                            defaultValue="04/04/2024"
+                            defaultValue="2024-04-06"
                             isEditable={isEditable}
                             register={register}
                             name="startDate"
+                            onChange={(val) => setValue("startDate", val)}
                         />
                         <InputHorizontal
+                            type="date"
                             label="วันหมดอายุ"
                             labelWidth={labelWidth}
-                            defaultValue="04/04/2026"
+                            defaultValue="2026-04-06"
                             isEditable={isEditable}
                             register={register}
                             name="endDate"
+                            onChange={(val) => setValue("endDate", val)}
                         />
                     </div>
                 </div>

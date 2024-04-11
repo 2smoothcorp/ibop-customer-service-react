@@ -1,11 +1,12 @@
 "use client";
 
-import InputText from "./input-text";
 import { UseFormRegister } from "react-hook-form";
 import { Property } from "csstype";
-import InputSelect, { InputSelectValue } from "./input-select";
-import InputNumber from "./input-number";
 import InputDate from "./input-date";
+import moment from "moment";
+import InputTextHook from "./input-text-hook";
+import InputSelectHook, { InputSelectHookValue } from "./input-select-hook";
+import InputNumberHook from "./input-number-hook";
 
 export default function InputHorizontal({
     type = "text",
@@ -19,6 +20,7 @@ export default function InputHorizontal({
     register,
     labelAlign = "right",
     list,
+    onChange,
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -51,7 +53,7 @@ export default function InputHorizontal({
                             ? <></>
                             : (
                                 type === "select"
-                                    ? <InputSelect
+                                    ? <InputSelectHook
                                         register={register}
                                         name={name}
                                         defaultValue={defaultValue}
@@ -59,7 +61,7 @@ export default function InputHorizontal({
                                         list={list}
                                     />
                                     : type === "number"
-                                        ? <InputNumber
+                                        ? <InputNumberHook
                                             register={register}
                                             name={name}
                                             defaultValue={defaultValue}
@@ -67,12 +69,12 @@ export default function InputHorizontal({
                                         />
                                         : type === "date"
                                             ? <InputDate
-                                                register={register}
                                                 name={name}
                                                 defaultValue={defaultValue}
                                                 className={isLableCols1 ? "col-span-7" : ""}
+                                                onChange={onChange}
                                             />
-                                            : <InputText
+                                            : <InputTextHook
                                                 register={register}
                                                 name={name}
                                                 defaultValue={defaultValue}
@@ -80,7 +82,9 @@ export default function InputHorizontal({
                                             />
                             )
                     )
-                    : <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{defaultValue}</div>
+                    : type === "date"
+                        ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{moment(defaultValue).format("DD/MM/YYYY").toString()}</div>
+                        : <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{defaultValue}</div>
             }
         </div>
     )
@@ -101,5 +105,6 @@ interface InputHorizontalProps {
     isRequired?: boolean;
     labelAlign?: Property.TextAlign | undefined;
     register: UseFormRegister<any>;
-    list?: InputSelectValue[];
+    list?: InputSelectHookValue[];
+    onChange?: (value: string) => void;
 }

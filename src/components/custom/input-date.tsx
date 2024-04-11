@@ -1,55 +1,53 @@
-import { FormControl, MenuItem, Select } from "@mui/material";
-import { UseFormRegister } from "react-hook-form";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment from "moment";
+import { MobileDatePicker } from "@mui/x-date-pickers";
 
 export default function InputDate({
-    name,
-    defaultValue,
-    placeholder,
+    defaultValue, // 2024-04-06
     className,
-    register,
     required = false,
+    disabled = false,
+    readonly = false,
+    onChange,
 }: InputDateProps) {
-    console.log(register)
     return (
-        <div className={'w-full ' + className}>
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DemoContainer components={['DatePicker']}>
-                    <DatePicker
+        <div className={'w-full' + className}>
+            <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="th-TH">
+                <DemoContainer sx={{ padding: 0 }} components={['DatePicker']}>
+                    <MobileDatePicker
+                        className="bg-white"
+                        format="DD/MM/YYYY"
+                        disabled={disabled}
+                        readOnly={readonly}
                         value={moment(defaultValue)}
-                        onChange={(newValue) => console.log(newValue)}
-                        // slots={{
-                        //     openPickerIcon: EditCalendarRoundedIcon,
-                        //     openPickerButton: StyledButton,
-                        //     day: StyledDay,
-                        // }}
+                        onChange={(newValue) => onChange && onChange(newValue?.format('YYYY-MM-DD').toString() ?? '')}
                         slotProps={{
-                            openPickerIcon: { fontSize: 'small' },
-                            openPickerButton: { size: 'small' },
                             textField: {
                                 required: required,
                                 size: 'small',
                                 color: 'primary',
                                 fullWidth: true,
-                                focused: true,
+                                InputProps: {
+                                    sx: {
+                                        fontFamily: 'Cordia New',
+                                        fontSize: '18px',
+                                    }
+                                },
                             },
-                            
+                            day: {
+                                sx: {
+                                    "&.MuiPickersDay-root.Mui-selected": {
+                                        backgroundColor: "#1F346B",
+                                    },
+                                },
+                            },
                         }}
                     />
                 </DemoContainer>
             </LocalizationProvider>
         </div>
-
-        // <input
-        //     type="text"
-        //     placeholder={placeholder || ""}
-        //     className={`font-cordia-new w-full px-3 py-2 h-10 bg-white border border-slate-300 rounded-md text-lg shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 ${className}`}
-        //     {...register(name, { required: required, value: defaultValue })}
-        // />
     )
 }
 
@@ -57,7 +55,8 @@ interface InputDateProps {
     required?: boolean;
     name: string;
     defaultValue?: string;
-    placeholder?: string;
     className?: string;
-    register: UseFormRegister<any>;
+    onChange?: (value: string) => void;
+    disabled?: boolean;
+    readonly?: boolean;
 }
