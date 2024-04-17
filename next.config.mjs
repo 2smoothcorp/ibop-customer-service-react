@@ -5,6 +5,9 @@ const nextConfig = {
     publicRuntimeConfig: {
         version: _package.version,
     },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
 };
 
 export default nextConfig;

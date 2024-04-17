@@ -12,7 +12,7 @@ export interface LoginActionResponse{
     message: string
 }
 
-export async function login(prevState: LoginActionResponse, formData: FormData) : Promise<LoginActionResponse>{
+export async function login(formData: FormData) : Promise<LoginActionResponse>{
     const authService = new AuthService('');
 
     const username = formData.get('username') as string || '';
