@@ -15,9 +15,9 @@ build:
   script:
     - |
       if [[ $CI_COMMIT_BRANCH == "uat" ]]; then
-        version=":$(cat ./Config/Package.cs | sed -n 's:.*public static string ProjectVersion { get; } = \"\(.*\)\".*:\1:pgI')"
+        version=":$(cat ./constants/constants.ts | sed -n 's:.*public static AppVersion: string = \'\(.*\)\'.*:\1:pgI')"
         echo ${version}
-        docker build --pull -t "${CI_REGISTRY_IMAGE}${version}" -f ./Dockerfile . --build-arg TELERIK_USERNAME=${TELERIK_USERNAME} --build-arg TELERIK_PASSWORD=${TELERIK_PASSWORD}
+        docker build --pull -t "${CI_REGISTRY_IMAGE}${version}" -f ./Dockerfile .
         docker push "${CI_REGISTRY_IMAGE}${version}"
       fi
     - echo "BUILD_VERSION=${version}" >> build.env
