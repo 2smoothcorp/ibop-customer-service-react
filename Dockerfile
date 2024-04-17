@@ -9,7 +9,6 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY .npmrc ./
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 # RUN mkdir -p ./patches
 # COPY patches/react-thailand-address-typeahead+2.0.1.patch ./patches
