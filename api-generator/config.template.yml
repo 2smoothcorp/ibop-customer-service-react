@@ -4,8 +4,8 @@
 ########################################################
 
 generatorName: typescript-axios
-outputDir: ./src/services/rest-api/???
-inputSpec: https://__url__/swagger/develop/swagger.json
+outputDir: ./src/services/rest-api/xxx
+inputSpec: yyy
 apiPackage: "entity"
 modelPackage: "model"
 enumPropertyNaming: "UPPERCASE"
