@@ -1,0 +1,46 @@
+stages:
+  - build
+  - deploy
+
+build:
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  artifacts:
+    reports:
+      dotenv: build.env
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
+  script:
+    - |
+      if [[ $CI_COMMIT_BRANCH == "uat" ]]; then
+        version=":$(cat ./constants/constants.ts | sed -n 's:.*public static AppVersion: string = \'\(.*\)\'.*:\1:pgI')"
+        echo ${version}
+        docker build --pull -t "${CI_REGISTRY_IMAGE}${version}" -f ./Dockerfile .
+        docker push "${CI_REGISTRY_IMAGE}${version}"
+      fi
+    - echo "BUILD_VERSION=${version}" >> build.env
+  rules:
+   - if: $CI_COMMIT_BRANCH == "uat"
+
+deploy:
+  stage: deploy
+  needs:
+    - job: build
+      artifacts: true
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: [""]
+  script:
+    - deploymentFile="deployment-uat.yaml"
+    - echo $KUBECONFIG_FILE | base64 --decode > ~/.kube/config
+    - TAG=$(echo $CI_COMMIT_SHA | head -c7) && sed -i 's|<BUILD_VERSION>|'${BUILD_VERSION}'|' $CI_PROJECT_DIR/${deploymentFile}
+    - TAG=$(echo $CI_COMMIT_SHA | head -c7) && sed -i 's|<CI_DEPLOYMENT_NAME>|'${CI_DEPLOYMENT_NAME}'|' $CI_PROJECT_DIR/${deploymentFile}
+    - TAG=$(echo $CI_COMMIT_SHA | head -c7) && sed -i 's|<CI_REGISTRY_IMAGE>|'${CI_REGISTRY_IMAGE}'|' $CI_PROJECT_DIR/${deploymentFile}
+    - TAG=$(echo $CI_COMMIT_SHA | head -c7) && sed -i 's|<CI_NAMESPACE>|'${CI_NAMESPACE}'|' $CI_PROJECT_DIR/${deploymentFile}
+    - cat $CI_PROJECT_DIR/${deploymentFile}
+    - kubectl apply -f $CI_PROJECT_DIR/$deploymentFile
+    - kubectl rollout status --namespace=$CI_NAMESPACE deployment/$CI_DEPLOYMENT_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH == "uat"

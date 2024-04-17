@@ -11,18 +11,18 @@ import {
 } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { AppBar, FormControl, FormControlLabel ,Radio, RadioGroup } from '@mui/material';
+import type { ConsentQuestionOutputDataResponse, ConsentAnsweredOutputDataResponse } from '@/services/rest-api/kyc';
 
 const Consent = (): ReactElement => {
-  const consentFormId = '28BFB1E6-C5ED-4D33-BB7D-99008A92258A';
   const [ customerId, setCustomerId ] = useState('');
-  const [ prefaceList, __setPrefaceList ] = useState<Array<string>>([
+  const [ prefaceList, setPrefaceList ] = useState<Array<string>>([
     `<p>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;คำที่ใช้ในเอกสารฉบับนี้ให้มีความหมายเดียวกันกับคำที่ได้นิยามไว้ในนโยบายความเป็นส่วนตัวของ บริษัท เอเซีย พลัส กรุ๊ป โฮลดิ้งส์ จำกัด (มหาชน) และ บริษัทในกลุ่ม (รวมเรียกว่า <b>"บริษัท"</b>) เว้นแต่ เอกสารฉบับนี้ได้นิยามไว้เป็นอย่างอื่นเพิ่มเติม
       <br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ข้าพเจ้าประสงค์ที่จะใช้บริการการซื้อขายหลักทรัพย์ การยืมและให้ยืมหลักทรัพย์ และ/หรือการซื้อขายสัญญาซื้อขายล่วงหน้าของบริษัท ซื่งข้าพเจ้ารับทราบว่าบริษัทมีความจำเป็นต้องใช้ข้อมูลส่วนบุคคลของข้าพเจ้า ดังนั้น ข้าพเจ้าจึงขอแสดงเจตนาให้ความยินยอมแก่บริษัทเกี่ยวกับการใช้ข้อมูลส่วนบุคคลที่ข้าพเจ้าได้ให้ไว้ดังนี้
     </p>`
   ]);
-  const [ postfaceList, __setPostfaceList ] = useState<Array<string>>([
+  const [ postfaceList, setPostfaceList ] = useState<Array<string>>([
     `<p>ทั้งนี้ กลุ่มบริษัทในเครือ ได้แก่ บริษัท เอเซีย พลัส กรุ๊ป โฮลดิ้งส์ จำกัด, บริษัทหลักทรัพย์ เอเซีย พลัส จำกัด และ บริษัท ที่ปรึกษา เอเซีย พลัส จํากัด</p>`
   ]);
   const [ consentOptionList, setConsentOptionList ] = useState<Array<ConsentInfo>>([
@@ -50,25 +50,81 @@ const Consent = (): ReactElement => {
   const params = useParams<{ customerId: string; }>();
 
   useEffect(() => {
-    const fetchGetConsentInfo = async () => {
-      // const res = await fetch(`https://ibop-kyc-service-uat.asiaplus.co.th/Consent/${ consentFormId }/GetQuestion`, {
-      //   method: 'GET',
-      //   headers: {
-      //     'authorization': `Bearer xxx`,
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
-      // const json = await res.json();
-    }
-
-    fetchGetConsentInfo();
-  }, []);
-
-  useEffect(() => {
     const { back } = router;
     const { customerId } = params;
+
+    const onInit = async () => {
+      const consentOptions = await fetchGetConsentQuestion();
+      await fetchGetConsentAnswer(consentOptions);
+    }
+
+    const fetchGetConsentQuestion = async (): Promise<Array<ConsentInfo>> => {
+      const request = await fetch(`api/consent/question`, { method: 'GET' });
+      const response: ConsentQuestionOutputDataResponse = await request.json();
+
+      const { data } = response;
+      if(!data) { return []; }
+
+      const {
+        // id, title,
+        header, header2, header3, header4, header5,
+        footer, footer2, footer3,
+        consentDetail
+      } = data;
+
+      const _preface = [];
+      if(header) { _preface.push(header); }
+      if(header2) { _preface.push(header2); }
+      if(header3) { _preface.push(header3); }
+      if(header4) { _preface.push(header4); }
+      if(header5) { _preface.push(header5); }
+
+      const _postface = [];
+      if(footer) { _postface.push(footer); }
+      if(footer2) { _postface.push(footer2); }
+      if(footer3) { _postface.push(footer3); }
+
+      const _opts: Array<ConsentInfo> = [];
+      for(const question of consentDetail || []) {
+        const { id, sortOrder, contentHtml } = question;
+        _opts.push({
+          order: sortOrder || 0,
+          consentId: `${ id }`,
+          question: contentHtml || "",
+          answer: ""
+        });
+      }
+
+      setPrefaceList(_preface);
+      setPostfaceList(_postface);
+      return _opts;
+    }
+
+    const fetchGetConsentAnswer = async (options: Array<ConsentInfo>) => {
+      const urlQuery = new URLSearchParams({ referenceId: '' });
+      const request = await fetch(`api/consent/answer?${ urlQuery }`, { method: 'GET' });
+      const response: ConsentAnsweredOutputDataResponse = await request.json();
+
+      const { data } = response;
+      if(!data) { return; }
+
+      const { answers } = data;
+
+      for(const answer of answers || []) {
+        const { isAccepted, sortOrder } = answer;
+        const _idx = (sortOrder || 1) - 1;
+        options[_idx] = {
+          ...options[_idx],
+          answer: isAccepted || ''
+        }
+      }
+
+      setConsentOptionList(options);
+    }
+
     if(!customerId) { return back(); }
     setCustomerId(customerId);
+    onInit();
   }, [ router, params ]);
 
   const onChangeConsentOption = (changedValue: string, idx: number) => {
