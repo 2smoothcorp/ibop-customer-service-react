@@ -5,30 +5,15 @@ import { login } from "./login.action";
 import { useFormState } from "react-dom";
 import { useEffect } from "react";
 
-export const LoginPage = () => {
+const LoginPage = () => {
 
-    const [createPostState, createPostAction] = useFormState(login, {
-        message: '',
-        success: false
-    })
-
-    useEffect(() => {
-        if (createPostState.success) {
-          alert("Post created!")
-        }
-    
-        if (createPostState.message) {
-          alert(createPostState.message)
-        }
-      }, [createPostState])
-      
     return (
     <div className="w-full max-w-lg mx-auto">
         <div className="text-xl font-bold text-center mt-20">
             <img src="logo-dark.png" width="300px" className="m-auto" />
             <div className="text-xl">iBOP - {Constants.AppName}</div>
         </div>
-        <form className="my-4 space-y-4 md:space-y-6 mx-auto" action={createPostAction}>
+        <form className="my-4 space-y-4 md:space-y-6 mx-auto" action={login}>
             <div>
                 <input 
                 type="text" 

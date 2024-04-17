@@ -20,7 +20,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 const filterMenuByViewPermission = (portalMenus: any, permission: Permission[]) => {
-    return portalMenus.filter( (portalMenu) => {
+    return portalMenus.filter( (portalMenu: any) => {
         const foundPermission = permission.filter( p => p.menuCode === portalMenu.code) || []
         if( foundPermission.length === 0 ) return false
         if( portalMenu.permissionActions.includes( foundPermission[0].menuAction ) ){
