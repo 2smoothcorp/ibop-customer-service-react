@@ -1,7 +1,7 @@
 import { Constants } from '@/constants/constants';
 import { PortalService } from './portal-service/portal-service';
 import { AuthApi, CustomerProfileV2Api } from './rest-api/customer-service';
-import { BaseJWTInfoData, JWTInfoData, VaultService } from './vault-service/vault-service';
+import { JWTInfoData, VaultService } from './vault-service/vault-service';
 
 export default class Services {
 
@@ -66,11 +66,10 @@ export default class Services {
         }
 
         const customerServiceVault = await this.getCustomerServiceVaule()
-        console.log('customerServiceVault', customerServiceVault)
         const jwtInfoData: JWTInfoData = (customerServiceVault?._vaultInfo?.data.data as JWTInfoData)
-        console.log(`jwtInfoData`, jwtInfoData)
-
+        
         const authToken = await this.getCustomerServiceToken()
+        console.log(`authToken.data.jwtToken`, authToken.data.jwtToken)
         this.customerProfileV2Service = new CustomerProfileV2Api({
             isJsonMime: () => false,
             apiKey: `Bearer ${authToken.data.jwtToken}`,

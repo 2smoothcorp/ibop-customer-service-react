@@ -1,5 +1,6 @@
 "use client";
 
+import MuiPagination from '@mui/material/Pagination';
 import {
   DataGrid,
   GridCallbackDetails,
@@ -15,6 +16,12 @@ export interface TableProps {
   onPageChange?: (model: GridPaginationModel) => void;
   rows?: []
   columns?: GridColDef[]
+  hideFooter?: boolean
+  getRowId?: (row: any) => any
+  totalItems?: number
+  totalPages?: number
+  paginationModel: GridPaginationModel
+  setPaginationModel: any
 }
 
 export interface ColProps {
@@ -25,27 +32,36 @@ export interface ColProps {
 
 const Table = (props: TableProps) => {
   const router = useRouter();
-
+  /*
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: 25,
+    pageSize: 5,
     page: 0,
   });
+  */
 
   const [filterModel, setFilterModel] = useState<GridFilterModel>({
     items: [],
   });
 
   const pageSizeOptions = [1, 5, 10, 25];
+  /*
+  useEffect(() => {
+    if (props.onPageChange) {
+      props.onPageChange(paginationModel);
+    }
+  }, [paginationModel])
 
   const onPageChange = (
     model: GridPaginationModel,
     details: GridCallbackDetails<any>
   ) => {
-    setPaginationModel(model);
     if (props.onPageChange) {
-      props.onPageChange(model);
+      //props.onPageChange(model);
     }
+    console.log(`model`, model)
+    setPaginationModel(model);
   };
+  */
 
   const onFilterChange = (
     model: GridFilterModel,
@@ -64,14 +80,36 @@ const Table = (props: TableProps) => {
     console.log(`details`, details);
   };
 
+  const onPaginationChange = (page: number) => {
+    console.log(`page`, page);
+    props?.setPaginationModel({
+      page: page,
+      pageSize: paginationModel.pageSize
+    })
+    
+  }
+
   const gridWidth = React.useMemo(() => {
     return (props.columns || []).reduce((acc, column) => {
       return acc + (column?.headerName?.length * 8);
     }, 0);
   }, [props.columns]);
 
+  const { totalItems, totalPages, paginationModel } = props
+
+  console.log(`totalItems`, totalItems)
+  console.log(`totalPages`, totalPages)
+  console.log(`props?.paginationModel`, props?.paginationModel)
+  console.log(`props?.paginationModel?.page`, props?.paginationModel?.page)
+
   return (
     <DataGrid
+      rows={props.rows || []}
+      //columns={props.columns || []}
+      columns={(props.columns || []).map(column => ({
+        ...column,
+        width: gridWidth > 1000 ? 150 : undefined // Adjust the threshold based on your layout
+      }))}
       sx={{
         '& .MuiDataGrid-columnHeader': {
           backgroundColor: '#F0F0F0', 
@@ -89,22 +127,35 @@ const Table = (props: TableProps) => {
           borderBottom: '1px solid #B9B9B9', 
         },
       }}
-      rows={props.rows || []}
-      //columns={props.columns || []}
-      columns={(props.columns || []).map(column => ({
-        ...column,
-        width: gridWidth > 1000 ? 150 : undefined // Adjust the threshold based on your layout
-      }))}
       pageSizeOptions={pageSizeOptions}
-      paginationModel={paginationModel}
+      paginationModel={props.paginationModel}
+
       filterModel={filterModel}
-      hideFooter={true}
+
+      getRowId={props?.getRowId}
+      hideFooter={props.hideFooter}
       disableColumnFilter={true}
-      onPaginationModelChange={onPageChange}
+      //onPaginationModelChange={onPageChange}
       onFilterModelChange={onFilterChange}
       onSortModelChange={onSortChange}
       autoHeight 
-      autoPageSize
+      //autoPageSize  
+      slots={{
+        pagination: ({ pagination, ...props }: any) => {
+          return (
+          <MuiPagination
+            {...pagination}
+            color="primary"
+            page={paginationModel.page}
+            count={totalPages}
+            onChange={(event, page) => {
+              console.log(`onChange page `, page);
+              onPaginationChange(page)
+            }}
+          />
+          )
+          },
+      }}
     />
   );
 };

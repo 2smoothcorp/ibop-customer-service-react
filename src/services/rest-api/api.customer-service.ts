@@ -8,10 +8,14 @@ import {
 } from './customer-service';
 
 class ApiCustomerService {
+    private instance?: ApiCustomerService;
+    private apiConfig?: InstanceConfig;
     private apiAuth?: AuthApi;
     private apiCustomerProfileV2?: CustomerProfileV2Api;
 
-    constructor() {}
+    private constructor() {}
+
+    public 
 
     public getAuthApi(config: InstanceConfig) {
         if(!this.apiAuth) { this.apiAuth = new AuthApi(config); }
