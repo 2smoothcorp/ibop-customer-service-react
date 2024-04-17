@@ -1,7 +1,9 @@
+import { Constants } from '@/constants/constants';
+
 export class VaultService<T>{
-    private _vaultHost: string;
-    private _vaultUser: string;
-    private _vaultPass: string;
+    private _vaultHost: string = Constants.VaultUrl;
+    private _vaultUser: string = Constants.VaultUsername;
+    private _vaultPass: string = Constants.VaultPassword;
     private _serviceUrl?: string;
 
     private vaultToken?: string;
@@ -9,11 +11,14 @@ export class VaultService<T>{
 
     static vaultInfo: any;
 
-    constructor(vaultHost: string, vaultUser: string, vaultPass: string, serviceUrl?: string) {
-        this._vaultHost = vaultHost;
-        this._vaultUser = vaultUser;
-        this._vaultPass = vaultPass;
-        this._serviceUrl = serviceUrl;
+    constructor(params?: ConstructorParams) {
+        if(params) {
+            const { vaultHost, vaultPass, vaultUser, serviceUrl } = params;
+            this._vaultHost = vaultHost || '';
+            this._vaultUser = vaultUser || '';
+            this._vaultPass = vaultPass || '';
+            this._serviceUrl = serviceUrl;
+        }
     };
 
     async getVaultToken(): Promise<string> {
@@ -110,6 +115,13 @@ export class VaultService<T>{
         return undefined
     }
 
+}
+
+export interface ConstructorParams {
+    vaultHost?: string;
+    vaultUser?: string;
+    vaultPass?: string;
+    serviceUrl?: string;
 }
 
 export interface GetVaultTokenResponse{
