@@ -21,12 +21,6 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-COPY kendo-ui-license.txt ./
-
-RUN npm install --save @progress/kendo-licensing
-
-RUN npx kendo-ui-license activate
-
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
 WORKDIR /app
