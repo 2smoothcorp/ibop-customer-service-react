@@ -1,10 +1,10 @@
 import { Constants } from '@/constants/constants';
 import { PortalService } from './portal-service/portal-service';
-import { BaseJWTInfoData, JWTInfoData, VaultService } from './vault-service/vault-service';
+import { JWTInfoData, VaultService } from './vault-service/vault-service';
 
-import { AuthApi } from './rest-api/customer-service';
 import { ApiCustomerService } from './rest-api/api.customer-service';
 import { ApiKyc } from './rest-api/api.kyc';
+import { AuthApi } from './rest-api/customer-service';
 
 export default class Services {
     private vaultService?: VaultService<JWTInfoData>;

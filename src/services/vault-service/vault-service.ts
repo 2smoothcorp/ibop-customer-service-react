@@ -27,7 +27,6 @@ export class VaultService<T>{
 
             const urlPath = `v1/auth/userpass/login/${this._vaultUser}`;
             const apiUrl = this._vaultHost + urlPath;
-            console.log(`apiUrl`, apiUrl)
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -65,7 +64,7 @@ export class VaultService<T>{
             const jsonResp: GetVaultJWTInfoResponse<T> = await response.json();
             VaultService.vaultInfo = jsonResp;
             this._vaultInfo = jsonResp;
-            console.log(`getVaultInfoByService`, jsonResp)
+           
             return jsonResp;
         }
         catch(e){

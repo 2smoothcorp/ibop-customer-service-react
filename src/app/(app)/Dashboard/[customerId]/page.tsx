@@ -12,7 +12,6 @@ import {
 import { useRouter, useParams } from "next/navigation";
 import { Grid } from '@mui/material';
 
-import { Appbar } from '@/components/appbar/appbar';
 import styles from './style.module.css';
 
 const Dashboard = (): ReactElement => {

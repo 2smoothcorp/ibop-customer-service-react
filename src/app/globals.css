@@ -6,6 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --font-family: DB Helvethaica, Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -19,6 +20,14 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: #f8f9fc !important;
+}
+
+* {
+  font-family: var(--font-family);
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  -webkit-font-smoothing: subpixel-antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 @layer utilities {

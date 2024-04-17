@@ -1,21 +1,27 @@
 "use client";
 
-import { Button } from "@mui/material";
+import MuiPagination from '@mui/material/Pagination';
 import {
   DataGrid,
   GridCallbackDetails,
   GridColDef,
   GridFilterModel,
   GridPaginationModel,
-  GridRenderCellParams,
-  GridRowsProp,
-  GridSortModel,
+  GridSortModel
 } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export interface TableProps {
   onPageChange?: (model: GridPaginationModel) => void;
+  rows?: []
+  columns?: GridColDef[]
+  hideFooter?: boolean
+  getRowId?: (row: any) => any
+  totalItems?: number
+  totalPages?: number
+  paginationModel: GridPaginationModel
+  setPaginationModel: any
 }
 
 export interface ColProps {
@@ -26,59 +32,36 @@ export interface ColProps {
 
 const Table = (props: TableProps) => {
   const router = useRouter();
-
+  /*
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: 25,
+    pageSize: 5,
     page: 0,
   });
+  */
 
   const [filterModel, setFilterModel] = useState<GridFilterModel>({
     items: [],
   });
 
-  const rows: GridRowsProp<ColProps> = [
-    { id: 1, col1: "Hello", col2: "World" },
-    { id: 2, col1: "DataGridPro", col2: "is Awesome" },
-    { id: 3, col1: "MUI", col2: "is Amazing" },
-  ];
-
-  const columns: GridColDef[] = [
-    {
-      field: "actions",
-      headerName: "Action",
-      type: "actions",
-      width: 150,
-      renderCell: (params: GridRenderCellParams<ColProps>) => (
-        //{JSON.stringify(params?.row)}
-        <strong>
-          <Button
-            variant="contained"
-            size="small"
-            className="bg-primary"
-            style={{ marginLeft: 16 }}
-            tabIndex={params.hasFocus ? 0 : -1}
-            onClick={() => router.push(`/CustomerProfile/${params.row.id}`)}
-          >
-            Open 
-          </Button>
-        </strong>
-      ),
-    },
-    { field: "col1", headerName: "Column 1", width: 150 },
-    { field: "col2", headerName: "Column 2", width: 150 },
-  ];
-
   const pageSizeOptions = [1, 5, 10, 25];
+  /*
+  useEffect(() => {
+    if (props.onPageChange) {
+      props.onPageChange(paginationModel);
+    }
+  }, [paginationModel])
 
   const onPageChange = (
     model: GridPaginationModel,
     details: GridCallbackDetails<any>
   ) => {
-    setPaginationModel(model);
     if (props.onPageChange) {
-      props.onPageChange(model);
+      //props.onPageChange(model);
     }
+    console.log(`model`, model)
+    setPaginationModel(model);
   };
+  */
 
   const onFilterChange = (
     model: GridFilterModel,
@@ -97,18 +80,82 @@ const Table = (props: TableProps) => {
     console.log(`details`, details);
   };
 
+  const onPaginationChange = (page: number) => {
+    console.log(`page`, page);
+    props?.setPaginationModel({
+      page: page,
+      pageSize: paginationModel.pageSize
+    })
+    
+  }
+
+  const gridWidth = React.useMemo(() => {
+    return (props.columns || []).reduce((acc, column) => {
+      return acc + (column?.headerName?.length * 8);
+    }, 0);
+  }, [props.columns]);
+
+  const { totalItems, totalPages, paginationModel } = props
+
+  console.log(`totalItems`, totalItems)
+  console.log(`totalPages`, totalPages)
+  console.log(`props?.paginationModel`, props?.paginationModel)
+  console.log(`props?.paginationModel?.page`, props?.paginationModel?.page)
+
   return (
     <DataGrid
-      rows={rows}
-      columns={columns}
+      rows={props.rows || []}
+      //columns={props.columns || []}
+      columns={(props.columns || []).map(column => ({
+        ...column,
+        width: gridWidth > 1000 ? 150 : undefined // Adjust the threshold based on your layout
+      }))}
+      sx={{
+        '& .MuiDataGrid-columnHeader': {
+          backgroundColor: '#F0F0F0', 
+          border: '1px solid #B9B9B9', 
+        },
+        '& .MuiDataGrid-filler': {
+          backgroundColor: '#F0F0F0', 
+          border: '1px solid #B9B9B9', 
+        },
+        '& .MuiDataGrid-columnHeaderTitle': {
+          color: '#000000', 
+          fontWeight: 'bold',
+        },
+        '& .MuiDataGrid-topContainer': {
+          borderBottom: '1px solid #B9B9B9', 
+        },
+      }}
       pageSizeOptions={pageSizeOptions}
-      paginationModel={paginationModel}
+      paginationModel={props.paginationModel}
+
       filterModel={filterModel}
-      hideFooter={true}
-      disableColumnFilter={true}
-      onPaginationModelChange={onPageChange}
+
+      getRowId={props?.getRowId}
+      hideFooter={props.hideFooter}
+      //disableColumnFilter={true}
+      //onPaginationModelChange={onPageChange}
       onFilterModelChange={onFilterChange}
       onSortModelChange={onSortChange}
+      autoHeight 
+      //autoPageSize  
+      slots={{
+        pagination: ({ pagination, ...props }: any) => {
+          return (
+          <MuiPagination
+            {...pagination}
+            color="primary"
+            page={paginationModel.page}
+            count={totalPages}
+            onChange={(event, page) => {
+              console.log(`onChange page `, page);
+              onPaginationChange(page)
+            }}
+          />
+          )
+          },
+      }}
     />
   );
 };

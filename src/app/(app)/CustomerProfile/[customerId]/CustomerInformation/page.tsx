@@ -1,4 +1,4 @@
-import DetailSection from "@/components/detail-section/detail-section";
+import DetailSection from "@/containers/detail-section/detail-section";
 import { SpaceBar } from "@mui/icons-material";
 import { AppBar, Toolbar, Typography } from "@mui/material";
 

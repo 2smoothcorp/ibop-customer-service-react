@@ -1,10 +1,9 @@
 import { Constants } from "@/constants/constants";
+import { lookup } from 'dns/promises';
+import os from 'os';
+import { ironSessionService } from "../iron-session/iron-session";
 import { PortalService } from "../portal-service/portal-service";
 import { VaultService } from "../vault-service/vault-service";
-import { cookies } from "next/headers";
-import os from 'os';
-import { lookup } from 'dns/promises';
-import { ironSessionService } from "../iron-session/iron-session";
 
 export class AuthService{
 
@@ -23,9 +22,6 @@ export class AuthService{
             const verifyToken = portalService.verifyToken(token);
     
             const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/SearchDirectory/SearchDirectory`;
-
-            console.log(`searchUserDirectory pathUrl`, pathUrl)
-    
             const formData = new URLSearchParams();
             formData.append('employeeID', employeeID)
     
@@ -38,7 +34,6 @@ export class AuthService{
                 cache: 'no-cache'
             });
             const responseJson = await response.json();
-            console.log(`response`, responseJson)
             return responseJson;
         }catch(e)
         {
@@ -56,7 +51,7 @@ export class AuthService{
         const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/UserPermission`
 
         const employeeID = await ironSessionService.getEmployeeId() 
-        console.log(`employeeID`, employeeID)
+
         if( !employeeID ) return {
             data: [],
             message: '',
@@ -73,9 +68,7 @@ export class AuthService{
         const queryParams = Object.keys(payload).map((key) => {
             return encodeURIComponent(key) + '=' + encodeURIComponent(payload[key as keyof PermissionRequest ] );
         }).join('&');
-    
-        console.log(pathUrl + `?${queryParams}`)
-    
+        
         const permissionResp = await fetch(pathUrl + `?${queryParams}`, {
             method: 'GET',
             headers: {
@@ -83,8 +76,9 @@ export class AuthService{
             },
             cache: 'no-cache'
         })
-        
-        return await permissionResp.json();
+
+        const response = await permissionResp.json();
+        return response;
     }
 
     async login(username: string, password: string): Promise<LoginResponse> {
@@ -98,8 +92,6 @@ export class AuthService{
             username = username.replace("@asiaplus.co.th", "") + "@asiaplus.co.th";
 
             const ipAddresses = await lookup(os.hostname(), { all: true });
-
-            console.log(`token`, token)
 
             const formData = new URLSearchParams();
             formData.append('username', username);
@@ -119,7 +111,6 @@ export class AuthService{
             })
 
             const responseJson = await loginResp.json()
-            console.log(`responseJson`, responseJson)
             return responseJson;
 
         }catch(e){
