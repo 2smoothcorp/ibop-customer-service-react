@@ -3,10 +3,10 @@
 import { UseFormRegister } from "react-hook-form";
 import { Property } from "csstype";
 import InputDate from "./input-date";
-import moment from "moment";
 import InputTextHook from "./input-text-hook";
 import InputSelectHook, { InputSelectHookValue } from "./input-select-hook";
 import InputNumber from "./input-number";
+import dayjs from "dayjs";
 
 export default function InputHorizontal({
     type = "text",
@@ -86,7 +86,7 @@ export default function InputHorizontal({
                     : type === "number"
                         ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{String(defaultValue).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')}</div>
                         : type === "date"
-                            ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{moment(defaultValue).format("DD/MM/YYYY").toString()}</div>
+                            ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{dayjs(defaultValue).format("DD/MM/YYYY").toString()}</div>
                             : <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{defaultValue}</div>
             }
         </div>
