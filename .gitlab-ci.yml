@@ -15,7 +15,8 @@ build:
   script:
     - |
       if [[ $CI_COMMIT_BRANCH == "uat" ]]; then
-        version=":$(cat ./constants/constants.ts | sed -n 's:.*public static AppVersion: string = \'\(.*\)\'.*:\1:pgI')"
+        echo "Try to get Version from constants.ts"
+        version=":$(cat ./src/constants/constants.ts | sed -n 's/.*public static AppVersion: string = "\(.*\)";.*/\1/p')"
         echo ${version}
         docker build --pull -t "${CI_REGISTRY_IMAGE}${version}" -f ./Dockerfile .
         docker push "${CI_REGISTRY_IMAGE}${version}"
