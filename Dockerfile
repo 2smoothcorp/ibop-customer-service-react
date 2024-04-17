@@ -1,5 +1,5 @@
 # Install dependencies only when needed
-FROM node:18-alpine AS deps
+FROM node:18-alpine AS base
 
 ##Install tzdata for change timezone
 RUN apk --no-cache add tzdata
@@ -21,7 +21,7 @@ RUN \
   fi
 
 # Rebuild the source code only when needed
-FROM node:18-alpine AS builder
+FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -40,7 +40,7 @@ RUN \
 # RUN npm run build
 
 # Production image, copy all the files and run next
-FROM node:18-alpine AS runner
+FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
