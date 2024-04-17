@@ -1,8 +1,9 @@
 import { Constants } from "@/constants/constants";
-import { MenuResponseListDataResponse } from "@/services/rest-api/customer-service";
+import { MenuResponse, MenuResponseListDataResponse } from "@/services/rest-api/customer-service";
 import { AppBar, Grid, Toolbar, Typography } from "@mui/material";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import styles from './style.module.css';
 
 const CustomerInfoDashBoardPage = async ({
   params,
@@ -19,6 +20,42 @@ const CustomerInfoDashBoardPage = async ({
 
   const dashboard: MenuResponseListDataResponse = await getDashboardByCorporateId(params?.customerId)
 
+  const onClickItem = (item: MenuResponse) => {
+    console.log('onClickItem', item)
+  }
+
+  const generateMenuItem = () => {
+    return dashboard.data?.map((item, idx) => {
+      const { sequence, name, description } = item;
+      return (
+        <Grid item
+          key={`dashboard-item-${ idx }_${ sequence || '' }`}
+          xs={12} sm={12} md={12} lg={6}
+        >
+          <div
+            className={ styles['item-container'] }
+            onClick={() => { onClickItem(item); }}
+          >
+            <Grid container>
+              <Grid item>
+                <i className={'far fa-user item-icon'}></i>
+              </Grid>
+              <Grid item>
+                <span className={ styles['item-text-title'] }>
+                  { name }
+                </span>
+                {/* <br />
+                <span className={ styles['item-text-sub-title'] }>
+                  { description }
+                </span> */}
+              </Grid>
+            </Grid>
+          </div>
+        </Grid>
+      );
+    });
+  }
+
   return (
     <>
       <AppBar
@@ -33,12 +70,7 @@ const CustomerInfoDashBoardPage = async ({
         </Toolbar>
       </AppBar>
       <Grid container spacing={2} sx={{ marginTop: 8, p: 2 }}>
-        test
-        {
-          (dashboard?.data || []).map( (d) => {
-            return (JSON.stringify(d))
-          } )
-        }
+      { generateMenuItem() }
       </Grid>
     </>
   );
