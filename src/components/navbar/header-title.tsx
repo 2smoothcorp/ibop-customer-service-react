@@ -1,14 +1,10 @@
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-
-
 export default function HeaderTitle({
+    className,
     title,
     rightComponent,
 }: HeaderTitleProps) {
     return (
-        <div className="flex flex-col gap-[10px] py-[20px]">
+        <div className={`flex flex-col gap-[10px] py-[20px] ${className}`}>
             <div className="flex justify-between">
                 <span className="font-db-helvethaica text-[24px] font-semibold p-0 m-0 tracking-wide text-[#43AD9E]">{title}</span>
                 {rightComponent}
@@ -19,6 +15,7 @@ export default function HeaderTitle({
 }
 
 interface HeaderTitleProps {
+    className? : string;
     title: string;
     rightComponent?: React.ReactNode;
 }
