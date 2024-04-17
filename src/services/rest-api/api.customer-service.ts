@@ -3,36 +3,24 @@
  */
 
 import {
-    AuthApi,
-    CustomerProfileV2Api
+  CustomerProfileV2Api
 } from './customer-service';
 
-class ApiCustomerService {
-    private instance?: ApiCustomerService;
-    private apiConfig?: InstanceConfig;
-    private apiAuth?: AuthApi;
-    private apiCustomerProfileV2?: CustomerProfileV2Api;
+export class ApiCustomerService {
+  private apiConfig: InstanceConfig;
+  private apiCustomerProfileV2?: CustomerProfileV2Api;
 
-    private constructor() {}
+  constructor(config: InstanceConfig) { this.apiConfig = config; }
 
-    public 
-
-    public getAuthApi(config: InstanceConfig) {
-        if(!this.apiAuth) { this.apiAuth = new AuthApi(config); }
-        return this.apiAuth;
-    }
-
-    public getCustomerProfileV2Api(config: InstanceConfig) {
-        if(!this.apiCustomerProfileV2) { this.apiCustomerProfileV2 = new CustomerProfileV2Api(config); }
-        return this.apiCustomerProfileV2;
-    }
+  public getCustomerProfileV2Api() {
+    if(!this.apiCustomerProfileV2) { this.apiCustomerProfileV2 = new CustomerProfileV2Api(this.apiConfig); }
+    return this.apiCustomerProfileV2;
+  }
 }
 
 interface InstanceConfig {
-    isJsonMime: () => boolean,
-    apiKey?: string;
-    accessToken: string;
-    basePath: string;
+  isJsonMime: () => boolean,
+  apiKey?: string;
+  accessToken?: string;
+  basePath: string;
 }
-
-export default ApiCustomerService;

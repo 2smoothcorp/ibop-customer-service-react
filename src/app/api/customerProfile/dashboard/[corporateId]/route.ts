@@ -11,8 +11,8 @@ export async function GET(request: NextRequest, { params }: { params: { corporat
                 status: 400,
             })
         }
-        const customerService = await services.getCustomerProfileV2Service();
-        const response = await customerService.customerProfileCustomerInfoMenuGet({
+        const customerService = await services.getCustomerServiceApi();
+        const response = await customerService.getCustomerProfileV2Api().customerProfileCustomerInfoMenuGet({
             corporateId: params?.corporateId
         })
         return NextResponse.json(response.data);

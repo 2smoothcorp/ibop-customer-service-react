@@ -1,17 +1,24 @@
 import { Constants } from '@/constants/constants';
 import { PortalService } from './portal-service/portal-service';
-import { AuthApi, CustomerProfileV2Api } from './rest-api/customer-service';
 import { JWTInfoData, VaultService } from './vault-service/vault-service';
 
+import { ApiCustomerService } from './rest-api/api.customer-service';
+import { ApiKyc } from './rest-api/api.kyc';
+import { AuthApi } from './rest-api/customer-service';
+
 export default class Services {
+    private vaultService?: VaultService<JWTInfoData>;
+    private customerServiceVault?: VaultService<JWTInfoData>;
+    private portalService?: PortalService;
 
-    private vaultService?: VaultService<JWTInfoData>
-    private customerServiceVault?: VaultService<JWTInfoData>
-    private customerServiceAuthService?: AuthApi
-    private customerProfileV2Service?: CustomerProfileV2Api
-    private portalService?: PortalService
+    /** Customer Service */
+    private serviceAuthCustomerService?: AuthApi;
+    private serviceCustomerService?: ApiCustomerService;
 
-    async getVaultService(){
+    /** KYC */
+    private serviceKyc?: ApiKyc;
+
+    private async getVaultService(){
         if( this.vaultService ){
             return this.vaultService
         }
@@ -20,15 +27,7 @@ export default class Services {
         return this.vaultService
     }
 
-    async getPortalService(){
-        if( this.portalService ){
-            return this.portalService
-        }
-        this.portalService = new PortalService(`${Constants.PortalUrl}`)
-        return this.portalService
-    }
-
-    async getCustomerServiceVaule(){
+    private async getCustomerServiceVault(){
         if( this.customerServiceVault ){
             return this.customerServiceVault;
         }
@@ -39,47 +38,50 @@ export default class Services {
         return this.customerServiceVault;
     }
 
-    async AuthApi(){
-        if( this.customerServiceAuthService ){
-            return this.customerServiceAuthService
-        }
-
-        const token = await (await this.getVaultService()).getJWTTokenByService('authen-jwt');
-
-        const customerServiceAuthService = new AuthApi({
+    private async getCustomerServiceAuth() {
+        const _serviceVault = await this.getVaultService();
+        const token = await _serviceVault.getJWTTokenByService('authen-jwt');
+        const config = {
             isJsonMime: () => false,
             accessToken: token,
             basePath: 'https://ibop-customer-service-uat.asiaplus.co.th'
-        })
-        this.customerServiceAuthService = customerServiceAuthService
-        return customerServiceAuthService
+        };
+
+        if(!this.serviceAuthCustomerService) { this.serviceAuthCustomerService = new AuthApi(config); }
+        return this.serviceAuthCustomerService;
     }
 
-    async getCustomerServiceToken(): Promise<any>{
-        const authToken = await (await this.AuthApi()).authGenerateJwtTokenPost() 
-        return authToken
-    }
+    private async getBaseConfig() {
+        const svc = await this.getCustomerServiceAuth();
+        const tokenInfo = await svc.authGenerateJwtTokenPost();
+        const jwtToken = tokenInfo.data.jwtToken;
+        const customerServiceVault = await this.getCustomerServiceVault()
+        const jwtInfoData: JWTInfoData = customerServiceVault?._vaultInfo?.data.data;
 
-    async getCustomerProfileV2Service(){
-        if( this.customerProfileV2Service ){
-            return this.customerProfileV2Service;
-        }
-
-        const customerServiceVault = await this.getCustomerServiceVaule()
-        const jwtInfoData: JWTInfoData = (customerServiceVault?._vaultInfo?.data.data as JWTInfoData)
-        
-        const authToken = await this.getCustomerServiceToken()
-        console.log(`authToken.data.jwtToken`, authToken.data.jwtToken)
-        this.customerProfileV2Service = new CustomerProfileV2Api({
+        return ({
             isJsonMime: () => false,
-            apiKey: `Bearer ${authToken.data.jwtToken}`,
-            accessToken: `Bearer ${authToken.data.jwtToken}`,
+            apiKey: `Bearer ${ jwtToken }`,
+            accessToken: `Bearer ${ jwtToken }`,
             basePath: jwtInfoData.BaseUrl || ''
         });
-        
-        return this.customerProfileV2Service;
     }
 
+    public async getPortalApi(){
+        if(!this.portalService) { this.portalService = new PortalService(`${Constants.PortalUrl}`) }
+        return this.portalService;
+    }
+
+    public async getCustomerServiceApi(): Promise<ApiCustomerService> {
+        const config = await this.getBaseConfig();
+        if(!this.serviceCustomerService) { this.serviceCustomerService = new ApiCustomerService(config); }
+        return this.serviceCustomerService;
+    }
+
+    public async getKycApi(): Promise<ApiKyc> {
+        const config = await this.getBaseConfig();
+        if(!this.serviceKyc) { this.serviceKyc = new ApiKyc(config); }
+        return this.serviceKyc;
+    }
 }
 
 export const services = new Services();

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <CI_DEPLOYMENT_NAME>
+  namespace: <CI_NAMESPACE>
+spec:
+  selector:
+    matchLabels:
+      app: <CI_DEPLOYMENT_NAME>
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: <CI_DEPLOYMENT_NAME>
+    spec:
+      containers:
+        - name: container-1
+          image: <CI_REGISTRY_IMAGE><BUILD_VERSION>
+          env:
+            - name: PAAS_APP_NAME
+              value: <CI_DEPLOYMENT_NAME>
+            - name: PAAS_NAMESPACE
+              value: <CI_NAMESPACE>
+            - name: PAAS_PROJECT_ID
+              value: 087775ea1780f48c2f53c00e33316e9a
+            - name: LOG_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: logdb.dbname
+            - name: LOG_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: logdb.host
+            - name: LOG_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: logdb.port
+            - name: LOG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: main-secret
+                  key: logdb.user
+            - name: LOG_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: main-secret
+                  key: logdb.pass
+            - name: VAULT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: vault.host
+            - name: VAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: main-secret
+                  key: vault.user
+            - name: VAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: main-secret
+                  key: vault.pass
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: TZ
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+      imagePullSecrets:
+        - name: huawei-registry
+        - name: default-secret
