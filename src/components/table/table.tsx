@@ -134,7 +134,7 @@ const Table = (props: TableProps) => {
 
       getRowId={props?.getRowId}
       hideFooter={props.hideFooter}
-      disableColumnFilter={true}
+      //disableColumnFilter={true}
       //onPaginationModelChange={onPageChange}
       onFilterModelChange={onFilterChange}
       onSortModelChange={onSortChange}

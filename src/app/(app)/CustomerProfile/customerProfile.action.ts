@@ -20,8 +20,8 @@ export async function searchCustomerInfo(prevState: CustomerProfileActionRespons
         const pageIndex = Number(formData.get('pageIndex') as string) || 1;
         const pageSize = Number(formData.get('pageSize')as string) || 10;
     
-        const customerProfileApi = await services.getCustomerProfileV2Service();
-        const response = await customerProfileApi.customerProfileCustomerInfoListGet({
+        const customerProfileApi = await services.getCustomerServiceApi();
+        const response = await customerProfileApi.getCustomerProfileV2Api().customerProfileCustomerInfoListGet({
             corporateID,
             referenceID,
             fullName,
