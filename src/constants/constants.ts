@@ -2,7 +2,7 @@
 export class Constants{
     public static AppCode: string = 'CustomerService';
     public static AppName: string = 'Customer Service';
-    public static AppVersion: string = "0.0.3";
+    public static AppVersion: string = "0.0.4";
     public static readonly APIUrl: string = process.env.BASE_URL || '';
     public static readonly VaultUrl: string = process.env.VAULT_URL || '';
     public static readonly VaultUsername: string = process.env.VAULT_USERNAME || '';
