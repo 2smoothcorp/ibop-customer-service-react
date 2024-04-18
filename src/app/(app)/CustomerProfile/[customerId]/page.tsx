@@ -1,5 +1,5 @@
 import { Constants } from "@/constants/constants";
-import { MenuResponse, MenuResponseListDataResponse } from "@/services/rest-api/customer-service";
+import { MenuResponseListDataResponse } from "@/services/rest-api/customer-service";
 import { AppBar, Grid, Toolbar, Typography } from "@mui/material";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -20,10 +20,6 @@ const CustomerInfoDashBoardPage = async ({
 
   const dashboard: MenuResponseListDataResponse = await getDashboardByCorporateId(params?.customerId)
 
-  const onClickItem = (item: MenuResponse) => {
-    console.log('onClickItem', item)
-  }
-
   const generateMenuItem = () => {
     return dashboard.data?.map((item, idx) => {
       const { sequence, name, description } = item;
@@ -34,7 +30,7 @@ const CustomerInfoDashBoardPage = async ({
         >
           <div
             className={ styles['item-container'] }
-            onClick={() => { onClickItem(item); }}
+            //onClick={() => { onClickItem(item); }}
           >
             <Grid container>
               <Grid item>
