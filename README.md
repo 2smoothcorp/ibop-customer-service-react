@@ -9,3 +9,5 @@
       - append `npm run apigen:process:api-[domain name]` (add `&` if neccessary)
     - update script `apigen:process:correction`
       - add `[domain name]` and the end of script string (using for argv)
+- Fetch Convention
+  - all should be using server actions, but only `GET` will be using `api route`
