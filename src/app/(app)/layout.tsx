@@ -18,9 +18,13 @@ export default async function RootLayout({
 }
 
 async function getMenuData() {
-  const menus = (await fetch(`${Constants.APIUrl}/api/auth/menu`, {
-    headers: { Cookie: cookies().toString() },
-    cache: 'no-cache'
-  }))
-  return await menus.json()
+  try{
+    const menus = (await fetch(`${Constants.APIUrl}/api/auth/menu`, {
+      headers: { Cookie: cookies().toString() },
+      cache: 'no-cache'
+    }))
+    return await menus.json()
+  }catch(e){
+    
+  }
 }
