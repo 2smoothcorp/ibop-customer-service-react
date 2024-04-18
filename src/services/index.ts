@@ -4,7 +4,8 @@ import { JWTInfoData, VaultService } from './vault-service/vault-service';
 
 import { ApiCustomerService } from './rest-api/api.customer-service';
 import { ApiKyc } from './rest-api/api.kyc';
-import { AuthApi } from './rest-api/customer-service';
+import { AuthApi as AuthCustomerServiceApi } from './rest-api/customer-service';
+import { AuthApi as AuthKycApi } from './rest-api/kyc';
 
 export default class Services {
     private vaultService?: VaultService<JWTInfoData>;
@@ -13,17 +14,15 @@ export default class Services {
     private vaultKyc?: VaultService<JWTInfoData>;
 
     /** Customer Service */
-    private serviceAuth?: AuthApi;
+    private authCustomerService?: AuthCustomerServiceApi;
     private serviceCustomerService?: ApiCustomerService;
 
     /** KYC */
+    private authKyc?: AuthKycApi;
     private serviceKyc?: ApiKyc;
 
     private async getVaultService(){
-        if(!this.vaultService) {
-            this.vaultService = new VaultService();
-        }
-
+        if(!this.vaultService) { this.vaultService = new VaultService(); }
         return this.vaultService
     }
 
@@ -32,7 +31,7 @@ export default class Services {
         return this.portalService;
     }
 
-    private async getAuthService(basePath: string) {
+    private async getAuthCustomerService(basePath: string) {
         const _serviceVault = await this.getVaultService();
         const token = await _serviceVault.getJWTTokenByService('authen-jwt');
         const config = {
@@ -41,8 +40,8 @@ export default class Services {
             basePath
         };
 
-        if(!this.serviceAuth) { this.serviceAuth = new AuthApi(config); }
-        return this.serviceAuth;
+        if(!this.authCustomerService) { this.authCustomerService = new AuthCustomerServiceApi(config); }
+        return this.authCustomerService;
     }
 
     private async getCustomerServiceVault(){
@@ -56,7 +55,7 @@ export default class Services {
     }
 
     private async getCustomerServiceConfig() {
-        const authService = await this.getAuthService('https://ibop-customer-service-uat.asiaplus.co.th');
+        const authService = await this.getAuthCustomerService('https://ibop-customer-service-uat.asiaplus.co.th');
         const tokenInfo = await authService.authGenerateJwtTokenPost();
         const jwtToken = tokenInfo.data.jwtToken;
         const vaultCustomerService = await this.getCustomerServiceVault()
@@ -68,6 +67,19 @@ export default class Services {
             accessToken: `Bearer ${ jwtToken }`,
             basePath: jwtInfoData.BaseUrl || ''
         });
+    }
+
+    private async getAuthKyc(basePath: string) {
+        const _serviceVault = await this.getVaultService();
+        const token = await _serviceVault.getJWTTokenByService('authen-jwt');
+        const config = {
+            isJsonMime: () => false,
+            accessToken: token,
+            basePath
+        };
+
+        if(!this.authKyc) { this.authKyc = new AuthKycApi(config); }
+        return this.authKyc;
     }
 
     public async getCustomerServiceApi(): Promise<ApiCustomerService> {
@@ -87,8 +99,8 @@ export default class Services {
     }
 
     private async getKycConfig() {
-        const authService = await this.getAuthService('https://ibop-kyc-service-uat.asiaplus.co.th/');
-        const tokenInfo = await authService.authGenerateJwtTokenPost();
+        const authService = await this.getAuthKyc('https://ibop-kyc-service-uat.asiaplus.co.th/');
+        const tokenInfo = await authService.apiAuthPost();
         const jwtToken = tokenInfo.data.jwtToken;
         const kycVault = await this.getKycVault()
         const jwtInfoData: JWTInfoData = kycVault?._vaultInfo?.data.data;
