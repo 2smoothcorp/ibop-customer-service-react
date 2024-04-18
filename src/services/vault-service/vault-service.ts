@@ -12,10 +12,6 @@ export class VaultService<T>{
     static vaultInfo: any;
 
     constructor(params?: ConstructorParams) {
-        console.log(`Constants.VaultUrl`, Constants.VaultUrl)
-        console.log(`Constants.VaultUsername`, Constants.VaultUsername)
-        console.log(`Constants.VaultPassword`, Constants.VaultPassword)
-        console.log(`params`, params)
         if(params) {
             const { vaultHost, vaultPass, vaultUser, serviceUrl } = params;
             this._vaultHost = vaultHost || Constants.VaultUrl;
