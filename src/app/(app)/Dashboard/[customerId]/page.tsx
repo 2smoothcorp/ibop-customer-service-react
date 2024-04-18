@@ -4,14 +4,15 @@
 
 'use client'
 
-import {
-  type ReactElement,
-  useEffect,
-  useState
-} from 'react';
-import { useRouter, useParams } from "next/navigation";
 import { Grid } from '@mui/material';
+import { useParams, useRouter } from "next/navigation";
+import {
+  useEffect,
+  useState,
+  type ReactElement
+} from 'react';
 
+import { Appbar } from '@/containers/appbar/appbar';
 import styles from './style.module.css';
 
 const Dashboard = (): ReactElement => {
