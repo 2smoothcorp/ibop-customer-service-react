@@ -7,7 +7,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const menu = await getMenuData();
+  //const menu = await getMenuData();
 
   return (
     <>
