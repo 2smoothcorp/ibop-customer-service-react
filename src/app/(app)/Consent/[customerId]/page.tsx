@@ -4,14 +4,14 @@
 
 'use client'
 
+import type { ConsentAnsweredOutputDataResponse, ConsentQuestionOutputDataResponse } from '@/services/rest-api/kyc';
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { useParams, useRouter } from 'next/navigation';
 import {
   type ReactElement,
   useEffect,
   useState
 } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { AppBar, FormControl, FormControlLabel ,Radio, RadioGroup } from '@mui/material';
-import type { ConsentQuestionOutputDataResponse, ConsentAnsweredOutputDataResponse } from '@/services/rest-api/kyc';
 
 const Consent = (): ReactElement => {
   const [ customerId, setCustomerId ] = useState('');
@@ -59,7 +59,7 @@ const Consent = (): ReactElement => {
     }
 
     const fetchGetConsentQuestion = async (): Promise<Array<ConsentInfo>> => {
-      const request = await fetch(`api/consent/question`, { method: 'GET' });
+      const request = await fetch(`/api/consent/question`, { method: 'GET' });
       const response: ConsentQuestionOutputDataResponse = await request.json();
 
       const { data } = response;
@@ -102,7 +102,7 @@ const Consent = (): ReactElement => {
 
     const fetchGetConsentAnswer = async (options: Array<ConsentInfo>) => {
       const urlQuery = new URLSearchParams({ referenceId: '' });
-      const request = await fetch(`api/consent/answer?${ urlQuery }`, { method: 'GET' });
+      const request = await fetch(`/api/consent/answer?${ urlQuery }`, { method: 'GET' });
       const response: ConsentAnsweredOutputDataResponse = await request.json();
 
       const { data } = response;
