@@ -1,20 +1,13 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import { mainTheme } from '@/libs/theme';
+import { ThemeProvider } from '@mui/material/styles';
+import type { Metadata } from 'next';
+import './globals.css';
 
-export const metadata: Metadata = {
-  title: "iBOP - Customer Service",
-  description: "ASP iBOP - Customer Service",
-};
-
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
   /*
   const UserDataSession = await cookies().get('user')?.value
   const headersList = headers();
-  const referer = headersList.get("referer");
+  const referer = headersList.get('referer');
   
   if( !UserDataSession && !(referer||'').includes('/login') ){
     redirect('/login')
@@ -22,10 +15,17 @@ export default async function RootLayout({
   */
 
   return (
-    <html lang="en">
+    <html lang={'en'}>
       <body>
-        {children}
+        <ThemeProvider theme={ mainTheme }>
+          { children }
+        </ThemeProvider>
       </body>
     </html>
   );
+}
+
+export const metadata: Metadata = {
+  title: "iBOP - Customer Service",
+  description: "ASP iBOP - Customer Service",
 }
