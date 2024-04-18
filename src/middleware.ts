@@ -1,15 +1,14 @@
-import { NextMiddleware, NextRequest, NextResponse } from 'next/server'
-import { PortalService, VerifyTokenResponse } from './services/portal-service/portal-service';
+import { NextRequest, NextResponse } from 'next/server';
 import { Constants } from './constants/constants';
-import { cookies } from 'next/headers';
 import { AuthService } from './services/auth-service/auth-service';
 import { ironSessionService } from './services/iron-session/iron-session';
+import { PortalService, VerifyTokenResponse } from './services/portal-service/portal-service';
  
 export async function middleware(request: NextRequest, response: NextResponse) {
   try{
     const url = request.nextUrl;
     const response = NextResponse.next();
-    const accessToken: string = request.nextUrl.searchParams.get('access_token') || '';
+    const accessToken: string = request.nextUrl.searchParams.get('token') || '';
     const user = request.cookies.get('user')?.value
 
     if( accessToken && !user){
@@ -49,7 +48,7 @@ export async function middleware(request: NextRequest, response: NextResponse) {
 
     if (request.nextUrl.pathname.startsWith('/logout')) {
       const _response = NextResponse.redirect(new URL('/login', request.url));
-      _response.cookies.delete('access_token');
+      _response.cookies.delete('token');
       _response.cookies.delete('user');
       return _response
     }
@@ -70,7 +69,7 @@ async function processLoginWithToken (accessToken: string, request: NextRequest,
   const verifyToken: VerifyTokenResponse = await portalService.verifyToken(accessToken); 
   
   if( verifyToken.status === 'error' ){
-    response.cookies.delete('access_token');
+    response.cookies.delete('token');
     response.cookies.delete('user');
     return Response.redirect(new URL('/login', request.url))
   }
@@ -80,7 +79,7 @@ async function processLoginWithToken (accessToken: string, request: NextRequest,
   if( searchUserDirectoryResponse.status.toLocaleLowerCase() === 'y' ){
     const userData = await ironSessionService.setUserDataInMiddleware(response, searchUserDirectoryResponse)
     
-    url.searchParams.delete('access_token')
+    url.searchParams.delete('token')
     url.searchParams.delete('refresh_token')
     
     const _response = NextResponse.redirect(url);

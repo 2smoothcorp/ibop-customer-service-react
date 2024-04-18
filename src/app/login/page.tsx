@@ -1,9 +1,8 @@
 "use client"
 
 import { Constants } from "@/constants/constants";
+import { useFormStatus } from "react-dom";
 import { login } from "./login.action";
-import { useFormState } from "react-dom";
-import { useEffect } from "react";
 
 const LoginPage = () => {
 
@@ -14,6 +13,18 @@ const LoginPage = () => {
             <div className="text-xl">iBOP - {Constants.AppName}</div>
         </div>
         <form className="my-4 space-y-4 md:space-y-6 mx-auto" action={login}>
+            <LoginForm/>
+        </form>
+    </div>
+    )
+}
+
+const LoginForm = () => {
+
+    const { pending, data, method, action } = useFormStatus();
+
+    return (
+        <>
             <div>
                 <input 
                 type="text" 
@@ -27,11 +38,15 @@ const LoginPage = () => {
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
                 />
             </div>
-        
-            <button type="submit" className="w-full bg-primary text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign in</button>
-            
-        </form>
-    </div>
+
+            <button 
+                type="submit" 
+                className="w-full bg-primary-950 disabled:bg-primary-800 hover:bg-primary-800 transition-all text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                disabled={pending}
+            >
+                Sign in
+            </button>
+        </>
     )
 }
 
