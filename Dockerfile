@@ -4,7 +4,6 @@ FROM node:18-alpine AS base
 FROM base AS deps
 
 RUN apk --no-cache add tzdata
-ENV TZ=Asia/Bangkok
 
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -48,7 +47,5 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT 3000
-
-ENV TZ="Asia/Bangkok"
 
 CMD ["node", "server.js"]

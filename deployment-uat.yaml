@@ -25,31 +25,6 @@ spec:
               value: <CI_NAMESPACE>
             - name: PAAS_PROJECT_ID
               value: 087775ea1780f48c2f53c00e33316e9a
-            - name: LOG_DB
-              valueFrom:
-                configMapKeyRef:
-                  name: main-config
-                  key: logdb.dbname
-            - name: LOG_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: main-config
-                  key: logdb.host
-            - name: LOG_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: main-config
-                  key: logdb.port
-            - name: LOG_USER
-              valueFrom:
-                secretKeyRef:
-                  name: main-secret
-                  key: logdb.user
-            - name: LOG_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: main-secret
-                  key: logdb.pass
             - name: VAULT_HOST
               valueFrom:
                 configMapKeyRef:

@@ -50,7 +50,6 @@ export default class Services {
             await _vaultInfo.getVaultInfoByService();
             this.vaultCustomerService = _vaultInfo;
         }
-        
         return this.vaultCustomerService;
     }
 
