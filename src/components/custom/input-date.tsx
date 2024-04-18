@@ -1,7 +1,7 @@
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import moment from "moment";
+import dayjs from "dayjs";
 import { MobileDatePicker } from "@mui/x-date-pickers";
 
 export default function InputDate({
@@ -14,14 +14,14 @@ export default function InputDate({
 }: InputDateProps) {
     return (
         <div className={'w-full' + className}>
-            <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="th-TH">
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="th-TH">
                 <DemoContainer sx={{ padding: 0 }} components={['DatePicker']}>
                     <MobileDatePicker
                         className="bg-white"
                         format="DD/MM/YYYY"
                         disabled={disabled}
                         readOnly={readonly}
-                        value={moment(defaultValue)}
+                        value={dayjs(defaultValue)}
                         onChange={(newValue) => onChange && onChange(newValue?.format('YYYY-MM-DD').toString() ?? '')}
                         slotProps={{
                             textField: {
