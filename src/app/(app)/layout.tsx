@@ -1,5 +1,4 @@
 import { Constants } from "@/constants/constants";
-import { Appbar } from "@/containers/appbar/appbar";
 import { cookies } from "next/headers";
 
 export default async function RootLayout({
@@ -11,9 +10,9 @@ export default async function RootLayout({
   const menu = await getMenuData();
 
   return (
-    <Appbar menu={menu}>
-        {children}
-    </Appbar>
+    <>
+      {children}
+    </>
   );
 }
 
