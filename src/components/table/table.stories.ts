@@ -11,3 +11,9 @@ const meta: Meta<typeof Table> = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+export const FirstStory: Story = {
+    args: {
+      //👇 The args you need here will depend on your component
+    },
+};

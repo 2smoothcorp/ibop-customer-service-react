@@ -10,8 +10,7 @@
     "apigen": "SET NODE_TLS_REJECT_UNAUTHORIZED=0 && npm run apigen:prepare && npm run apigen:process:api-customer-service && npm run apigen:process:api-kyc && npm run apigen:process:correction",
     "apigen:prepare": "shx rm -rf ./src/services/rest-api/*/",
     "apigen:process:api-customer-service": "openapi-generator-cli generate --config ./api-generator/config.customer-service.yml --skip-validate-spec",
-    "apigen:process:api-kyc": "openapi-generator-cli generate --config ./api-generator/config.kyc.yml --skip-validate-spec",
-    "apigen:process:correction": "node ./api-generator/corrector.js customer-service kyc",
+    "apigen:process:correction": "node ./api-generator/corrector.js customer-service",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
