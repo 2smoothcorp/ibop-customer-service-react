@@ -11,7 +11,10 @@ import {
 } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import type { ConsentAnsweredOutputDataResponse, ConsentQuestionOutputDataResponse } from '@/services/rest-api/customer-service';
+import type {
+  ConsentQuestionOutputDataResponse,
+  ConsentAnsweredOutputDataResponse
+} from '@/services/rest-api/customer-service';
 
 const Consent = (): ReactElement => {
   const [ corporateId, setCorporateId ] = useState('');
@@ -48,11 +51,11 @@ const Consent = (): ReactElement => {
   const [ isEditing, setIsEditing ] = useState(false);
   const [ isLoading, setIsLoading ] = useState(false);
   const router = useRouter();
-  const params = useParams<{ corporateId: string; }>();
+  const params = useParams<{ customerId: string; }>();
 
   useEffect(() => {
     const { back } = router;
-    const { corporateId } = params;
+    const { customerId } = params;
 
     const onInit = async () => {
       setIsLoading(true);
@@ -104,8 +107,8 @@ const Consent = (): ReactElement => {
     }
 
     const fetchGetConsentAnswer = async (options: Array<ConsentInfo>) => {
-      const urlQuery = new URLSearchParams({ corporateId });
-      const request = await fetch(`/api/consent/answer?${ urlQuery }`, { method: 'GET' });
+      const _corporateId = customerId;
+      const request = await fetch(`/api/consent/answer/${ _corporateId }`, { method: 'GET' });
       const response: ConsentAnsweredOutputDataResponse = await request.json();
 
       const { data } = response;
@@ -125,8 +128,8 @@ const Consent = (): ReactElement => {
       setConsentOptionList(options);
     }
 
-    if(!corporateId) { return back(); }
-    setCorporateId(corporateId);
+    if(!customerId) { return back(); }
+    setCorporateId(customerId);
     onInit();
   }, [ router, params ]);
 
