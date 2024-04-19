@@ -4,17 +4,17 @@
 
 'use client'
 
-import type { ConsentAnsweredOutputDataResponse, ConsentQuestionOutputDataResponse } from '@/services/rest-api/kyc';
-import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import { useParams, useRouter } from 'next/navigation';
 import {
   type ReactElement,
   useEffect,
   useState
 } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import type { ConsentAnsweredOutputDataResponse, ConsentQuestionOutputDataResponse } from '@/services/rest-api/customer-service';
 
 const Consent = (): ReactElement => {
-  const [ customerId, setCustomerId ] = useState('');
+  const [ corporateId, setCorporateId ] = useState('');
   const [ prefaceList, setPrefaceList ] = useState<Array<string>>([
     // `<p>
     //   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;คำที่ใช้ในเอกสารฉบับนี้ให้มีความหมายเดียวกันกับคำที่ได้นิยามไว้ในนโยบายความเป็นส่วนตัวของ บริษัท เอเซีย พลัส กรุ๊ป โฮลดิ้งส์ จำกัด (มหาชน) และ บริษัทในกลุ่ม (รวมเรียกว่า <b>"บริษัท"</b>) เว้นแต่ เอกสารฉบับนี้ได้นิยามไว้เป็นอย่างอื่นเพิ่มเติม
@@ -48,11 +48,11 @@ const Consent = (): ReactElement => {
   const [ isEditing, setIsEditing ] = useState(false);
   const [ isLoading, setIsLoading ] = useState(false);
   const router = useRouter();
-  const params = useParams<{ customerId: string; }>();
+  const params = useParams<{ corporateId: string; }>();
 
   useEffect(() => {
     const { back } = router;
-    const { customerId } = params;
+    const { corporateId } = params;
 
     const onInit = async () => {
       setIsLoading(true);
@@ -104,7 +104,7 @@ const Consent = (): ReactElement => {
     }
 
     const fetchGetConsentAnswer = async (options: Array<ConsentInfo>) => {
-      const urlQuery = new URLSearchParams({ referenceId: '' });
+      const urlQuery = new URLSearchParams({ corporateId });
       const request = await fetch(`/api/consent/answer?${ urlQuery }`, { method: 'GET' });
       const response: ConsentAnsweredOutputDataResponse = await request.json();
 
@@ -125,8 +125,8 @@ const Consent = (): ReactElement => {
       setConsentOptionList(options);
     }
 
-    if(!customerId) { return back(); }
-    setCustomerId(customerId);
+    if(!corporateId) { return back(); }
+    setCorporateId(corporateId);
     onInit();
   }, [ router, params ]);
 
