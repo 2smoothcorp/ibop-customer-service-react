@@ -3,7 +3,7 @@
 ### - Using root path perspective
 ########################################################
 
-generatorName: typescript-axios
+generatorName: typescript-fetch
 outputDir: ./src/services/rest-api/customer-service
 inputSpec: https://ibop-customer-service-uat.asiaplus.co.th/swagger/develop/swagger.json
 apiPackage: "entity"

@@ -3,7 +3,8 @@ import { PortalService } from './portal-service/portal-service';
 import { JWTInfoData, VaultService } from './vault-service/vault-service';
 
 import { ApiCustomerService } from './rest-api/api.customer-service';
-import { AuthApi as AuthCustomerServiceApi } from './rest-api/customer-service';
+import { AuthApi, Configuration } from './rest-api/customer-service';
+//import { AuthApi as AuthCustomerServiceApi } from './rest-api/customer-service';
 
 export default class Services {
     private vaultService?: VaultService<JWTInfoData>;
@@ -11,7 +12,7 @@ export default class Services {
     private vaultCustomerService?: VaultService<JWTInfoData>;
 
     /** Customer Service */
-    private authApi?: AuthCustomerServiceApi;
+    private authApi?: AuthApi;
     private apiService?: ApiCustomerService;
 
     private processUrlCorrection(urlString: string) {
@@ -37,9 +38,13 @@ export default class Services {
             isJsonMime: () => false,
             accessToken: token,
             basePath
-        };
+        };  
 
-        if(!this.authApi) { this.authApi = new AuthCustomerServiceApi(config); }
+        const _config = new Configuration({
+            accessToken: token,
+            basePath: basePath
+        });
+        if(!this.authApi) { this.authApi = new AuthApi(_config); }
         return this.authApi;
     }
 
@@ -56,16 +61,23 @@ export default class Services {
     private async getCustomerServiceConfig() {
         const authService = await this.getAuthCustomerService('https://ibop-customer-service-uat.asiaplus.co.th');
         const tokenInfo = await authService.authGenerateJwtTokenPost();
-        const jwtToken = tokenInfo.data.jwtToken;
+        const jwtToken = tokenInfo.jwtToken;
         const vaultCustomerService = await this.getCustomerServiceVault()
         const jwtInfoData: JWTInfoData = { BaseUrl: '', ...(vaultCustomerService?._vaultInfo?.data.data || {}) };
 
+        return  new Configuration({
+            accessToken: `Bearer ${ jwtToken }`,
+            apiKey: `Bearer ${ jwtToken }`,
+            basePath: jwtInfoData.BaseUrl || '',
+        });
+        /*
         return ({
             isJsonMime: () => false,
             apiKey: `Bearer ${ jwtToken }`,
             accessToken: `Bearer ${ jwtToken }`,
             basePath: jwtInfoData.BaseUrl || ''
         });
+        */
     }
 
     public async getCustomerServiceApi(): Promise<ApiCustomerService> {

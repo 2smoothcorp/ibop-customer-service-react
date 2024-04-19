@@ -72,10 +72,10 @@ const SearchCustomerProfileListForm = () => {
               <Grid item xs={6}>{field?.input}</Grid>
             </Grid>
             <Grid item xs={4} md={4} className="flex items-center gap-4 gap-x-4">
-              <Grid xs={6} className="text-right">
+              <Grid item xs={6} className="text-right">
                 {field2?.title}
               </Grid>
-              <Grid xs={6}>{field2?.input}</Grid>
+              <Grid item xs={6}>{field2?.input}</Grid>
             </Grid>
             <Grid item xs={2} md={2} className="flex items-center justify-evenly gap-2">
               {index + 1 === rowCount && (
@@ -83,15 +83,15 @@ const SearchCustomerProfileListForm = () => {
                   <Button
                     type="submit"
                     variant="contained"
-                    className="bg-primary-950 disabled:bg-primary-800 hover:bg-primary-800 transition-all text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:text-white"
-                    sx={{ backgroundColor: '#1F346B', minWidth: 40 }}
+                    className="bg-primary-950 disabled:bg-primary-900 hover:bg-primary-900 transition-all text-white disabled:text-white text-xl py-0 w-25 h-10"
+                    sx={{ backgroundColor: '#1F346B', minWidth: 60 }}
                     disabled={pending}
                   >
                     ค้นหา
                   </Button>
                   <Button type="reset"
                     variant="contained"
-                    sx={{ backgroundColor: '#E8E8E8', color: '#252525', minWidth: 40 }}
+                    sx={{ backgroundColor: '#E8E8E8', color: '#252525', minWidth: 60 }}
                     className="bg-[#E8E8E8] hover:bg-[#E8E8E8] hover:brightness-95 text-xl py-0 w-25 h-10 !text-[#252525] font-db-helvethaica"
                   >
                     ล้างค่า
