@@ -29,11 +29,11 @@ export async function searchCustomerInfo(prevState: CustomerProfileActionRespons
             pageIndex,
             pageSize
         });
-        //console.log('response.data', response.data)
-        return { success: true, data: response.data };
+        console.log('response', response)
+        return { success: true, data: response };
     }catch(e: any){
-        console.error('Errrrr', e?.response?.data)
-        return { success: false, error: e?.response?.data };
+        console.error('Error', e)
+        return { success: false, error: e };
     }
 }
 
