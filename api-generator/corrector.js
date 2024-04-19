@@ -3,7 +3,7 @@ const path = require('path');
 
 const replaceInFiles = ({ dir, oldStr, newStr }) => {
     const baseDirectory = 'src/services/rest-api';
-    const directory = `${ baseDirectory }/${ dir }/entity`;
+    const directory = `${ baseDirectory }/${ dir }/apis`; //apis  //entity
 
     // Read all files in the directory
     fs.readdirSync(directory).forEach(file => {
