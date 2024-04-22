@@ -9,6 +9,7 @@ export interface SearchCustomerProfileListTableProps {
     response?: CustomerProfileActionResponse
     paginationModel: GridPaginationModel
     setPaginationModel: (model: GridPaginationModel) => void
+    isLoading?: boolean
 }
 
 const SearchCustomerProfileListTable = (props: SearchCustomerProfileListTableProps) => {
@@ -49,7 +50,7 @@ const SearchCustomerProfileListTable = (props: SearchCustomerProfileListTablePro
         { field: "phoneNumber", headerName: "หมายเลขโทรศัพท์" },
         { field: "accountCreateDate", headerName: "วันที่เปิดบัญชี" },
         { field: "accountBranch", headerName: "สาขา" },
-        { field: "advisor", headerName: "ผู้แนะนำการลงทุน" },
+        { field: "advisor", headerName: "ผู้แนะนำการลงทุน", flex: 1 },
     ];
 
 
@@ -69,7 +70,7 @@ const SearchCustomerProfileListTable = (props: SearchCustomerProfileListTablePro
                 paginationModel={paginationModel}
                 setPaginationModel={setPaginationModel}
                 //onPageChange={onPageChange}
-                isLoading={pending}
+                isLoading={ props.isLoading || pending}
             />
         </div>
 
