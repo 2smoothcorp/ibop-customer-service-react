@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
-import MuiPagination from '@mui/material/Pagination';
+import React, { useState, useMemo } from 'react';
+import { Pagination as MuiPagination } from '@mui/material';
 import {
   DataGrid,
   GridCallbackDetails,
@@ -10,120 +11,56 @@ import {
   GridPaginationModel,
   GridSortModel,
   type GridRowIdGetter
-} from "@mui/x-data-grid";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-
-export interface TableProps<T extends {}> {
-  onPageChange?: (model: GridPaginationModel) => void;
-  rows?: Array<T>
-  columns?: GridColDef[]
-  hideFooter?: boolean
-  getRowId?: GridRowIdGetter<T>
-  totalItems?: number
-  totalPages?: number
-  paginationModel: GridPaginationModel
-  setPaginationModel: (model: GridPaginationModel) => void
-  setPageSizenModel?: (model: GridPaginationModel) => void
-  isLoading?: boolean
-}
-
-export interface ColProps {
-  id: number;
-  col1: string;
-  col2: string;
-}
+} from '@mui/x-data-grid';
 
 const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
-  const router = useRouter();
-  /*
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: 5,
-    page: 0,
-  });
-  */
-
-  const [filterModel, setFilterModel] = useState<GridFilterModel>({
-    items: [],
-  });
-
+  const { totalItems, totalPages, paginationModel } = props
+  const [filterModel, setFilterModel] = useState<GridFilterModel>({ items: [] });
   const pageSizeOptions = [1, 5, 10, 25];
-  /*
-  useEffect(() => {
-    if (props.onPageChange) {
-      props.onPageChange(paginationModel);
-    }
-  }, [paginationModel])
 
-  const onPageChange = (
-    model: GridPaginationModel,
-    details: GridCallbackDetails<any>
-  ) => {
-    if (props.onPageChange) {
-      //props.onPageChange(model);
-    }
-    console.log(`model`, model)
-    setPaginationModel(model);
-  };
-  */
+  const gridWidth = useMemo(() => {
+    const { columns } = props;
+    return (columns || []).reduce((acc, column) => {
+      return acc + ((column?.headerName?.length || 0) * 8);
+    }, 0);
+  }, [ props ]);
 
-  const onFilterChange = (
-    model: GridFilterModel,
-    details: GridCallbackDetails<"filter">
-  ) => {
+  const onFilterChange = (model: GridFilterModel, details: GridCallbackDetails<'filter'>) => {
     setFilterModel(model);
-  };
+  }
 
-  const onSortChange = (
-    model: GridSortModel,
-    details: GridCallbackDetails<any>
-  ) => {
-  };
+  const onSortChange = (model: GridSortModel, details: GridCallbackDetails<any>) => {}
 
   const onPaginationChange = (page: number) => {
-    props?.setPaginationModel({
-      page: page,
-      pageSize: paginationModel.pageSize
-    })
+    const { setPaginationModel } = props;
+    if(setPaginationModel) {
+      setPaginationModel({
+        page: page,
+        pageSize: paginationModel.pageSize
+      });
+    }
   }
 
   const onPageSizeChange = (pageSize: number) => {
-    props?.setPaginationModel({
-      page: 1,
-      pageSize: pageSize
-    })
+    const {setPaginationModel} = props;
+    if(setPaginationModel) {
+      setPaginationModel({
+        page: 1,
+        pageSize: pageSize
+      })
+    }
   }
-
-  const gridWidth = React.useMemo(() => {
-    return (props.columns || []).reduce((acc, column) => {
-      return acc + ((column?.headerName?.length || 0) * 8);
-    }, 0);
-  }, [props.columns]);
-
-  const { totalItems, totalPages, paginationModel } = props
-  console.log('paginationModel', paginationModel)
 
   const CustomMuiPagination = () => {
     return (
       <MuiPagination
-        color='primary'
+        color={'primary'}
         page={paginationModel.page}
         count={totalPages || 0}
-        onChange={(event, page) => {
-          onPaginationChange(page)
-        }}
+        // className={'w-[40rem]'}
+        onChange={(event, page) => { onPaginationChange(page) }}
       />
     )
-  }
-
-  function CustomPagination(props: any) {
-    return <GridPagination
-      ActionsComponent={CustomMuiPagination}
-      rowsPerPageOptions={pageSizeOptions}
-      rowsPerPage={paginationModel.pageSize}
-      onRowsPerPageChange={(event) => onPageSizeChange(parseInt(event.target.value))}
-      {...props}
-    />;
   }
 
   return (
@@ -144,6 +81,9 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
         '& .MuiDataGrid-topContainer': {
           borderBottom: '1px solid #B9B9B9',
         },
+        '.MuiDataGrid-footerContainer': { justifyContent: 'unset' },
+        '.MuiTablePagination-root': { width: '100%', display: 'flex', justifyContent: 'flex-end' },
+        '.MuiTablePagination-spacer': { display: 'none' }
       }}
 
       getRowId={props?.getRowId}
@@ -164,10 +104,38 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
       //autoPageSize  
       loading={props.isLoading}
       slots={{
-        pagination: CustomPagination
+        pagination: (props) => (
+          <GridPagination
+            {...props}
+            ActionsComponent={CustomMuiPagination}
+            rowsPerPageOptions={pageSizeOptions}
+            rowsPerPage={paginationModel.pageSize}
+            onRowsPerPageChange={(event) => onPageSizeChange(parseInt(event.target.value))}
+          />
+        )
       }}
     />
   );
-};
+}
+
+export interface TableProps<T extends {}> {
+  onPageChange?: (model: GridPaginationModel) => void;
+  rows?: Array<T>
+  columns?: GridColDef[]
+  hideFooter?: boolean
+  getRowId?: GridRowIdGetter<T>
+  totalItems?: number
+  totalPages?: number
+  paginationModel: GridPaginationModel
+  setPaginationModel: (model: GridPaginationModel) => void
+  setPageSizenModel?: (model: GridPaginationModel) => void
+  isLoading?: boolean
+}
+
+export interface ColProps {
+  id: number;
+  col1: string;
+  col2: string;
+}
 
 export default Table;
