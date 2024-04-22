@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { BankInfoResponse } from './BankInfoResponse';
+import type { AccountInfoResponse } from './AccountInfoResponse';
 import {
-    BankInfoResponseFromJSON,
-    BankInfoResponseFromJSONTyped,
-    BankInfoResponseToJSON,
-} from './BankInfoResponse';
+    AccountInfoResponseFromJSON,
+    AccountInfoResponseFromJSONTyped,
+    AccountInfoResponseToJSON,
+} from './AccountInfoResponse';
 
 /**
  * 
  * @export
- * @interface BankInfoResponseDataResponse
+ * @interface AccountInfoResponseDataResponse
  */
-export interface BankInfoResponseDataResponse {
+export interface AccountInfoResponseDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof BankInfoResponseDataResponse
+     * @memberof AccountInfoResponseDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof BankInfoResponseDataResponse
+     * @memberof AccountInfoResponseDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof BankInfoResponseDataResponse
+     * @memberof AccountInfoResponseDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {BankInfoResponse}
-     * @memberof BankInfoResponseDataResponse
+     * @type {AccountInfoResponse}
+     * @memberof AccountInfoResponseDataResponse
      */
-    data?: BankInfoResponse | null;
+    data?: AccountInfoResponse | null;
 }
 
 /**
- * Check if a given object implements the BankInfoResponseDataResponse interface.
+ * Check if a given object implements the AccountInfoResponseDataResponse interface.
  */
-export function instanceOfBankInfoResponseDataResponse(value: object): boolean {
+export function instanceOfAccountInfoResponseDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function BankInfoResponseDataResponseFromJSON(json: any): BankInfoResponseDataResponse {
-    return BankInfoResponseDataResponseFromJSONTyped(json, false);
+export function AccountInfoResponseDataResponseFromJSON(json: any): AccountInfoResponseDataResponse {
+    return AccountInfoResponseDataResponseFromJSONTyped(json, false);
 }
 
-export function BankInfoResponseDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): BankInfoResponseDataResponse {
+export function AccountInfoResponseDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): AccountInfoResponseDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function BankInfoResponseDataResponseFromJSONTyped(json: any, ignoreDiscr
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : BankInfoResponseFromJSON(json['data']),
+        'data': !exists(json, 'data') ? undefined : AccountInfoResponseFromJSON(json['data']),
     };
 }
 
-export function BankInfoResponseDataResponseToJSON(value?: BankInfoResponseDataResponse | null): any {
+export function AccountInfoResponseDataResponseToJSON(value?: AccountInfoResponseDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function BankInfoResponseDataResponseToJSON(value?: BankInfoResponseDataR
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': BankInfoResponseToJSON(value.data),
+        'data': AccountInfoResponseToJSON(value.data),
     };
 }
 
