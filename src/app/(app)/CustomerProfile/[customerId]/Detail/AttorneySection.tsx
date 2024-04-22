@@ -1,6 +1,7 @@
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
-import React from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
 
 interface DetailSection {
     name?: string
@@ -130,6 +131,20 @@ const addressAttornetSectionList : Array<DetailSection> = [
 ]
 
 const AttorneySection = () => {
+
+    const search = useSearchParams()
+    const params = useParams()
+    //const { customerId } = router.
+    console.log(`params`, params)
+
+    useEffect( () => {
+        getAttorney()
+    }, [] )
+
+    const getAttorney = async () => {
+        //await fetch(`/api/customer-profile/attorney/${customerId}`)
+    }
+
     return (
         <React.Fragment>
             <HeaderTitle
@@ -199,5 +214,21 @@ const AttorneySection = () => {
         </React.Fragment>
     )
 }
+
+/*
+const fetchData = async (corporateId: string) => {
+    try{
+        const menus = (await fetch(`${Constants.APIUrl}/api/customer-profile/dashboard/${corporateId}`, {
+          headers: { Cookie: cookies().toString() },
+          cache: 'no-cache',
+        }))
+        const response = await menus.json()
+        return response
+        //
+      }catch(e){
+        console.error(e)
+      }
+}
+*/
 
 export default AttorneySection;
