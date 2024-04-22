@@ -13,7 +13,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Grid, FormControl, FormLabel } from '@mui/material';
 
 const Beneficiary = (): ReactElement => {
-  const [ customerId, setCustomerId ] = useState('');
+  const [ corporateId, setCorporateId ] = useState('');
   const router = useRouter();
   const params = useParams<{ customerId: string; }>();
 
@@ -26,7 +26,7 @@ const Beneficiary = (): ReactElement => {
     }
 
     if(!customerId) { return back(); }
-    setCustomerId(customerId);
+    setCorporateId(customerId);
     onInit();
   }, [ router, params ]);
 

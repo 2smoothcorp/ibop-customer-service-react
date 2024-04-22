@@ -74,7 +74,7 @@ const CustomerInfoDashBoardPage = async ({
 
 const getDashboardByCorporateId = async (corporateId: string) => {
   try{
-    const menus = (await fetch(`${Constants.APIUrl}/api/customerProfile/dashboard/${corporateId}`, {
+    const menus = (await fetch(`${Constants.APIUrl}/api/customer-profile/dashboard/${corporateId}`, {
       headers: { Cookie: cookies().toString() },
       cache: 'no-cache',
     }))
