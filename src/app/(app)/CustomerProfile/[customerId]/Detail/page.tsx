@@ -4,13 +4,13 @@
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
-import CustomerInfo from "./CustomerInfo"
+import CustomerInformation from "./CustomerInformation"
 
 export default function DetailPage() {
     const stepper = [
         {
             title: "ข้อมูลส่วนตัว",
-            component: <CustomerInfo />
+            component: <CustomerInformation />
         },
         {
             title: "ข้อมูลติดต่อ",
