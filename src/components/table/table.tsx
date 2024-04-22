@@ -8,17 +8,18 @@ import {
   GridFilterModel,
   GridPagination,
   GridPaginationModel,
-  GridSortModel
+  GridSortModel,
+  type GridRowIdGetter
 } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export interface TableProps {
+export interface TableProps<T extends {}> {
   onPageChange?: (model: GridPaginationModel) => void;
-  rows?: Array<any>
+  rows?: Array<T>
   columns?: GridColDef[]
   hideFooter?: boolean
-  getRowId?: (row: any) => any
+  getRowId?: GridRowIdGetter<T>
   totalItems?: number
   totalPages?: number
   paginationModel: GridPaginationModel
@@ -33,7 +34,7 @@ export interface ColProps {
   col2: string;
 }
 
-const Table = (props: TableProps) => {
+const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
   const router = useRouter();
   /*
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -126,7 +127,7 @@ const Table = (props: TableProps) => {
   }
 
   return (
-    <DataGrid
+    <DataGrid<DynamicType>
       sx={{
         '& .MuiDataGrid-columnHeader': {
           backgroundColor: '#F0F0F0',

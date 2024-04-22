@@ -18,16 +18,11 @@ const DetailSection = <T,>(props: DetailSectionProps<T>) => {
 
   const getColPerRow = () => {
     switch (colPerRow) {
-      case 1:
-        return 12;
-      case 2:
-        return 6;
-      case 3:
-        return 4;
-      case 4:
-        return 3;
-      default:
-        return 4;
+      case 1: return 12;
+      case 2: return 6;
+      case 3: return 4;
+      case 4: return 3;
+      default: return 4;
     }
   };
   const COL_PER_ROW = getColPerRow();
@@ -38,7 +33,7 @@ const DetailSection = <T,>(props: DetailSectionProps<T>) => {
         {topic}
       </div>
       <Grid container spacing={2} className="mt-2">
-        {detailList?.map((l, idx) => {
+        {detailList?.map(({ title, value }, idx) => {
           return (
             <Grid container item key={idx} xs={COL_PER_ROW} spacing={2}>
               <Grid
@@ -46,10 +41,10 @@ const DetailSection = <T,>(props: DetailSectionProps<T>) => {
                 xs={COL_PER_ROW === 12 ? 12 : 6}
                 className={COL_PER_ROW === 12 ? "" : "flex justify-end"}
               >
-                {l.title}
+                <strong>{ title }</strong>
               </Grid>
               <Grid item xs={COL_PER_ROW === 12 ? 12 : 6}>
-                {l.value}
+                { value }
               </Grid>
             </Grid>
           );
