@@ -16,62 +16,55 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ReserveAccountNoInput
+ * @interface AccountInfoModel
  */
-export interface ReserveAccountNoInput {
+export interface AccountInfoModel {
     /**
      * 
      * @type {string}
-     * @memberof ReserveAccountNoInput
-     */
-    refId?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof ReserveAccountNoInput
-     */
-    refType?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof ReserveAccountNoInput
+     * @memberof AccountInfoModel
      */
     accountType?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof ReserveAccountNoInput
+     * @memberof AccountInfoModel
      */
     accountNo?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AccountInfoModel
+     */
+    boAccountNo?: string | null;
 }
 
 /**
- * Check if a given object implements the ReserveAccountNoInput interface.
+ * Check if a given object implements the AccountInfoModel interface.
  */
-export function instanceOfReserveAccountNoInput(value: object): boolean {
+export function instanceOfAccountInfoModel(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function ReserveAccountNoInputFromJSON(json: any): ReserveAccountNoInput {
-    return ReserveAccountNoInputFromJSONTyped(json, false);
+export function AccountInfoModelFromJSON(json: any): AccountInfoModel {
+    return AccountInfoModelFromJSONTyped(json, false);
 }
 
-export function ReserveAccountNoInputFromJSONTyped(json: any, ignoreDiscriminator: boolean): ReserveAccountNoInput {
+export function AccountInfoModelFromJSONTyped(json: any, ignoreDiscriminator: boolean): AccountInfoModel {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'refId': !exists(json, 'refId') ? undefined : json['refId'],
-        'refType': !exists(json, 'refType') ? undefined : json['refType'],
         'accountType': !exists(json, 'accountType') ? undefined : json['accountType'],
         'accountNo': !exists(json, 'accountNo') ? undefined : json['accountNo'],
+        'boAccountNo': !exists(json, 'boAccountNo') ? undefined : json['boAccountNo'],
     };
 }
 
-export function ReserveAccountNoInputToJSON(value?: ReserveAccountNoInput | null): any {
+export function AccountInfoModelToJSON(value?: AccountInfoModel | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -80,10 +73,9 @@ export function ReserveAccountNoInputToJSON(value?: ReserveAccountNoInput | null
     }
     return {
         
-        'refId': value.refId,
-        'refType': value.refType,
         'accountType': value.accountType,
         'accountNo': value.accountNo,
+        'boAccountNo': value.boAccountNo,
     };
 }
 

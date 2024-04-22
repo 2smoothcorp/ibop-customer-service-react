@@ -21,6 +21,9 @@ models/AccountActionLogHistoriesOutputPagination.ts
 models/AccountActivateProductPostRequest.ts
 models/AccountBackOfficeReportOutputPagination.ts
 models/AccountCreateProfilePostRequest.ts
+models/AccountInfoModel.ts
+models/AccountInfoResponse.ts
+models/AccountInfoResponseDataResponse.ts
 models/AccountOfficerInput.ts
 models/AccountOfficerSP.ts
 models/AccountOfficerSPDataResponse.ts
@@ -53,7 +56,6 @@ models/BankInfoOutputListDataResponse.ts
 models/BankInfoResponse.ts
 models/BankInfoResponseDataResponse.ts
 models/BankRequest.ts
-models/BaseResponse.ts
 models/BeneficiaryInfoModel.ts
 models/BeneficiaryInfoResponse.ts
 models/BeneficiaryInfoResponseDataResponse.ts
@@ -75,7 +77,6 @@ models/ContactInfoOutput.ts
 models/ContactInfoOutputDataResponse.ts
 models/CustomerInfoListResponse.ts
 models/CustomerInfoListResponsePagination.ts
-models/CustomerProfileCustomerInformationPersonalInfoCorporateIdPutRequest.ts
 models/CustomerProfileReportOutput.ts
 models/CustomerProfileReportOutputCustomerProfileReportOutputPagination.ts
 models/CustomerProfileRequest.ts
@@ -123,8 +124,8 @@ models/MenuResponseListDataResponse.ts
 models/OccupationInfoModel.ts
 models/OccupationInfoResponse.ts
 models/OccupationInfoResponseDataResponse.ts
+models/PermissionInfoOuput.ts
 models/PersonalInfoModel.ts
-models/PersonalInfoRequest.ts
 models/PersonalInfoResponse.ts
 models/PersonalInfoResponseDataResponse.ts
 models/PersonalOutput.ts
