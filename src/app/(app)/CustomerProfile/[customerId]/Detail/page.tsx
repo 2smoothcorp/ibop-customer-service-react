@@ -4,6 +4,7 @@
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
+import AttorneySection from "./AttorneySection"
 import CustomerInfo from "./CustomerInfo"
 
 export default function DetailPage() {
@@ -34,7 +35,7 @@ export default function DetailPage() {
         },
         {
             title: "ผู้รับมอบอำนาจ",
-            component: <div>Content7</div>
+            component: <AttorneySection/>
         },
         {
             title: "ความยินยอมและวัตถุประสงค์อื่น",

@@ -10,14 +10,23 @@ import {
 import { GridPaginationModel } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormState } from "react-dom";
 import { searchCustomerInfo } from "./customerProfile.action";
 
 const CustomerInfoPage = ({
   searchParams
 }: {
-  searchParams?: { search?: string; page?: string }
+  searchParams?: { 
+    corporateID?: string 
+    referenceID?: string 
+    fullName?: string 
+    emailNumber?: string 
+    pageIndex?: string 
+    pageSize?: string 
+  }
 }) => {
+
+  console.log(`page`, searchParams?.pageIndex)
 
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -33,7 +42,7 @@ const CustomerInfoPage = ({
     error: undefined
   })
 
-  const { pending } = useFormStatus();
+  const [ isLoading, setIsLOading ] = useState<boolean>(false)
 
   const prepareBeforeSendAction = (formData: FormData) => {
     //console.log(formData)
@@ -41,13 +50,32 @@ const CustomerInfoPage = ({
     const referenceID = formData.get('referenceID') as string || '';
     const fullName = formData.get('fullName') as string || '';
     const emailNumber = formData.get('emailNumber') as string || '';
-    const pageIndex = paginationModel.page || 1;
-    const pageSize = paginationModel.pageSize;
+    const pageIndex = formData.get('pageIndex') || 1;
+    const pageSize = formData.get('pageSize') || paginationModel.pageSize;
 
-    formData.set('pageIndex', "1");
-    formData.set('pageSize', paginationModel?.pageSize?.toString() || '');
+    formData.set('pageIndex', pageIndex.toString());
+    formData.set('pageSize', pageSize.toString());
 
-    searchCustomerInfoAction(formData)
+    const queryParams = {
+      corporateID,
+      referenceID,
+      fullName,
+      emailNumber,
+      pageIndex,
+      pageSize
+    }
+
+    const params = Object.keys(queryParams)
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
+    .join('&');
+
+    //searchCustomerInfoAction(formData)
+    setPaginationModel((prev) => ({
+      ...prev,
+      page: 1,
+    })
+    )
+    //router.push(`/CustomerProfile?${params}`)
   }
 
 
@@ -55,15 +83,18 @@ const CustomerInfoPage = ({
     if (!searchCustomerInfoState.success && searchCustomerInfoState?.error) {
       alert(searchCustomerInfoState?.error)
     }
+    setIsLOading(false)
 
   }, [searchCustomerInfoState])
 
   useEffect(() => {
     if (formRef.current && paginationModel) {
+      setIsLOading(true)
       const formData = new FormData(formRef.current);
       formData.set('pageIndex', paginationModel?.page?.toString() || '');
       formData.set('pageSize', paginationModel?.pageSize?.toString() || '');
-      formRef.current && formRef.current?.requestSubmit();
+      //formRef.current && formRef.current?.requestSubmit();
+      searchCustomerInfoAction(formData);
     }
   }, [paginationModel])
 
@@ -79,12 +110,13 @@ const CustomerInfoPage = ({
           </Typography>
         </Toolbar>
       </AppBar>
-      <form action={prepareBeforeSendAction} ref={formRef}>
+      <form action={prepareBeforeSendAction} ref={formRef} >
         <SearchCustomerProfileListForm />
         <SearchCustomerProfileListTable
           response={searchCustomerInfoState}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          isLoading={isLoading}
         />
       </form>
     </>
