@@ -4,8 +4,11 @@
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
-import AttorneySection from "./AttorneySection"
-import CustomerInfo from "./CustomerInfo"
+import AttorneySection from "./attorney"
+import ATS from "./ats"
+import CustomerContract from "./customer-contract"
+import CustomerInformation from "./customer-information"
+import EDividend from "./e-dividend"
 
 export default function DetailPage() {
     const stepper = [
