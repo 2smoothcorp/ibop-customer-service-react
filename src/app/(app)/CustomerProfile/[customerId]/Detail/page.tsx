@@ -5,6 +5,7 @@ import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
 import AttorneySection from "./AttorneySection"
+import ATS from "./ats"
 import CustomerContract from "./customer-contract"
 import CustomerInformation from "./customer-information"
 
@@ -28,7 +29,7 @@ export default function DetailPage() {
         },
         {
             title: "บัญชี ATS ",
-            component: <div>Content5</div>
+            component: <ATS />
         },
         {
             title: "e-Dividend",
