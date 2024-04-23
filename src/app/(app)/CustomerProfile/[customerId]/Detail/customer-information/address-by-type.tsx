@@ -4,7 +4,7 @@ import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi } from "@/utils/function";
+import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -44,7 +44,7 @@ export default function AddressByType() {
             case 'street':
                 return handleEmptyStringFormApi(addressInfo.street);
             case 'country':
-                return handleEmptyStringFormApi(addressInfo.countryDesc);
+                return isEmptyStringFormApi(addressInfo.countryCode) ? '-' : `${addressInfo.countryCode} - ${addressInfo.countryDesc}`;
             case 'zipCode':
                 return handleEmptyStringFormApi(addressInfo.zipCode);
             case 'province':

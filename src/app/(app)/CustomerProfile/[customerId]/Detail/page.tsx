@@ -5,6 +5,7 @@ import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
 import AttorneySection from "./AttorneySection"
+import CustomerContract from "./customer-contract"
 import CustomerInformation from "./customer-information"
 
 export default function DetailPage() {
@@ -15,7 +16,7 @@ export default function DetailPage() {
         },
         {
             title: "ข้อมูลติดต่อ",
-            component: <div>Content2</div>
+            component: <CustomerContract />
         },
         {
             title: "ข้อมูลทางการเงิน",
