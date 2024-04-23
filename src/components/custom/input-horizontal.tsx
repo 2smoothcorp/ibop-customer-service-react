@@ -116,7 +116,7 @@ interface InputHorizontalProps {
     placeholder?: string;
     isRequired?: boolean;
     labelAlign?: Property.TextAlign | undefined;
-    register: UseFormRegister<any>;
+    register?: UseFormRegister<any>;
     list?: InputSelectHookValue[];
     onChange?: (value: string) => void;
     onChangeNumber?: (value: number) => void;
