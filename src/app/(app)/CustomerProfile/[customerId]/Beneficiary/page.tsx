@@ -10,10 +10,14 @@ import {
   useState
 } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Grid, FormControl, FormLabel } from '@mui/material';
+import { CircularProgress, Grid, FormControl, FormLabel } from '@mui/material';
+
+import { AppLoader } from '@/components/app-loader';
+import type { BeneficiaryInfoResponseDataResponse } from '@/services/rest-api/customer-service';
 
 const Beneficiary = (): ReactElement => {
   const [ corporateId, setCorporateId ] = useState('');
+  const [ isLoading, setIsLoading ] = useState(false);
   const router = useRouter();
   const params = useParams<{ customerId: string; }>();
 
@@ -22,7 +26,23 @@ const Beneficiary = (): ReactElement => {
     const { customerId } = params;
 
     const onInit = async () => {
-      //
+      setIsLoading(true);
+      // await fetchGetBeneficiaryInfo();
+      // setIsLoading(false);
+    }
+
+    const fetchGetBeneficiaryInfo = async () => {
+      const _corporateId = customerId;
+      const request = await fetch(`/api/customer-profile/beneficiary/${ _corporateId }`, { method: 'GET' });
+      const response: BeneficiaryInfoResponseDataResponse = await request.json();
+
+      const { data } = response;
+      if(!data) { return; }
+
+      const { beneficiaryInfo } = data;
+      if(!beneficiaryInfo) { return; }
+
+      const {  } = beneficiaryInfo;
     }
 
     if(!customerId) { return back(); }
@@ -31,6 +51,10 @@ const Beneficiary = (): ReactElement => {
   }, [ router, params ]);
 
   const renderPersonalInfo = () => {
+    if(isLoading) {
+      return (<AppLoader asContentLoader />);
+    }
+
     return (
       <Grid container spacing={2}>
         <Grid item xs={4}>
@@ -74,6 +98,10 @@ const Beneficiary = (): ReactElement => {
   }
 
   const renderAddrInfo = () => {
+    if(isLoading) {
+      return (<AppLoader asContentLoader />);
+    }
+
     return (
       <Grid container spacing={2}>
         <Grid item xs={4}>

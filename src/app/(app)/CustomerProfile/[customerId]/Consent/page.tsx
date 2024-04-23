@@ -65,7 +65,7 @@ const Consent = (): ReactElement => {
     }
 
     const fetchGetConsentQuestion = async (): Promise<Array<ConsentInfo>> => {
-      const request = await fetch(`/api/consent/question`, { method: 'GET' });
+      const request = await fetch(`/api/customer-profile/consent/question`, { method: 'GET' });
       const response: ConsentQuestionOutputDataResponse = await request.json();
 
       const { data } = response;
@@ -108,7 +108,7 @@ const Consent = (): ReactElement => {
 
     const fetchGetConsentAnswer = async (options: Array<ConsentInfo>) => {
       const _corporateId = customerId;
-      const request = await fetch(`/api/consent/answer/${ _corporateId }`, { method: 'GET' });
+      const request = await fetch(`/api/customer-profile/consent/answer/${ _corporateId }`, { method: 'GET' });
       const response: ConsentAnsweredOutputDataResponse = await request.json();
 
       const { data } = response;
