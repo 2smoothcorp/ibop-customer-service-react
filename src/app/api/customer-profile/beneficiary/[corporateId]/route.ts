@@ -5,7 +5,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { services } from '@/services';
 
-export async function GET(_: NextRequest, { corporateId }: ParamSegment) {
+export async function GET(_: NextRequest, { params }: { params: ParamSegment }) {
+  const { corporateId } = params;
   if(!corporateId) {
     return NextResponse.json({
       message: '[ERROR] /api/customer-profile/beneficiary',
