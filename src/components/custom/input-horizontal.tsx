@@ -1,12 +1,12 @@
 "use client";
 
-import { UseFormRegister } from "react-hook-form";
 import { Property } from "csstype";
-import InputDate from "./input-date";
-import InputTextHook from "./input-text-hook";
-import InputSelectHook, { InputSelectHookValue } from "./input-select-hook";
-import InputNumber from "./input-number";
 import dayjs from "dayjs";
+import { UseFormRegister } from "react-hook-form";
+import InputDate from "./input-date";
+import InputNumber from "./input-number";
+import InputSelectHook, { InputSelectHookValue } from "./input-select-hook";
+import InputTextHook from "./input-text-hook";
 
 export default function InputHorizontal({
     type = "text",
@@ -17,6 +17,8 @@ export default function InputHorizontal({
     defaultValue,
     isRequired = false,
     isLableCols1,
+    allGridCols = "grid-cols-8",
+    inputCol = "col-span-7",
     register,
     labelAlign = "right",
     list,
@@ -32,19 +34,17 @@ export default function InputHorizontal({
     }
 
     return (
-        <div className={`${isLableCols1 ? "grid grid-cols-8" : "flex"} items-center min-h-[46px]`}>
+        <div className={`${isLableCols1 ? "grid " + allGridCols : "flex"} items-center min-h-[46px]`}>
             {
                 labelWidth
                     ? <div
-                        className="font-cordia-new text-lg px-4 font-semibold tracking-wide"
+                        className="text-lg px-4 font-semibold tracking-wide"
                         style={{
                             width: labelWidth,
                             textAlign: labelAlign,
                         }}>{label} {getRequired()}</div>
                     : (
-                        isLableCols1 ?
-                            <div className="font-cordia-new w-full text-lg font-semibold text-right px-4 tracking-wide">{label} {getRequired()}</div> :
-                            <div className="font-cordia-new w-full text-lg font-semibold text-right px-4 tracking-wide" >{label} {getRequired()}</div>
+                        <div className="w-full text-lg font-semibold text-right px-4 tracking-wide">{label} {getRequired()}</div>
                     )
             }
             {
@@ -58,36 +58,42 @@ export default function InputHorizontal({
                                         register={register}
                                         name={name}
                                         defaultValue={defaultValue}
-                                        className={isLableCols1 ? "col-span-7" : ""}
+                                        className={isLableCols1 ? inputCol : ""}
                                         list={list}
                                     />
                                     : type === "number"
                                         ? <InputNumber
                                             name={name}
                                             defaultValue={defaultValue}
-                                            className={isLableCols1 ? "col-span-7" : ""}
+                                            className={isLableCols1 ? inputCol : ""}
                                             onChange={onChangeNumber}
                                         />
                                         : type === "date"
                                             ? <InputDate
                                                 name={name}
                                                 defaultValue={defaultValue}
-                                                className={isLableCols1 ? "col-span-7" : ""}
+                                                className={isLableCols1 ? inputCol : ""}
                                                 onChange={onChange}
                                             />
                                             : <InputTextHook
                                                 register={register}
                                                 name={name}
                                                 defaultValue={defaultValue}
-                                                className={isLableCols1 ? "col-span-7" : ""}
+                                                className={isLableCols1 ? inputCol : ""}
                                             />
                             )
                     )
-                    : type === "number"
-                        ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{String(defaultValue).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')}</div>
-                        : type === "date"
-                            ? <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{dayjs(defaultValue).format("DD/MM/YYYY").toString()}</div>
-                            : <div className="font-cordia-new w-full text-lg font-medium col-span-7" >{defaultValue}</div>
+                    : (
+                        <div className={`w-full text-lg font-medium ${inputCol}`}>
+                            {
+                                type === "number"
+                                    ? String(defaultValue).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')
+                                    : type === "date"
+                                        ? dayjs(defaultValue).format("DD/MM/YYYY").toString()
+                                        : defaultValue
+                            }
+                        </div>
+                    )
             }
         </div>
     )
@@ -102,7 +108,10 @@ interface InputHorizontalProps {
     isEditable?: boolean;
     inputWidth?: number;
     labelWidth?: number | string;
+    allCol?: string;
+    inputCol?: string;
     isLableCols1?: boolean;
+    allGridCols?: string;
     defaultValue?: string;
     placeholder?: string;
     isRequired?: boolean;

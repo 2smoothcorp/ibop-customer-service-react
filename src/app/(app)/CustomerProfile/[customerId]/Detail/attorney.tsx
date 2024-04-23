@@ -9,7 +9,6 @@ import React, { useEffect, useState } from "react";
 interface DetailSection {
     name?: string
     label: string
-    value: string
     defaultValue: string
     isRequired?: boolean
     isEditable?: boolean
@@ -21,7 +20,6 @@ const attorneySectionList: Array<DetailSection> = [
         name: 'referenceTypeDesc',
         label: 'ประเภทหลักฐาน',
         defaultValue: '',
-        value: '',
         isRequired: true,
         normalize: 'reference'
     },
@@ -29,14 +27,12 @@ const attorneySectionList: Array<DetailSection> = [
         name: 'referenceId',
         label: 'เลขที่บัตร',
         defaultValue: '',
-        value: '',
         isRequired: true
     },
     {
         name: 'nationDesc',
         label: 'ประเทศเจ้าของสัญชาติ',
         defaultValue: '',
-        value: '',
         isRequired: true,
         normalize: 'nation'
     },
@@ -44,33 +40,28 @@ const attorneySectionList: Array<DetailSection> = [
         name: 'titleDesc',
         label: 'คำนำหน้า',
         defaultValue: '',
-        value: '',
         isRequired: true
     },
     {
         name: 'name',
         label: 'ชื่อ-นามสกุล ผู้รับมอบอำนาจ',
         defaultValue: '',
-        value: '',
         isRequired: true
     },
     {
         name: 'relationDesc',
         label: 'ความสัมพันธ์',
         defaultValue: 'สามี',
-        value: '',
     },
     {
         name: 'mobileNo',
         label: 'โทรศัพท์มือถือ',
         defaultValue: '083-3333333',
-        value: '',
     },
     {
         name: 'email',
         label: 'อีเมล',
         defaultValue: 'ABCD@hotmail.com',
-        value: '',
     },
 ]
 
@@ -79,79 +70,67 @@ const addressAttornetSectionList: Array<DetailSection> = [
         name: 'addressNo',
         label: 'เลขที่',
         defaultValue: '',
-        value: '',
         isRequired: true
     },
     {
         name: 'moo',
         label: 'หมู่ที่',
         defaultValue: '',
-        value: '',
         isRequired: true
     },
     {
         name: 'buildingOrVillage',
         label: 'หมู่บ้าน / อาคาร',
         defaultValue: '',
-        value: '',
         isRequired: true
     },
     {
         name: 'roomNo',
         label: 'ห้อง',
         defaultValue: '',
-        value: '',
         isRequired: true
     },
     {
         name: 'floor',
         label: 'ชั้น',
         defaultValue: '',
-        value: '',
         isRequired: true
     },
     {
         name: 'soi',
         label: 'ตรอก / ซอย',
         defaultValue: '',
-        value: '',
     },
     {
         name: 'street',
         label: 'ถนน',
         defaultValue: '',
-        value: '',
     },
     {
         name: 'countryDesc',
         label: 'ประเทศ',
         defaultValue: '',
-        value: '',
         normalize: 'country'
     },
     {
         name: 'zipCode',
         label: 'รหัสไปรษณีย์',
         defaultValue: '',
-        value: '',
     },
     {
         name: 'provinceNameTh',
         label: 'จังหวัด',
         defaultValue: '',
-        value: '',
     },
     {
         name: 'districtNameTh',
         label: 'อำเภอ / เขต',
         defaultValue: '',
-        value: '',
     },
     {
         name: 'subDistrictNameTh',
         label: 'ตำบล / แขวง',
         defaultValue: '',
-        value: '',
     },
 ]
 
@@ -229,13 +208,13 @@ const AttorneySection = () => {
                             <div className="grid grid-cols-3">
                                 {
                                     attorneySectionList.map((attorneySection: DetailSection, idx: number) => {
-                                        const { name = '', label, defaultValue, value, isRequired, normalize } = attorneySection
+                                        const { name = '', label, defaultValue, isRequired, normalize } = attorneySection
                                         const _dataInfo = (name === 'referenceId' ? data?.data : attorneyInfo) || undefined
-                                        const _value = getValueFromFieldName(name, _dataInfo, normalize)
+                                        const value = getValueFromFieldName(name, _dataInfo, normalize)
                                         return <React.Fragment key={idx}>
                                             <InputHorizontal
-                                                label={attorneySection.label}
-                                                defaultValue={_value}
+                                                label={label}
+                                                defaultValue={value}
                                                 isEditable={isEditable}
                                                 //register={register}
                                                 name={name}
@@ -253,12 +232,12 @@ const AttorneySection = () => {
                             <div className="grid grid-cols-3">
                                 {
                                     addressAttornetSectionList.map((attorneySection: DetailSection, idx: number) => {
-                                        const { name = '', label, defaultValue, value, isRequired, normalize } = attorneySection
-                                        const _value = getValueFromFieldName(name, attorneyInfo, normalize)
+                                        const { name = '', label, defaultValue, isRequired, normalize } = attorneySection
+                                        const value = getValueFromFieldName(name, attorneyInfo, normalize)
                                         return <React.Fragment key={idx}>
                                             <InputHorizontal
-                                                label={attorneySection.label}
-                                                defaultValue={_value}
+                                                label={label}
+                                                defaultValue={value}
                                                 isEditable={isEditable}
                                                 //register={register}
                                                 name={name}

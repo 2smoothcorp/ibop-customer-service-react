@@ -3,15 +3,14 @@ import { Constants } from './constants/constants';
 import { AuthService } from './services/auth-service/auth-service';
 import { ironSessionService } from './services/iron-session/iron-session';
 import { PortalService, VerifyTokenResponse } from './services/portal-service/portal-service';
- 
+
 export async function middleware(request: NextRequest, response: NextResponse) {
-  try{
+  try {
     const url = request.nextUrl;
     const response = NextResponse.next();
     const accessToken: string = request.nextUrl.searchParams.get('token') || '';
     const user = request.cookies.get('user')?.value
-
-    if( accessToken && !user){
+    if (accessToken && !user) {
       return await processLoginWithToken(accessToken, request, response);
       /*
       const url = request.nextUrl;
@@ -52,23 +51,23 @@ export async function middleware(request: NextRequest, response: NextResponse) {
       _response.cookies.delete('user');
       return _response
     }
-    
-  }catch(e){
+
+  } catch (e) {
     console.error(e)
   }
 }
- 
+
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
 }
 
-async function processLoginWithToken (accessToken: string, request: NextRequest, response: NextResponse) : Promise<Response | NextResponse<any>> {
+async function processLoginWithToken(accessToken: string, request: NextRequest, response: NextResponse): Promise<Response | NextResponse<any>> {
   const url = request.nextUrl;
 
   const portalService = new PortalService(`${Constants.PortalUrl}`);
-  const verifyToken: VerifyTokenResponse = await portalService.verifyToken(accessToken); 
-  
-  if( verifyToken.status === 'error' ){
+  const verifyToken: VerifyTokenResponse = await portalService.verifyToken(accessToken);
+
+  if (verifyToken.status === 'error') {
     response.cookies.delete('token');
     response.cookies.delete('user');
     return Response.redirect(new URL('/login', request.url))
@@ -76,12 +75,12 @@ async function processLoginWithToken (accessToken: string, request: NextRequest,
 
   const authService = new AuthService('');
   const searchUserDirectoryResponse = await authService.searchUserDirectory(accessToken, verifyToken.data.employeeId)
-  if( searchUserDirectoryResponse.status.toLocaleLowerCase() === 'y' ){
+  if (searchUserDirectoryResponse.status.toLocaleLowerCase() === 'y') {
     const userData = await ironSessionService.setUserDataInMiddleware(response, searchUserDirectoryResponse)
-    
+
     url.searchParams.delete('token')
     url.searchParams.delete('refresh_token')
-    
+
     const _response = NextResponse.redirect(url);
     _response.cookies.set("user", userData);
     return _response

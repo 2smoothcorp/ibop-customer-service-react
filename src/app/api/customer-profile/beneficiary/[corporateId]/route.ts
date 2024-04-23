@@ -5,7 +5,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { services } from '@/services';
 
-export async function GET(_: NextRequest, { corporateId }: ParamSegment) {
+export async function GET(_: NextRequest, { params }: { params: ParamSegment }) {
+  const { corporateId } = params;
   if(!corporateId) {
     return NextResponse.json({
       message: '[ERROR] /api/customer-profile/beneficiary',
@@ -14,9 +15,9 @@ export async function GET(_: NextRequest, { corporateId }: ParamSegment) {
   }
 
   try {
-    // const apiService = await services.getCustomerServiceApi();
-    // const result = await apiService.getCustomerProfileV2Api().customerProfileCustomerInformationBeneficiaryInfoGet({  });
-    return NextResponse.json({});
+    const apiService = await services.getCustomerServiceApi();
+    const result = await apiService.getCustomerProfileV2Api().customerProfileCustomerInformationBeneficiaryInfoGet({ corporateId });
+    return NextResponse.json(result);
   }
   catch(err: any) {
     return NextResponse.json({ message: '[ERROR] /api/customer-profile/beneficiary', err }, { status: 500 });
