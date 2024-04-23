@@ -5,13 +5,13 @@ import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
 import AttorneySection from "./AttorneySection"
-import CustomerInfo from "./CustomerInfo"
+import CustomerInformation from "./customer-information"
 
 export default function DetailPage() {
     const stepper = [
         {
             title: "ข้อมูลส่วนตัว",
-            component: <CustomerInfo />
+            component: <CustomerInformation />
         },
         {
             title: "ข้อมูลติดต่อ",
@@ -35,7 +35,7 @@ export default function DetailPage() {
         },
         {
             title: "ผู้รับมอบอำนาจ",
-            component: <AttorneySection/>
+            component: <AttorneySection />
         },
         {
             title: "ความยินยอมและวัตถุประสงค์อื่น",
