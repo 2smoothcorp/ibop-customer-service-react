@@ -6,10 +6,10 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
-export default function ATS() {
+export default function EDividend() {
     const params = useParams()
     const { data, isLoading, error } = useQuery({
-        queryKey: ['ats', params.customerId],
+        queryKey: ['eDividend', params.customerId],
         queryFn: () => getData(),
     })
 
@@ -17,7 +17,7 @@ export default function ATS() {
         const { customerId } = params
         if (customerId) {
             try {
-                const request = await fetch(`/api/customer-profile/ats/${customerId}`, { method: 'GET' });
+                const request = await fetch(`/api/customer-profile/e-dividend/${customerId}`, { method: 'GET' });
                 const response: BankInfoResponseDataResponse = await request.json();
                 if (response.status == 200) {
                     const { data } = response;
@@ -46,7 +46,7 @@ export default function ATS() {
         <>
             <HeaderTitle
                 className="gap-0"
-                title="ข้อมูลบัญชีธนาคาร"
+                title="บัญชีธนาคารสำหรับดอกเบี้ย และเงินปันผล Bank account to receive e-Dividend / Interest"
             />
             <div className="h-2" />
             <div className="px-10">
@@ -62,7 +62,6 @@ export default function ATS() {
                     pageSizeOptions={[]}
                 />
             </div>
-
         </>
     )
 }
@@ -106,16 +105,6 @@ const columns: GridColDef[] = [
         align: 'center',
         width: 200,
         valueGetter: (value, row) => `${row.isDefault ? '✅' : '❌'}`,
-    },
-    {
-        headerClassName: 'font-db-helvethaica text-[20px] bg-[#B9B9B9] bg-opacity-70',
-        cellClassName: 'font-cordia-new text-[18px]',
-        field: 'howToRegister',
-        headerName: 'วิธีสมัคร ATS',
-        headerAlign: 'center',
-        align: 'center',
-        description: 'This column has a value getter and is not sortable.',
-        flex: 1,
     },
 ];
 

@@ -8,6 +8,7 @@ import AttorneySection from "./AttorneySection"
 import ATS from "./ats"
 import CustomerContract from "./customer-contract"
 import CustomerInformation from "./customer-information"
+import EDividend from "./e-dividend"
 
 export default function DetailPage() {
     const stepper = [
@@ -33,7 +34,7 @@ export default function DetailPage() {
         },
         {
             title: "e-Dividend",
-            component: <div>Content6</div>
+            component: <EDividend />
         },
         {
             title: "ผู้รับมอบอำนาจ",
