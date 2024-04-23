@@ -3,7 +3,7 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
-import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { handleEmptyStringFormApi } from "@/utils/function";
 import { useParams } from "next/navigation";
 import React from "react";
 import { useFormState } from "react-dom";
@@ -47,11 +47,11 @@ export default function AddressByCurrent() {
                 setValue('floor', handleEmptyStringFormApi(addressInfoModel?.floor));
                 setValue('soi', handleEmptyStringFormApi(addressInfoModel?.soi));
                 setValue('street', handleEmptyStringFormApi(addressInfoModel?.street));
-                setValue('country', !isEmptyStringFormApi(addressInfoModel?.countryCode) ? `${addressInfoModel?.countryCode} - ${addressInfoModel?.countryDesc}` : '-');
+                setValue('country', handleEmptyStringFormApi(addressInfoModel?.countryDesc));
                 setValue('zipCode', handleEmptyStringFormApi(addressInfoModel?.zipCode));
-                setValue('province', !isEmptyStringFormApi(addressInfoModel?.provinceCode) ? `${addressInfoModel?.provinceCode} - ${addressInfoModel?.provinceNameTh}` : '-');
-                setValue('district', !isEmptyStringFormApi(addressInfoModel?.districtCode) ? `${addressInfoModel?.districtCode} - ${addressInfoModel?.districtNameTh}` : '-');
-                setValue('subDistrict', !isEmptyStringFormApi(addressInfoModel?.subDistrictCode) ? `${addressInfoModel?.subDistrictCode} - ${addressInfoModel?.subDistrictNameTh}` : '-');
+                setValue('province', handleEmptyStringFormApi(addressInfoModel?.provinceNameTh));
+                setValue('district', handleEmptyStringFormApi(addressInfoModel?.districtNameTh));
+                setValue('subDistrict', handleEmptyStringFormApi(addressInfoModel?.subDistrictNameTh));
             }
             setIsReady(true);
         }

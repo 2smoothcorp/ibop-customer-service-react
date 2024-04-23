@@ -7,8 +7,6 @@ import SpouseInfo from "./CustomerInformation/SpouseInfo";
 
 export default function CustomerInformation() {
 
-    // useQuery({ queryKey: ['todos'], queryFn: () => getMasterDataOccupation() })
-
     return (
         <>
             <PersonalInfo />

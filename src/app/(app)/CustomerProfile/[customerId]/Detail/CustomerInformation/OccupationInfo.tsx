@@ -3,11 +3,13 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
-import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { handleEmptyStringFormApi } from "@/utils/function";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
+import { getMasterDataOccupation } from "../customerInformation.action";
 import { getOccupationInfo } from "./occupationInfo.action";
 
 export default function OccupationInfo() {
@@ -22,6 +24,8 @@ export default function OccupationInfo() {
     } = useForm<SubmitInput>()
     const [isReady, setIsReady] = React.useState<boolean>(false);
     const [isEditable, setIsEditable] = React.useState<boolean>(false);
+
+    const { data: occupations } = useQuery({ queryKey: ['masterDataOccupation'], queryFn: () => getMasterDataOccupation() })
 
     const [getOccupationInfoState, getOccupationInfoAction] = useFormState(getOccupationInfo, {
         dataOccupation: undefined,
@@ -41,7 +45,6 @@ export default function OccupationInfo() {
             // console.log(data?.data?.addressInfoModel);
             if (dataAddress?.data && dataAddress?.data?.addressInfoModel) {
                 const { data: { addressInfoModel } } = dataAddress;
-                // console.log(addressInfoModel);
                 setValue('addressNo', handleEmptyStringFormApi(addressInfoModel?.addressNo));
                 setValue('moo', handleEmptyStringFormApi(addressInfoModel?.moo));
                 setValue('buildingOrVillage', handleEmptyStringFormApi(addressInfoModel?.buildingOrVillage));
@@ -49,16 +52,22 @@ export default function OccupationInfo() {
                 setValue('floor', handleEmptyStringFormApi(addressInfoModel?.floor));
                 setValue('soi', handleEmptyStringFormApi(addressInfoModel?.soi));
                 setValue('street', handleEmptyStringFormApi(addressInfoModel?.street));
-                setValue('country', !isEmptyStringFormApi(addressInfoModel?.countryCode) ? `${addressInfoModel?.countryCode} - ${addressInfoModel?.countryDesc}` : '-');
+                setValue('country', handleEmptyStringFormApi(addressInfoModel?.countryDesc));
                 setValue('zipCode', handleEmptyStringFormApi(addressInfoModel?.zipCode));
-                setValue('province', !isEmptyStringFormApi(addressInfoModel?.provinceCode) ? `${addressInfoModel?.provinceCode} - ${addressInfoModel?.provinceNameTh}` : '-');
-                setValue('district', !isEmptyStringFormApi(addressInfoModel?.districtCode) ? `${addressInfoModel?.districtCode} - ${addressInfoModel?.districtNameTh}` : '-');
-                setValue('subDistrict', !isEmptyStringFormApi(addressInfoModel?.subDistrictCode) ? `${addressInfoModel?.subDistrictCode} - ${addressInfoModel?.subDistrictNameTh}` : '-');
+                setValue('province', handleEmptyStringFormApi(addressInfoModel?.provinceNameTh));
+                setValue('district', handleEmptyStringFormApi(addressInfoModel?.districtNameTh));
+                setValue('subDistrict', handleEmptyStringFormApi(addressInfoModel?.subDistrictNameTh));
             }
-            if (dataOccupation?.data && dataOccupation?.data?.occupationInfo) {
+            if (dataOccupation?.data && dataOccupation?.data?.occupationInfo && occupations?.data && occupations?.data?.data) {
                 const { data: { occupationInfo } } = dataOccupation
+                const { data: { data: occupationList } } = occupations;
                 // console.log(occupationInfo)
-                setValue('occupationCode', occupationInfo.occupationCode ?? '-');
+                const occupation = occupationList.find((item) => item.rValue === occupationInfo.occupationCode);
+                if (occupation) {
+                    setValue('occupation', `${occupation.rValue} - ${occupation.rText}`);
+                } else {
+                    setValue('occupation', occupationInfo.occupationCode ?? '-');
+                }
                 setValue('jobWorkPlace', handleEmptyStringFormApi(occupationInfo.jobWorkPlace));
                 setValue('jobPosition', handleEmptyStringFormApi(occupationInfo.jobPosition));
                 setValue('jobDepartment', handleEmptyStringFormApi(occupationInfo.jobDepartment));
@@ -94,10 +103,10 @@ export default function OccupationInfo() {
                     allGridCols="grid-cols-6"
                     inputCol="col-span-5"
                     label="อาชีพ"
-                    defaultValue={getValues('occupationCode')}
+                    defaultValue={getValues('occupation')}
                     isEditable={isEditable}
                     register={register}
-                    name="occupationCode"
+                    name="occupation"
                 />
                 <div className="grid grid-cols-3">
 
@@ -219,7 +228,7 @@ export default function OccupationInfo() {
 }
 
 interface SubmitInput {
-    occupationCode: string;
+    occupation: string;
     jobWorkPlace: string;
     jobPosition: string;
     jobDepartment: string;
