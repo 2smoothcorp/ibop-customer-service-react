@@ -4,7 +4,7 @@ import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { AddressInfoModel, AddressInfoResponseDataResponse, ComboBox, ComboBoxListDataResponse, OccupationInfoModel, OccupationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi } from "@/utils/function";
+import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -102,7 +102,7 @@ export default function OccupationInfo() {
             case 'street':
                 return occupation.addressInfoModel && handleEmptyStringFormApi(occupation.addressInfoModel.street) || '-';
             case 'country':
-                return occupation.addressInfoModel && handleEmptyStringFormApi(occupation.addressInfoModel.countryDesc) || '-';
+                return occupation.addressInfoModel && (isEmptyStringFormApi(occupation.addressInfoModel.countryCode) ? '-' : `${occupation.addressInfoModel.countryCode} - ${occupation.addressInfoModel.countryDesc}`) || '-';
             case 'zipCode':
                 return occupation.addressInfoModel && handleEmptyStringFormApi(occupation.addressInfoModel.zipCode) || '-';
             case 'province':
