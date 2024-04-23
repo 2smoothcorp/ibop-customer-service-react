@@ -13,17 +13,19 @@ import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import { searchCustomerInfo } from "./customerProfile.action";
 
+interface SearchParams {
+  corporateID?: string
+  referenceID?: string
+  fullName?: string
+  emailNumber?: string
+  pageIndex?: string | number
+  pageSize?: string | number
+}
+
 const CustomerInfoPage = ({
   searchParams
 }: {
-  searchParams?: { 
-    corporateID?: string 
-    referenceID?: string 
-    fullName?: string 
-    emailNumber?: string 
-    pageIndex?: string 
-    pageSize?: string 
-  }
+  searchParams?: SearchParams
 }) => {
 
   console.log(`page`, searchParams?.pageIndex)
@@ -42,40 +44,14 @@ const CustomerInfoPage = ({
     error: undefined
   })
 
-  const [ isLoading, setIsLOading ] = useState<boolean>(false)
+  const [isLoading, setIsLOading] = useState<boolean>(false)
 
   const prepareBeforeSendAction = (formData: FormData) => {
-    //console.log(formData)
-    const corporateID = formData.get('corporateID') as string || '';
-    const referenceID = formData.get('referenceID') as string || '';
-    const fullName = formData.get('fullName') as string || '';
-    const emailNumber = formData.get('emailNumber') as string || '';
-    const pageIndex = formData.get('pageIndex') || 1;
-    const pageSize = formData.get('pageSize') || paginationModel.pageSize;
-
-    formData.set('pageIndex', pageIndex.toString());
-    formData.set('pageSize', pageSize.toString());
-
-    const queryParams = {
-      corporateID,
-      referenceID,
-      fullName,
-      emailNumber,
-      pageIndex,
-      pageSize
-    }
-
-    const params = Object.keys(queryParams)
-    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
-    .join('&');
-
-    //searchCustomerInfoAction(formData)
     setPaginationModel((prev) => ({
       ...prev,
       page: 1,
     })
     )
-    //router.push(`/CustomerProfile?${params}`)
   }
 
 
