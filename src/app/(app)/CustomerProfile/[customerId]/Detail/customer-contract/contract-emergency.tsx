@@ -62,23 +62,6 @@ export default function ContractEmergency() {
                 setValue('relationship3', normalizationData('relationship', item));
             }
         }
-        // setValue('docReceiveChannel', handleEmptyStringFormApi(addressInfo.docReceiveChannel));
-        // setValue('addressNo', normalizationData('addressNo', addressInfo));
-        // setValue('moo', normalizationData('moo', addressInfo));
-        // setValue('buildingOrVillage', normalizationData('buildingOrVillage', addressInfo));
-        // setValue('roomNo', normalizationData('roomNo', addressInfo));
-        // setValue('floor', normalizationData('floor', addressInfo));
-        // setValue('soi', normalizationData('soi', addressInfo));
-        // setValue('street', normalizationData('street', addressInfo));
-        // setValue('countryCode', normalizationData('countryCode', addressInfo));
-        // setValue('country', normalizationData('country', addressInfo));
-        // setValue('zipCode', normalizationData('zipCode', addressInfo));
-        // setValue('province', normalizationData('province', addressInfo));
-        // setValue('district', normalizationData('district', addressInfo));
-        // setValue('subDistrict', normalizationData('subDistrict', addressInfo));
-        // setValue('mobileNo', normalizationData('mobileNo', addressInfo));
-        // setValue('officeNo', normalizationData('officeNo', addressInfo));
-        // setValue('email', normalizationData('email', addressInfo));
     }
 
     const getData = async () => {
