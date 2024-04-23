@@ -3,15 +3,23 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
+import { PersonalInfoModel, PersonalInfoResponseDataResponse } from "@/services/rest-api/customer-service";
+import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import React from "react";
-import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
-import { getPersonalInfo } from "./personalInfo.action";
 
 export default function PersonalInfo() {
     const params = useParams()
+    const [isEditable, setIsEditable] = React.useState<boolean>(false);
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['personalInfo', params.customerId],
+        queryFn: () => getData(),
+    })
+
     const {
         register,
         handleSubmit,
@@ -20,52 +28,78 @@ export default function PersonalInfo() {
         setValue,
         getValues,
     } = useForm<SubmitInput>()
-    const [isReady, setIsReady] = React.useState<boolean>(false)
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
 
-    const [getPersonalInfoState, getPersonalInfoAction] = useFormState(getPersonalInfo, {
-        data: undefined,
-        success: false,
-        error: undefined
-    })
-
-    React.useEffect(() => {
-        if (!getPersonalInfoState.success && getPersonalInfoState?.error) {
-            setIsReady(true);
+    const normalizationData = (name: string, personalInfo: PersonalInfoModel): string => {
+        switch (name) {
+            case 'personType':
+                return personalInfo.personTypeCode !== '-' ? `${personalInfo.personTypeCode} - ${personalInfo.personTypeDesc}` : '-';
+            case 'referenceTypeDesc':
+                return handleEmptyStringFormApi(personalInfo.referenceTypeDesc);
+            case 'referenceID':
+                return handleEmptyStringFormApi(personalInfo.referenceID);
+            case 'country':
+                return personalInfo.countryCode ? `${personalInfo.countryCode} - ${personalInfo.countryNameTh || personalInfo.countryNameEn}` : '-';
+            case 'nation':
+                return personalInfo.nationalityCode ? `${personalInfo.nationalityCode} - ${personalInfo.nationDesc}` : '-';
+            case 'identityExpireDate':
+                return !isEmptyStringFormApi(personalInfo.identityExpireDate) ? dayjs(personalInfo.identityExpireDate).format('DD/MM/YYYY') : '-';
+            case 'gender':
+                return personalInfo.genderCode ? `${personalInfo.genderCode} - ${personalInfo.gender}` : '-';
+            case 'title':
+                return personalInfo.titleCodeTh ? `${personalInfo.titleCodeTh} - ${personalInfo.titleNameTh || personalInfo.titleNameEn}` : '-';
+            case 'firstNameTh':
+                return handleEmptyStringFormApi(personalInfo.firstNameTh);
+            case 'lastNameTh':
+                return handleEmptyStringFormApi(personalInfo.lastNameTh);
+            case 'firstNameEn':
+                return handleEmptyStringFormApi(personalInfo.firstNameEn);
+            case 'lastNameEn':
+                return handleEmptyStringFormApi(personalInfo.lastNameEn);
+            case 'birthDate':
+                return !isEmptyStringFormApi(personalInfo.birthDate) ? dayjs(personalInfo.birthDate).format('DD/MM/YYYY') : '-';
+            default:
+                return '-';
         }
-        if (getPersonalInfoState.success) {
-            const { data } = getPersonalInfoState
-            if (data?.data && data?.data?.personalInfo) {
-                const { data: { personalInfo } } = data
-                // console.log(personalInfo)
-                setValue('personType', personalInfo.personTypeCode !== '-' ? `${personalInfo.personTypeCode} - ${personalInfo.personTypeDesc}` : '-');
-                setValue('referenceTypeDesc', personalInfo.referenceTypeDesc ?? '-');
-                setValue('referenceID', personalInfo.referenceID ?? '-');
-                setValue('country', personalInfo.countryCode ? `${personalInfo.countryCode} - ${personalInfo.countryNameTh || personalInfo.countryNameEn}` : '-');
-                setValue('nation', personalInfo.nationalityCode ? `${personalInfo.nationalityCode} - ${personalInfo.nationDesc}` : '-');
-                setValue('identityExpireDate', personalInfo.identityExpireDate?.toString() ?? '-');
-                setValue('gender', personalInfo.genderCode ? `${personalInfo.genderCode} - ${personalInfo.gender}` : '-')
-                setValue('title', personalInfo.titleCodeTh ? `${personalInfo.titleCodeTh} - ${personalInfo.titleNameTh || personalInfo.titleNameEn}` : '-');
-                setValue('firstNameTh', personalInfo.firstNameTh ?? '-');
-                setValue('lastNameTh', personalInfo.lastNameTh ?? '-');
-                setValue('firstNameEn', personalInfo.firstNameEn ?? '-');
-                setValue('lastNameEn', personalInfo.lastNameEn ?? '-');
-                setValue('birthDate', personalInfo.birthDate ? dayjs(personalInfo.birthDate).format('DD/MM/YYYY') : '-');
-            }
-            setIsReady(true);
+    }
+
+    const setDefaultData = (personalInfo: PersonalInfoModel) => {
+        setValue('personType', normalizationData('personType', personalInfo));
+        setValue('referenceTypeDesc', normalizationData('referenceTypeDesc', personalInfo));
+        setValue('referenceID', normalizationData('referenceID', personalInfo));
+        setValue('country', normalizationData('country', personalInfo));
+        setValue('nation', normalizationData('nation', personalInfo));
+        setValue('identityExpireDate', normalizationData('identityExpireDate', personalInfo));
+        setValue('gender', normalizationData('gender', personalInfo));
+        setValue('title', normalizationData('title', personalInfo));
+        setValue('firstNameTh', normalizationData('firstNameTh', personalInfo));
+        setValue('lastNameTh', normalizationData('lastNameTh', personalInfo));
+        setValue('firstNameEn', normalizationData('firstNameEn', personalInfo));
+        setValue('lastNameEn', normalizationData('lastNameEn', personalInfo));
+        setValue('birthDate', normalizationData('birthDate', personalInfo));
+    }
+
+    const getData = async () => {
+        if (data) {
+            setDefaultData(data)
         }
-
-    }, [getPersonalInfoState])
-
-    React.useEffect(() => {
         const { customerId } = params
         if (customerId) {
-            const formData = new FormData();
-            formData.append('corporateId', customerId as string)
-            getPersonalInfoAction(formData)
+            try {
+                const request = await fetch(`/api/customer-profile/personal-info/${customerId}`, { method: 'GET' });
+                const response: PersonalInfoResponseDataResponse = await request.json();
+                if (response.status == 200) {
+                    const { data } = response;
+                    if (data && data.personalInfo) {
+                        setDefaultData(data.personalInfo)
+                        return data.personalInfo
+                    }
+                }
+            } catch (error) {
+                throw error
+            }
         }
-        // console.log('router.query', params)
-    }, []);
+        return null
+    }
 
     return (
         <>
@@ -74,13 +108,13 @@ export default function PersonalInfo() {
                 title="ข้อมูลส่วนตัว"
             />
             <ContentLoading
-                isLoading={!getPersonalInfoState.data && getPersonalInfoState.error === undefined && !isReady}
-                error={getPersonalInfoState.error || null}
+                isLoading={isLoading}
+                error={error ? error.message : undefined}
             >
                 <div className="grid grid-cols-3">
                     <InputHorizontal
                         label="ประเภทลูกค้า"
-                        defaultValue={getValues('personType')}
+                        defaultValue={data && normalizationData('personType', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="personType"
@@ -88,7 +122,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="ประเภทหลักฐานลูกค้า"
-                        defaultValue={getValues('referenceTypeDesc')}
+                        defaultValue={data && normalizationData('referenceTypeDesc', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="referenceTypeDesc"
@@ -96,7 +130,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="เลขที่บัตร"
-                        defaultValue={getValues('referenceID')}
+                        defaultValue={data && normalizationData('referenceID', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="referenceID"
@@ -104,7 +138,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="ประเทศที่ออกบัตร"
-                        defaultValue={getValues('country')}
+                        defaultValue={data && normalizationData('country', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="country"
@@ -112,7 +146,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="ประเทศเจ้าของสัญชาติ"
-                        defaultValue={getValues('nation')}
+                        defaultValue={data && normalizationData('nation', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="nation"
@@ -120,7 +154,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="วันที่หมดอายุบัตร (ค.ศ.)"
-                        defaultValue={getValues('identityExpireDate')}
+                        defaultValue={data && normalizationData('identityExpireDate', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="identityExpireDate"
@@ -128,7 +162,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="คำนำหน้า"
-                        defaultValue={getValues('title')}
+                        defaultValue={data && normalizationData('title', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="title"
@@ -136,7 +170,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="ชื่อ (ภาษาไทย)"
-                        defaultValue={getValues('firstNameTh')}
+                        defaultValue={data && normalizationData('firstNameTh', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="firstNameTh"
@@ -144,7 +178,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="นามสกุล (ภาษาไทย)"
-                        defaultValue={getValues('lastNameTh')}
+                        defaultValue={data && normalizationData('lastNameTh', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="lastNameTh"
@@ -158,7 +192,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="ชื่อ (ภาษาอังกฤษ)"
-                        defaultValue={getValues('firstNameEn')}
+                        defaultValue={data && normalizationData('firstNameEn', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="firstNameEn"
@@ -166,7 +200,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="นามสกุล (ภาษาอังกฤษ)"
-                        defaultValue={getValues('lastNameEn')}
+                        defaultValue={data && normalizationData('lastNameEn', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="lastNameEn"
@@ -174,7 +208,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="เพศ"
-                        defaultValue={getValues('gender')}
+                        defaultValue={data && normalizationData('gender', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="gender"
@@ -182,7 +216,7 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="วัน/เดือน/ปีเกิด (ค.ศ.)"
-                        defaultValue={getValues('birthDate')}
+                        defaultValue={data && normalizationData('birthDate', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="birthDate"

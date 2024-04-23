@@ -3,12 +3,12 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
+import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi } from "@/utils/function";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
-import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
-import { getAddressByType } from "./addressByType.action";
 
 export default function AddressByType() {
     const params = useParams()
@@ -20,51 +20,84 @@ export default function AddressByType() {
         setValue,
         getValues,
     } = useForm<SubmitInput>()
-    const [isReady, setIsReady] = React.useState<boolean>(false);
     const [isEditable, setIsEditable] = React.useState<boolean>(false);
 
-    const [getAddressByTypeState, getAddressByTypeAction] = useFormState(getAddressByType, {
-        data: undefined,
-        success: false,
-        error: undefined
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['addressByType', params.customerId],
+        queryFn: () => getData(),
     })
 
-    React.useEffect(() => {
-        if (!getAddressByTypeState.success && getAddressByTypeState?.error) {
-            setIsReady(true);
-        }
-        // console.log('getAddressByTypeState', getAddressByTypeState)
-        if (getAddressByTypeState.success) {
-            const { data } = getAddressByTypeState
-            // console.log(data?.data?.addressInfoModel);
-            if (data?.data && data?.data?.addressInfoModel) {
-                const { data: { addressInfoModel } } = data;
-                // console.log(addressInfoModel);
-                setValue('addressNo', handleEmptyStringFormApi(addressInfoModel?.addressNo));
-                setValue('moo', handleEmptyStringFormApi(addressInfoModel?.moo));
-                setValue('buildingOrVillage', handleEmptyStringFormApi(addressInfoModel?.buildingOrVillage));
-                setValue('roomNo', handleEmptyStringFormApi(addressInfoModel?.roomNo));
-                setValue('floor', handleEmptyStringFormApi(addressInfoModel?.floor));
-                setValue('soi', handleEmptyStringFormApi(addressInfoModel?.soi));
-                setValue('street', handleEmptyStringFormApi(addressInfoModel?.street));
-                setValue('country', handleEmptyStringFormApi(addressInfoModel?.countryDesc));
-                setValue('zipCode', handleEmptyStringFormApi(addressInfoModel?.zipCode));
-                setValue('province', handleEmptyStringFormApi(addressInfoModel?.provinceNameTh));
-                setValue('district', handleEmptyStringFormApi(addressInfoModel?.districtNameTh));
-                setValue('subDistrict', handleEmptyStringFormApi(addressInfoModel?.subDistrictNameTh));
-            }
-            setIsReady(true);
-        }
-    }, [getAddressByTypeState])
+    const normalizationData = (name: string, addressInfo: AddressInfoModel): any => {
+        switch (name) {
+            case 'addressNo':
+                return handleEmptyStringFormApi(addressInfo.addressNo);
+            case 'moo':
+                return handleEmptyStringFormApi(addressInfo.moo);
+            case 'buildingOrVillage':
+                return handleEmptyStringFormApi(addressInfo.buildingOrVillage);
+            case 'roomNo':
+                return handleEmptyStringFormApi(addressInfo.roomNo);
+            case 'floor':
+                return handleEmptyStringFormApi(addressInfo.floor);
+            case 'soi':
+                return handleEmptyStringFormApi(addressInfo.soi);
+            case 'street':
+                return handleEmptyStringFormApi(addressInfo.street);
+            case 'country':
+                return handleEmptyStringFormApi(addressInfo.countryDesc);
+            case 'zipCode':
+                return handleEmptyStringFormApi(addressInfo.zipCode);
+            case 'province':
+                return handleEmptyStringFormApi(addressInfo.provinceNameTh);
+            case 'district':
+                return handleEmptyStringFormApi(addressInfo.districtNameTh);
+            case 'subDistrict':
+                return handleEmptyStringFormApi(addressInfo.subDistrictNameTh);
 
-    React.useEffect(() => {
+            default:
+                return '-';
+        }
+    }
+
+    const setDefaultData = (addressInfo: AddressInfoModel) => {
+        setValue('addressNo', normalizationData('addressNo', addressInfo));
+        setValue('moo', normalizationData('moo', addressInfo));
+        setValue('buildingOrVillage', normalizationData('buildingOrVillage', addressInfo));
+        setValue('roomNo', normalizationData('roomNo', addressInfo));
+        setValue('floor', normalizationData('floor', addressInfo));
+        setValue('soi', normalizationData('soi', addressInfo));
+        setValue('street', normalizationData('street', addressInfo));
+        setValue('country', normalizationData('country', addressInfo));
+        setValue('zipCode', normalizationData('zipCode', addressInfo));
+        setValue('province', normalizationData('province', addressInfo));
+        setValue('district', normalizationData('district', addressInfo));
+        setValue('subDistrict', normalizationData('subDistrict', addressInfo));
+    }
+
+    const getData = async () => {
+        if (data) {
+            setDefaultData(data)
+        }
         const { customerId } = params
         if (customerId) {
-            const formData = new FormData();
-            formData.append('corporateId', customerId as string)
-            getAddressByTypeAction(formData)
+            try {
+                const request = await fetch(`/api/customer-profile/address-info/${customerId}/01`, { method: 'GET' });
+                const response: AddressInfoResponseDataResponse = await request.json();
+                if (response.status == 200) {
+                    const { data } = response;
+
+                    if (data && data.addressInfoModel) {
+                        setDefaultData(data.addressInfoModel)
+                        return data.addressInfoModel
+                    }
+                }
+            } catch (error) {
+                console.error('error', error)
+                throw error
+            }
         }
-    }, []);
+        return null
+    }
 
     return (
         <>
@@ -73,63 +106,63 @@ export default function AddressByType() {
                 title="ที่อยู่ตามประเภทหลักฐาน"
             />
             <ContentLoading
-                isLoading={!getAddressByTypeState.data && getAddressByTypeState.error === undefined && !isReady}
-                error={getAddressByTypeState.error || null}
+                isLoading={isLoading}
+                error={error && error.message || undefined}
                 hight={184}
             >
                 <div className="grid grid-cols-3">
                     <InputHorizontal
                         label="เลขที่"
-                        defaultValue={getValues('addressNo')}
+                        defaultValue={data && normalizationData('addressNo', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="addressNo"
                     />
                     <InputHorizontal
                         label="หมู่ที่"
-                        defaultValue={getValues('moo')}
+                        defaultValue={data && normalizationData('moo', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="moo"
                     />
                     <InputHorizontal
                         label="หมู่บ้าน / อาคาร"
-                        defaultValue={getValues('buildingOrVillage')}
+                        defaultValue={data && normalizationData('buildingOrVillage', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="buildingOrVillage"
                     />
                     <InputHorizontal
                         label="ห้อง"
-                        defaultValue={getValues('roomNo')}
+                        defaultValue={data && normalizationData('roomNo', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="roomNo"
                     />
                     <InputHorizontal
                         label="ชั้น"
-                        defaultValue={getValues('floor')}
+                        defaultValue={data && normalizationData('floor', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="floor"
                     />
                     <InputHorizontal
                         label="ตรอก / ซอย"
-                        defaultValue={getValues('soi')}
+                        defaultValue={data && normalizationData('soi', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="soi"
                     />
                     <InputHorizontal
                         label="ถนน"
-                        defaultValue={getValues('street')}
+                        defaultValue={data && normalizationData('street', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="street"
                     />
                     <InputHorizontal
                         label="ประเทศ"
-                        defaultValue={getValues('country')}
+                        defaultValue={data && normalizationData('country', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="country"
@@ -137,7 +170,7 @@ export default function AddressByType() {
                     />
                     <InputHorizontal
                         label="รหัสไปรษณีย์"
-                        defaultValue={getValues('zipCode')}
+                        defaultValue={data && normalizationData('zipCode', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="zipCode"
@@ -145,7 +178,7 @@ export default function AddressByType() {
                     />
                     <InputHorizontal
                         label="จังหวัด"
-                        defaultValue={getValues('province')}
+                        defaultValue={data && normalizationData('province', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="province"
@@ -153,7 +186,7 @@ export default function AddressByType() {
                     />
                     <InputHorizontal
                         label="อำเภอ / เขต"
-                        defaultValue={getValues('district')}
+                        defaultValue={data && normalizationData('district', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="district"
@@ -161,7 +194,7 @@ export default function AddressByType() {
                     />
                     <InputHorizontal
                         label="ตำบล / แขวง"
-                        defaultValue={getValues('subDistrict')}
+                        defaultValue={data && normalizationData('subDistrict', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="subDistrict"
