@@ -11,6 +11,7 @@ import CustomerContract from "./customer-contract"
 import CustomerInformation from "./customer-information"
 import EDividend from "./e-dividend"
 import FATCA from "./fatca"
+import FinancialInformation from "./financial-information"
 
 export default function DetailPage() {
     const stepper = [
@@ -24,7 +25,7 @@ export default function DetailPage() {
         },
         {
             title: "ข้อมูลทางการเงิน",
-            component: <div>Content3</div>
+            component: <FinancialInformation />
         },
         {
             title: "ผู้รับผลประโยชน์ที่แท้จริง",
