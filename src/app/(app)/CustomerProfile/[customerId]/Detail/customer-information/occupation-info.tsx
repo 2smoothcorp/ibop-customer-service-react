@@ -24,7 +24,7 @@ export default function OccupationInfo() {
 
     const { data: occupations, } = useQuery({
         queryKey: ['masterDataOccupation'], queryFn: async () => {
-            const request = await fetch(`/api/customer-profile/master-data/occupation`, { method: 'GET' });
+            const request = await fetch(`/api/master-data/occupation`, { method: 'GET' });
             const response: ComboBoxListDataResponse = await request.json();
             if (response.status === 200) {
                 return response.data;
@@ -39,7 +39,7 @@ export default function OccupationInfo() {
                 setDefaultData(data);
             }
             const { customerId } = params
-            const requestMasterData = await fetch(`/api/customer-profile/master-data/occupation`, { method: 'GET' });
+            const requestMasterData = await fetch(`/api/master-data/occupation`, { method: 'GET' });
             const responseMasterData: ComboBoxListDataResponse = await requestMasterData.json();
             const requestOccupation = await fetch(`/api/customer-profile/occupation/${customerId}`, { method: 'GET' });
             const responseOccupation: OccupationInfoResponseDataResponse = await requestOccupation.json();
