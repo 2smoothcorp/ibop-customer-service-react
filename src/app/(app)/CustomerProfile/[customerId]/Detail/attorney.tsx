@@ -1,10 +1,12 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
+import useMasterDataProduct from "@/hooks/masterDataProduct";
 import { AttorneyInfoModel, AttorneyInfoResponse, AttorneyInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { ApiResponse } from "@/type/api";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 interface DetailSection {
     name?: string
@@ -158,30 +160,24 @@ const AttorneySection = () => {
     const search = useSearchParams()
     const params = useParams()
 
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [data, setData] = useState<AttorneyInfoResponseDataResponse>()
-
     const [isEditable, setIsEditable] = React.useState<boolean>(false);
 
-    useEffect(() => {
-        getAttorney()
-    }, [])
-
-    const getAttorney = async () => {
-        try {
-            setIsLoading(true)
-            const request = await fetch(`/api/customer-profile/attorney/${params.customerId}`)
-            const response: ApiResponse<AttorneyInfoResponseDataResponse> = await request.json();
-            console.log(`response`, response)
-            if (response.success) {
-                setData(response.data)
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['attorneyInfo', params.customerId],
+        queryFn: async function () {
+            try {
+                const request = await fetch(`/api/customer-profile/attorney/${params.customerId}`)
+                const response: ApiResponse<AttorneyInfoResponseDataResponse> = await request.json();
+                console.log(`response`, response)
+                return response.data
+            } catch (e) {
+            } finally {
             }
-        } catch (e) {
-
-        } finally {
-            setIsLoading(false)
         }
-    }
+    })
+
+    const masterDataProduct = useMasterDataProduct();
+    console.log(`masterDataProduct`, masterDataProduct.data)
 
     return (
         <ContentLoading
@@ -194,7 +190,7 @@ const AttorneySection = () => {
 
             <div className="flex flex-col">
                 <span className="mx-4 font-bold">ท่านเป็นผู้มีสถานภาพทางการเมืองหรือเป็นสมาชิกในครอบครัว หรือเป็นผู้ใกล้ชิดกับบุคคลผู้มีสถานภาพทางการเมืองหรือไม่ * </span>
-                <span className="mx-4">ไม่มี</span>
+                <span className="mx-4">{(data?.data?.attorneyInfo || []).length === 0 ? 'ไม่มี' : 'มี'}</span>
             </div>
             {
                 data?.data?.attorneyInfo?.map((attorneyInfo, index) => {
@@ -254,8 +250,12 @@ const AttorneySection = () => {
                             />
                             <div className="ml-14">
                                 {
-                                    attorneyInfo?.productCode?.map((productCode, idx) => {
-                                        return <div key={`productCode${idx}`}>{productCode}</div>
+                                    attorneyInfo?.productCode?.map((productCode: string, idx: number) => {
+                                        const product = masterDataProduct?.data?.filter((d) => d.rValue === productCode)[0]?.rText
+                                            || productCode
+                                        return <div key={`productCode${idx}`}>
+                                            {product}
+                                        </div>
                                     })
                                 }
                             </div>
