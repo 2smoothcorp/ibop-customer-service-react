@@ -9,6 +9,7 @@ import AttorneySection from "./attorney"
 import CustomerContract from "./customer-contract"
 import CustomerInformation from "./customer-information"
 import EDividend from "./e-dividend"
+import FATCA from "./fatca"
 
 export default function DetailPage() {
     const stepper = [
@@ -46,7 +47,7 @@ export default function DetailPage() {
         },
         {
             title: "FATCA - CRS",
-            component: <div>Content9</div>
+            component: <FATCA />
         },
         {
             title: "สรุปรายละเอียด",
