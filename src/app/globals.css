@@ -20,42 +20,15 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: #f8f9fc !important;
+  font-size: 16px;
 }
 
 * {
   font-family: var(--font-family);
-  font-size: 16px;
+  /* font-size: 16px; */
   letter-spacing: 0.5px;
   -webkit-font-smoothing: subpixel-antialiased;
   text-rendering: optimizeLegibility;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-.font-cordia-new {
-  font-family: 'Cordia New', sans-serif;
-}
-
-@font-face {
-  font-family: 'Cordia New';
-  src: url('../fonts/cordia_new.ttf');
-}
-
-.font-arial {
-  font-family: 'Arial', sans-serif;
-}
-
-@font-face {
-  font-family: 'Arial';
-  src: url('../fonts/arial.ttf');
-}
-
-.font-db-helvethaica {
-  font-family: 'DB Helvethaica', sans-serif;
 }
 
 @font-face {

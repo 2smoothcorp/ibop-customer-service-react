@@ -34,10 +34,10 @@ export default function ExitUSIndentity() {
       try {
         const request = await fetch(`/api/customer-profile/fatca/tins/${customerId}`, { method: 'GET' });
         const response: TinInfoOutput = await request.json();
-        const { tins, isFatcaIndividualSelfCert } = response;
-        setValue('isFatcaIndividualSelfCert', isFatcaIndividualSelfCert || false)
+        const { isFatcaIndividualSelfCert } = response;
         if (response) {
-          return tins;
+          setValue('isFatcaIndividualSelfCert', isFatcaIndividualSelfCert || false)
+          return response;
         }
       } catch (error) {
         throw error
@@ -50,7 +50,7 @@ export default function ExitUSIndentity() {
     <>
       <HeaderTitle
         className="gap-0"
-        title="ส่วนที่ 1 สถานะความเป็นบุคคลอเมริกัน"
+        title="ส่วนที่ 2 ท่านเป็นผู้มีถิ่นที่อยู่ทางภาษีในประเทศอื่นๆนอกจากสหรัฐอเมริกา"
       />
       <ContentLoading
         isLoading={isLoading}
@@ -60,7 +60,7 @@ export default function ExitUSIndentity() {
         <div className="block px-10">
           <div className="flex justify-around items-center pb-4">
             {
-              isFATCA !== undefined && (
+              data?.isFatcaIndividualSelfCert !== undefined && (
                 <InputSwitch
                   label="สถานะ FATCA"
                   name="isFatcaIndividualSelfCert"
@@ -70,7 +70,7 @@ export default function ExitUSIndentity() {
               )
             }
             {
-              isFATCA && (
+              data?.isFatcaIndividualSelfCert && (
                 <Button
                   onClick={() => { console.log('open modal add new tin') }}
                   variant="contained"
@@ -80,11 +80,11 @@ export default function ExitUSIndentity() {
             }
           </div>
           {
-            isFATCA && (
+            data?.isFatcaIndividualSelfCert && (
               <DataGrid
                 loading={isLoading}
                 showCellVerticalBorder
-                rows={data || undefined}
+                rows={data.tins || undefined}
                 columns={columns}
                 autoHeight
                 pageSizeOptions={[]}
@@ -104,8 +104,6 @@ interface SubmitInput {
 
 const columns: GridColDef[] = [
   {
-    headerClassName: 'font-db-helvethaica text-[20px] bg-[#B9B9B9] bg-opacity-70',
-    cellClassName: 'font-cordia-new text-[18px]',
     field: 'TaxCountryCode',
     headerName: 'ประเทศถิ่นที่อยู่ทางภาษี',
     headerAlign: 'center',
@@ -113,8 +111,6 @@ const columns: GridColDef[] = [
     flex: 1,
   },
   {
-    headerClassName: 'font-db-helvethaica text-[20px] bg-[#B9B9B9] bg-opacity-70',
-    cellClassName: 'font-cordia-new text-[18px]',
     field: 'TinNo',
     headerName: 'หมายเลขประจำตัวผู้เสียภาษี',
     headerAlign: 'center',
@@ -122,8 +118,6 @@ const columns: GridColDef[] = [
     flex: 2,
   },
   {
-    headerClassName: 'font-db-helvethaica text-[20px] bg-[#B9B9B9] bg-opacity-70',
-    cellClassName: 'font-cordia-new text-[18px]',
     field: 'NoTinResonCode',
     headerName: 'หากไม่มีหมายเลขประจำตัวผู้เสียภาษี ระบุเหตุผล A, B, หรือ C',
     headerAlign: 'center',
@@ -131,8 +125,6 @@ const columns: GridColDef[] = [
     flex: 3,
   },
   {
-    headerClassName: 'font-db-helvethaica text-[20px] bg-[#B9B9B9] bg-opacity-70',
-    cellClassName: 'font-cordia-new text-[18px]',
     field: 'NoTinReasonRemark',
     headerName: 'หากท่านเลือกเหตุผล B โปรดอธิบายเหตุ...',
     headerAlign: 'center',

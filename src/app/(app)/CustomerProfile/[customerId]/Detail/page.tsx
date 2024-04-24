@@ -4,6 +4,7 @@
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
+import AccountInformation from "./account-information"
 import ATS from "./ats"
 import AttorneySection from "./attorney"
 import CustomerContract from "./customer-contract"
@@ -50,8 +51,8 @@ export default function DetailPage() {
             component: <FATCA />
         },
         {
-            title: "สรุปรายละเอียด",
-            component: <div>Content10</div>
+            title: "ข้อมูลบัญชี",
+            component: <AccountInformation />
         }
     ]
     const [stepIndex, setStepIndex] = React.useState(0)

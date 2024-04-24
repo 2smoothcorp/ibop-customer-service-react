@@ -4,7 +4,9 @@
 
 'use client'
 
-import { createTheme } from '@mui/material/styles';
+import type { } from '@mui/x-data-grid/themeAugmentation';
+
+import { createTheme } from "@mui/material";
 
 export const mainTheme = createTheme({
   direction: 'ltr',
@@ -60,5 +62,27 @@ export const mainTheme = createTheme({
   },
 
   /** Custom Component Specific Theme here */
-  // components: {}
+  components: {
+    MuiDataGrid: {
+      styleOverrides: {
+        root: {
+          // border: '1px solid #D1D5DB',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+          '& .MuiDataGrid-columnsContainer': {
+            backgroundColor: '#F9FAFB',
+            borderBottom: '1px solid #D1D5DB',
+            '& .MuiDataGrid-columnSeparator': {
+              display: 'none'
+            }
+          },
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: 'rgba(185,185,185, 0.15)',
+            color: '#000',
+            fontSize: '18px',
+            fontWeight: 700,
+          },
+        },
+      }
+    }
+  }
 });
