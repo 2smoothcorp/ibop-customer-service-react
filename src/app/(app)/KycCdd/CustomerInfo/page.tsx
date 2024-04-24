@@ -20,7 +20,7 @@ import Table from '@/components/table/table';
 
 import { search } from './actions';
 
-const KycCddCustomerInfoList = (): ReactElement => {
+const Page = (): ReactElement => {
   const [ tableDatasource, setTableDatasource ] = useState<Array<TableDataModel>>([]);
   const [ tableTotalItem, setTableTotalItem ] = useState(0);
   const [ tableTotalPage, setTableTotalPage ] = useState(0);
@@ -180,4 +180,4 @@ interface TableDataModel {
   createdBy: string;
 }
 
-export default KycCddCustomerInfoList;
+export default Page;
