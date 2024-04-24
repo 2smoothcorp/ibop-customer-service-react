@@ -4,23 +4,22 @@
 
 'use client'
 
+import { Button, Grid } from '@mui/material';
+import type { GridPaginationModel } from '@mui/x-data-grid';
+import { useParams, useRouter } from 'next/navigation';
 import {
   type ReactElement,
   Fragment,
   useEffect,
   useState
 } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Button, Grid } from '@mui/material';
-import type { GridPaginationModel } from '@mui/x-data-grid';
 
-import Navbar from '@/components/navbar/header-navbar';
 import Table from '@/components/table/table';
 // import DatePicker from '@/components/custom/input-date';
 
 import { search } from './actions';
 
-const KycCddCustomerInfoList = (): ReactElement => {
+const Page = (): ReactElement => {
   const [ tableDatasource, setTableDatasource ] = useState<Array<TableDataModel>>([]);
   const [ tableTotalItem, setTableTotalItem ] = useState(0);
   const [ tableTotalPage, setTableTotalPage ] = useState(0);
@@ -33,6 +32,10 @@ const KycCddCustomerInfoList = (): ReactElement => {
   const formActionSearch = async (data: FormData) => {
     const { items, totalItems, totalPages } = await search(data);
     console.log('formActionSearch', { items, totalItems, totalPages });
+  }
+
+  const onClickReviewButton = () => {
+    router.push(`/KycCdd/Review/Info`);
   }
 
   const renderTextInput = (name: string) => {
@@ -163,6 +166,13 @@ const KycCddCustomerInfoList = (): ReactElement => {
   return (
     <Fragment>
       { renderSearchPanel() }
+
+      <div className={'flex justify-end'}>
+        <Button variant={'contained'} onClick={ onClickReviewButton }>
+          ทบทวนกลุ่มความเสี่ยง
+        </Button>
+      </div>
+
       { renderTable() }
     </Fragment>
   );
@@ -179,4 +189,4 @@ interface TableDataModel {
   createdBy: string;
 }
 
-export default KycCddCustomerInfoList;
+export default Page;

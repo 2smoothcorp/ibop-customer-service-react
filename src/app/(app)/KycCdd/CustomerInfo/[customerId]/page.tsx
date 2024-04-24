@@ -18,7 +18,7 @@ import Navbar from '@/components/navbar/header-navbar';
 import DetailSection from '@/containers/detail-section/detail-section';
 import Table from '@/components/table/table';
 
-const KycCddCustomerInfoDetail = (): ReactElement => {
+const Page = (): ReactElement => {
   const [ tableDatasource, setTableDatasource ] = useState<Array<TableDataModel>>([]);
   const [ tableTotalItem, setTableTotalItem ] = useState(0);
   const [ tableTotalPage, setTableTotalPage ] = useState(0);
@@ -100,4 +100,4 @@ interface TableDataModel {
   score: number;
 }
 
-export default KycCddCustomerInfoDetail;
+export default Page;
