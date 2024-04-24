@@ -23,49 +23,49 @@ import {
 /**
  * 
  * @export
- * @interface KycPersonalInfoOutputDataResponse
+ * @interface KycPersonalInfoOutputListDataResponse
  */
-export interface KycPersonalInfoOutputDataResponse {
+export interface KycPersonalInfoOutputListDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof KycPersonalInfoOutputDataResponse
+     * @memberof KycPersonalInfoOutputListDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof KycPersonalInfoOutputDataResponse
+     * @memberof KycPersonalInfoOutputListDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof KycPersonalInfoOutputDataResponse
+     * @memberof KycPersonalInfoOutputListDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {KycPersonalInfoOutput}
-     * @memberof KycPersonalInfoOutputDataResponse
+     * @type {Array<KycPersonalInfoOutput>}
+     * @memberof KycPersonalInfoOutputListDataResponse
      */
-    data?: KycPersonalInfoOutput | null;
+    data?: Array<KycPersonalInfoOutput> | null;
 }
 
 /**
- * Check if a given object implements the KycPersonalInfoOutputDataResponse interface.
+ * Check if a given object implements the KycPersonalInfoOutputListDataResponse interface.
  */
-export function instanceOfKycPersonalInfoOutputDataResponse(value: object): boolean {
+export function instanceOfKycPersonalInfoOutputListDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function KycPersonalInfoOutputDataResponseFromJSON(json: any): KycPersonalInfoOutputDataResponse {
-    return KycPersonalInfoOutputDataResponseFromJSONTyped(json, false);
+export function KycPersonalInfoOutputListDataResponseFromJSON(json: any): KycPersonalInfoOutputListDataResponse {
+    return KycPersonalInfoOutputListDataResponseFromJSONTyped(json, false);
 }
 
-export function KycPersonalInfoOutputDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycPersonalInfoOutputDataResponse {
+export function KycPersonalInfoOutputListDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycPersonalInfoOutputListDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function KycPersonalInfoOutputDataResponseFromJSONTyped(json: any, ignore
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : KycPersonalInfoOutputFromJSON(json['data']),
+        'data': !exists(json, 'data') ? undefined : (json['data'] === null ? null : (json['data'] as Array<any>).map(KycPersonalInfoOutputFromJSON)),
     };
 }
 
-export function KycPersonalInfoOutputDataResponseToJSON(value?: KycPersonalInfoOutputDataResponse | null): any {
+export function KycPersonalInfoOutputListDataResponseToJSON(value?: KycPersonalInfoOutputListDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function KycPersonalInfoOutputDataResponseToJSON(value?: KycPersonalInfoO
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': KycPersonalInfoOutputToJSON(value.data),
+        'data': value.data === undefined ? undefined : (value.data === null ? null : (value.data as Array<any>).map(KycPersonalInfoOutputToJSON)),
     };
 }
 

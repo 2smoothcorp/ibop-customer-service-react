@@ -121,15 +121,12 @@ models/IsValidOutput.ts
 models/IsValidOutputDataResponse.ts
 models/KycBeneficiaryInfoOutput.ts
 models/KycBeneficiaryInfoOutputDataResponse.ts
-models/KycCustomerInputKycCustomerOutputPagination.ts
-models/KycCustomerOutput.ts
 models/KycPersonalInfoOutput.ts
 models/KycPersonalInfoOutputDataResponse.ts
+models/KycPersonalInfoOutputListDataResponse.ts
 models/KycResultOutput.ts
 models/KycResultResponse.ts
 models/KycResultResponseDataResponse.ts
-models/KycRiskLevelScoreOutput.ts
-models/KycRiskLevelScoreOutputDataResponse.ts
 models/KycSpouseInfoOutput.ts
 models/KycSpouseInfoOutputDataResponse.ts
 models/MaintenanceAccountOfficerPutRequest.ts
@@ -157,6 +154,9 @@ models/Relation.ts
 models/RequestCustomerInput.ts
 models/ReserveAccountNoInput.ts
 models/ReserveAccountNoOutput.ts
+models/RiskLevelResponse.ts
+models/RiskLevelResultResponse.ts
+models/RiskLevelResultResponseDataResponse.ts
 models/SaveTinInput.ts
 models/SelectProductGetAllOutputPagination.ts
 models/SelectProductRequest.ts

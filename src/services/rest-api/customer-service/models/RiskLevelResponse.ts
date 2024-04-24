@@ -16,109 +16,109 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface KycResultOutput
+ * @interface RiskLevelResponse
  */
-export interface KycResultOutput {
+export interface RiskLevelResponse {
     /**
      * 
      * @type {number}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     id?: number;
     /**
      * 
      * @type {number}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     applicantId?: number | null;
     /**
      * 
      * @type {number}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     ruleId?: number | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     firstNameTh?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     lastNameTh?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     firstNameEn?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     lastNameEn?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     ruleDescription?: string | null;
     /**
      * 
      * @type {number}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     riskLevel?: number | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     riskLevelDesc?: string | null;
     /**
      * 
      * @type {number}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     score?: number | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     remark?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     createdBy?: string | null;
     /**
      * 
      * @type {Date}
-     * @memberof KycResultOutput
+     * @memberof RiskLevelResponse
      */
     createdDate?: Date | null;
 }
 
 /**
- * Check if a given object implements the KycResultOutput interface.
+ * Check if a given object implements the RiskLevelResponse interface.
  */
-export function instanceOfKycResultOutput(value: object): boolean {
+export function instanceOfRiskLevelResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function KycResultOutputFromJSON(json: any): KycResultOutput {
-    return KycResultOutputFromJSONTyped(json, false);
+export function RiskLevelResponseFromJSON(json: any): RiskLevelResponse {
+    return RiskLevelResponseFromJSONTyped(json, false);
 }
 
-export function KycResultOutputFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycResultOutput {
+export function RiskLevelResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): RiskLevelResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -141,7 +141,7 @@ export function KycResultOutputFromJSONTyped(json: any, ignoreDiscriminator: boo
     };
 }
 
-export function KycResultOutputToJSON(value?: KycResultOutput | null): any {
+export function RiskLevelResponseToJSON(value?: RiskLevelResponse | null): any {
     if (value === undefined) {
         return undefined;
     }

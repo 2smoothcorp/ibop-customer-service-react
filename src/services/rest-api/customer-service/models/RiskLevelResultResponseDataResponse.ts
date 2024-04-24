@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { KycResultResponse } from './KycResultResponse';
+import type { RiskLevelResultResponse } from './RiskLevelResultResponse';
 import {
-    KycResultResponseFromJSON,
-    KycResultResponseFromJSONTyped,
-    KycResultResponseToJSON,
-} from './KycResultResponse';
+    RiskLevelResultResponseFromJSON,
+    RiskLevelResultResponseFromJSONTyped,
+    RiskLevelResultResponseToJSON,
+} from './RiskLevelResultResponse';
 
 /**
  * 
  * @export
- * @interface KycResultResponseDataResponse
+ * @interface RiskLevelResultResponseDataResponse
  */
-export interface KycResultResponseDataResponse {
+export interface RiskLevelResultResponseDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof KycResultResponseDataResponse
+     * @memberof RiskLevelResultResponseDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof KycResultResponseDataResponse
+     * @memberof RiskLevelResultResponseDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof KycResultResponseDataResponse
+     * @memberof RiskLevelResultResponseDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {KycResultResponse}
-     * @memberof KycResultResponseDataResponse
+     * @type {RiskLevelResultResponse}
+     * @memberof RiskLevelResultResponseDataResponse
      */
-    data?: KycResultResponse | null;
+    data?: RiskLevelResultResponse | null;
 }
 
 /**
- * Check if a given object implements the KycResultResponseDataResponse interface.
+ * Check if a given object implements the RiskLevelResultResponseDataResponse interface.
  */
-export function instanceOfKycResultResponseDataResponse(value: object): boolean {
+export function instanceOfRiskLevelResultResponseDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function KycResultResponseDataResponseFromJSON(json: any): KycResultResponseDataResponse {
-    return KycResultResponseDataResponseFromJSONTyped(json, false);
+export function RiskLevelResultResponseDataResponseFromJSON(json: any): RiskLevelResultResponseDataResponse {
+    return RiskLevelResultResponseDataResponseFromJSONTyped(json, false);
 }
 
-export function KycResultResponseDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycResultResponseDataResponse {
+export function RiskLevelResultResponseDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): RiskLevelResultResponseDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function KycResultResponseDataResponseFromJSONTyped(json: any, ignoreDisc
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : KycResultResponseFromJSON(json['data']),
+        'data': !exists(json, 'data') ? undefined : RiskLevelResultResponseFromJSON(json['data']),
     };
 }
 
-export function KycResultResponseDataResponseToJSON(value?: KycResultResponseDataResponse | null): any {
+export function RiskLevelResultResponseDataResponseToJSON(value?: RiskLevelResultResponseDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function KycResultResponseDataResponseToJSON(value?: KycResultResponseDat
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': KycResultResponseToJSON(value.data),
+        'data': RiskLevelResultResponseToJSON(value.data),
     };
 }
 
