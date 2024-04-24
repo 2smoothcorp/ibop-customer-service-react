@@ -38,13 +38,13 @@ export default function InputHorizontal({
             {
                 labelWidth
                     ? <div
-                        className="font-cordia-new text-lg px-4 font-semibold tracking-wide"
+                        className="text-lg px-4 font-semibold tracking-wide"
                         style={{
                             width: labelWidth,
                             textAlign: labelAlign,
                         }}>{label} {getRequired()}</div>
                     : (
-                        <div className="font-cordia-new w-full text-lg font-semibold text-right px-4 tracking-wide">{label} {getRequired()}</div>
+                        <div className="w-full text-lg font-semibold text-right px-4 tracking-wide">{label} {getRequired()}</div>
                     )
             }
             {
@@ -84,7 +84,7 @@ export default function InputHorizontal({
                             )
                     )
                     : (
-                        <div className={`font-cordia-new w-full text-lg font-medium ${inputCol}`}>
+                        <div className={`w-full text-lg font-medium ${inputCol}`}>
                             {
                                 type === "number"
                                     ? String(defaultValue).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')

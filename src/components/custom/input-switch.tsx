@@ -1,5 +1,5 @@
-import { FormControlLabel, MenuItem, Select, styled } from "@mui/material";
-import Switch, { SwitchProps } from '@mui/material/Switch';
+import { FormControlLabel, styled } from "@mui/material";
+import Switch from '@mui/material/Switch';
 
 export default function InputSwitch({
     name,
@@ -21,7 +21,7 @@ export default function InputSwitch({
                         name={name}
                     />
                 }
-                label={<div className="text-md font-cordia-new">{label}</div>}
+                label={<div className="text-md">{label}</div>}
             />
         </div>
 

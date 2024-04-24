@@ -4,8 +4,13 @@
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
-import AttorneySection from "./AttorneySection"
+import AccountInformation from "./account-information"
+import ATS from "./ats"
+import AttorneySection from "./attorney"
+import CustomerContract from "./customer-contract"
 import CustomerInformation from "./customer-information"
+import EDividend from "./e-dividend"
+import FATCA from "./fatca"
 
 export default function DetailPage() {
     const stepper = [
@@ -15,7 +20,7 @@ export default function DetailPage() {
         },
         {
             title: "ข้อมูลติดต่อ",
-            component: <div>Content2</div>
+            component: <CustomerContract />
         },
         {
             title: "ข้อมูลทางการเงิน",
@@ -27,11 +32,11 @@ export default function DetailPage() {
         },
         {
             title: "บัญชี ATS ",
-            component: <div>Content5</div>
+            component: <ATS />
         },
         {
             title: "e-Dividend",
-            component: <div>Content6</div>
+            component: <EDividend />
         },
         {
             title: "ผู้รับมอบอำนาจ",
@@ -43,11 +48,11 @@ export default function DetailPage() {
         },
         {
             title: "FATCA - CRS",
-            component: <div>Content9</div>
+            component: <FATCA />
         },
         {
-            title: "สรุปรายละเอียด",
-            component: <div>Content10</div>
+            title: "ข้อมูลบัญชี",
+            component: <AccountInformation />
         }
     ]
     const [stepIndex, setStepIndex] = React.useState(0)

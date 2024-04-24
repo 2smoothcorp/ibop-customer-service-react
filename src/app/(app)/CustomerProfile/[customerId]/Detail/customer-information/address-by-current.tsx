@@ -4,7 +4,7 @@ import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi } from "@/utils/function";
+import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -20,53 +20,7 @@ export default function AddressByCurrent() {
         setValue,
         getValues,
     } = useForm<SubmitInput>()
-    const [isReady, setIsReady] = React.useState<boolean>(false);
     const [isEditable, setIsEditable] = React.useState<boolean>(false);
-
-    // const [getAddressByCurrentState, getAddressByCurrentAction] = useFormState(getAddressByCurrent, {
-    //     data: undefined,
-    //     success: false,
-    //     error: undefined
-    // })
-
-    // React.useEffect(() => {
-    //     if (!getAddressByCurrentState.success && getAddressByCurrentState?.error) {
-    //         setIsReady(true);
-    //         // alert(getAddressByTypeState?.error)
-    //     }
-    //     if (getAddressByCurrentState.success) {
-    //         const { data } = getAddressByCurrentState
-    //         // console.log(data?.data?.addressInfoModel);
-    //         if (data?.data && data?.data?.addressInfoModel) {
-    //             const { data: { addressInfoModel } } = data;
-    //             // console.log(addressInfoModel);
-    //             setValue('addressNo', handleEmptyStringFormApi(addressInfoModel?.addressNo));
-    //             setValue('moo', handleEmptyStringFormApi(addressInfoModel?.moo));
-    //             setValue('buildingOrVillage', handleEmptyStringFormApi(addressInfoModel?.buildingOrVillage));
-    //             setValue('roomNo', handleEmptyStringFormApi(addressInfoModel?.roomNo));
-    //             setValue('floor', handleEmptyStringFormApi(addressInfoModel?.floor));
-    //             setValue('soi', handleEmptyStringFormApi(addressInfoModel?.soi));
-    //             setValue('street', handleEmptyStringFormApi(addressInfoModel?.street));
-    //             setValue('country', handleEmptyStringFormApi(addressInfoModel?.countryDesc));
-    //             setValue('zipCode', handleEmptyStringFormApi(addressInfoModel?.zipCode));
-    //             setValue('province', handleEmptyStringFormApi(addressInfoModel?.provinceNameTh));
-    //             setValue('district', handleEmptyStringFormApi(addressInfoModel?.districtNameTh));
-    //             setValue('subDistrict', handleEmptyStringFormApi(addressInfoModel?.subDistrictNameTh));
-    //         }
-    //         setIsReady(true);
-    //     }
-
-    // }, [getAddressByCurrentState])
-
-    // React.useEffect(() => {
-    //     const { customerId } = params
-    //     if (customerId) {
-    //         const formData = new FormData();
-    //         formData.append('corporateId', customerId as string)
-    //         getAddressByCurrentAction(formData)
-    //     }
-    // }, []);
-
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['addressByCurrent', params.customerId],
@@ -90,7 +44,7 @@ export default function AddressByCurrent() {
             case 'street':
                 return handleEmptyStringFormApi(addressInfo.street);
             case 'country':
-                return handleEmptyStringFormApi(addressInfo.countryDesc);
+                return isEmptyStringFormApi(addressInfo.countryCode) ? '-' : `${addressInfo.countryCode} - ${addressInfo.countryDesc}`;
             case 'zipCode':
                 return handleEmptyStringFormApi(addressInfo.zipCode);
             case 'province':

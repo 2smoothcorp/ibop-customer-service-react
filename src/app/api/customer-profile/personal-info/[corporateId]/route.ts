@@ -1,12 +1,7 @@
-/**
- *  API Route - Consent Answer
- */
-
 import { services } from '@/services';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(_: NextRequest, { params: { corporateId } }: ParamSegment) {
-    console.log('corporateId', corporateId)
     if (!corporateId) {
         return NextResponse.json({
             message: `[ERROR] /api/customer-profile/personal-info`,

@@ -1,7 +1,3 @@
-/**
- *  API Route - Consent Answer
- */
-
 import { services } from '@/services';
 import { NextRequest, NextResponse } from 'next/server';
 

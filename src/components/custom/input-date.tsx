@@ -1,8 +1,8 @@
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import dayjs from "dayjs";
-import { MobileDatePicker } from "@mui/x-date-pickers";
 
 export default function InputDate({
     defaultValue, // 2024-04-06
@@ -44,6 +44,7 @@ export default function InputDate({
                                 },
                             },
                         }}
+                        defaultValue={defaultValue}
                     />
                 </DemoContainer>
             </LocalizationProvider>

@@ -1,10 +1,10 @@
 
-export class Constants{
+export class Constants {
     public static AppCode: string = 'CustomerService';
     public static AppName: string = 'Customer Service';
 
     /** @note required to be double-quote, due to deployment reason */
-    public static AppVersion: string = "0.0.8";
+    public static AppVersion: string = "0.0.10";
 
     public static readonly APIUrl: string = process.env.BASE_URL || '';
     public static readonly VaultUrl: string = process.env.VAULT_URL || '';
