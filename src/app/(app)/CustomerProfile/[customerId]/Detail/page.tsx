@@ -4,6 +4,8 @@
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
+import Beneficiary from "../Beneficiary/page"
+import Consent from "../Consent/page"
 import AccountInformation from "./account-information"
 import ATS from "./ats"
 import AttorneySection from "./attorney"
@@ -29,7 +31,7 @@ export default function DetailPage() {
         },
         {
             title: "ผู้รับผลประโยชน์ที่แท้จริง",
-            component: <div>Content4</div>
+            component: <Consent />
         },
         {
             title: "บัญชี ATS ",
@@ -45,7 +47,7 @@ export default function DetailPage() {
         },
         {
             title: "ความยินยอมและวัตถุประสงค์อื่น",
-            component: <div>Content8</div>
+            component: <Beneficiary />
         },
         {
             title: "FATCA - CRS",

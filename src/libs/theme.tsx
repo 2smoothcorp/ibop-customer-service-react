@@ -63,6 +63,13 @@ export const mainTheme = createTheme({
 
   /** Custom Component Specific Theme here */
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontSize: '18px'
+        }
+      }
+    },
     MuiDataGrid: {
       styleOverrides: {
         root: {
@@ -81,6 +88,21 @@ export const mainTheme = createTheme({
             fontSize: '18px',
             fontWeight: 700,
           },
+          '& .MuiDataGrid-cell': {
+            fontSize: '18px',
+          },
+          '& .MuiTablePagination-selectLabel': {
+            fontSize: '18px',
+          },
+          '& .MuiInputBase-input': {
+            fontSize: '18px',
+          },
+          '& .MuiTablePagination-displayedRows': {
+            fontSize: '18px',
+          },
+          '& .MuiPaginationItem-page': {
+            fontSize: '18px',
+          }
         },
       }
     }
