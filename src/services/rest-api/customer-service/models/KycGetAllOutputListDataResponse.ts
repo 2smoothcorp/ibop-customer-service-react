@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { OccupationInfoResponse } from './OccupationInfoResponse';
+import type { KycGetAllOutput } from './KycGetAllOutput';
 import {
-    OccupationInfoResponseFromJSON,
-    OccupationInfoResponseFromJSONTyped,
-    OccupationInfoResponseToJSON,
-} from './OccupationInfoResponse';
+    KycGetAllOutputFromJSON,
+    KycGetAllOutputFromJSONTyped,
+    KycGetAllOutputToJSON,
+} from './KycGetAllOutput';
 
 /**
  * 
  * @export
- * @interface OccupationInfoResponseDataResponse
+ * @interface KycGetAllOutputListDataResponse
  */
-export interface OccupationInfoResponseDataResponse {
+export interface KycGetAllOutputListDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof OccupationInfoResponseDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof OccupationInfoResponseDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof OccupationInfoResponseDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {OccupationInfoResponse}
-     * @memberof OccupationInfoResponseDataResponse
+     * @type {Array<KycGetAllOutput>}
+     * @memberof KycGetAllOutputListDataResponse
      */
-    data?: OccupationInfoResponse | null;
+    data?: Array<KycGetAllOutput> | null;
 }
 
 /**
- * Check if a given object implements the OccupationInfoResponseDataResponse interface.
+ * Check if a given object implements the KycGetAllOutputListDataResponse interface.
  */
-export function instanceOfOccupationInfoResponseDataResponse(value: object): boolean {
+export function instanceOfKycGetAllOutputListDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function OccupationInfoResponseDataResponseFromJSON(json: any): OccupationInfoResponseDataResponse {
-    return OccupationInfoResponseDataResponseFromJSONTyped(json, false);
+export function KycGetAllOutputListDataResponseFromJSON(json: any): KycGetAllOutputListDataResponse {
+    return KycGetAllOutputListDataResponseFromJSONTyped(json, false);
 }
 
-export function OccupationInfoResponseDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): OccupationInfoResponseDataResponse {
+export function KycGetAllOutputListDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycGetAllOutputListDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function OccupationInfoResponseDataResponseFromJSONTyped(json: any, ignor
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : OccupationInfoResponseFromJSON(json['data']),
+        'data': !exists(json, 'data') ? undefined : (json['data'] === null ? null : (json['data'] as Array<any>).map(KycGetAllOutputFromJSON)),
     };
 }
 
-export function OccupationInfoResponseDataResponseToJSON(value?: OccupationInfoResponseDataResponse | null): any {
+export function KycGetAllOutputListDataResponseToJSON(value?: KycGetAllOutputListDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function OccupationInfoResponseDataResponseToJSON(value?: OccupationInfoR
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': OccupationInfoResponseToJSON(value.data),
+        'data': value.data === undefined ? undefined : (value.data === null ? null : (value.data as Array<any>).map(KycGetAllOutputToJSON)),
     };
 }
 

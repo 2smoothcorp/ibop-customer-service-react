@@ -123,10 +123,11 @@ models/IsValidOutputDataResponse.ts
 models/KycAddressInfoInput.ts
 models/KycBeneficiaryInfoOutput.ts
 models/KycBeneficiaryInfoOutputDataResponse.ts
+models/KycGetAllOutput.ts
+models/KycGetAllOutputListDataResponse.ts
 models/KycPersonalInfoInput.ts
 models/KycPersonalInfoOutput.ts
 models/KycPersonalInfoOutputDataResponse.ts
-models/KycPersonalInfoOutputListDataResponse.ts
 models/KycResultOutput.ts
 models/KycResultResponse.ts
 models/KycResultResponseDataResponse.ts
