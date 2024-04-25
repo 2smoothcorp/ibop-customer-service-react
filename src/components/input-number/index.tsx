@@ -30,7 +30,7 @@ export const InputNumber = (props: InputNumberProps): ReactElement => {
       inputMode={'numeric'}
       { ...props }
 
-      className={[  styles['number-input'], '' ].join(' ')}
+      className={[  styles['number-input'], props.className ].join(' ')}
 
       { ...registerHookForm() }
     />
