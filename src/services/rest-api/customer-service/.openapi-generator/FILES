@@ -134,7 +134,6 @@ models/KycResultResponseDataResponse.ts
 models/KycSpouseInfoInput.ts
 models/KycSpouseInfoOutput.ts
 models/KycSpouseInfoOutputDataResponse.ts
-models/KycUpdateAddressInfoCorporateIdPostRequest.ts
 models/KycUpdatePersonalInfoCorporateIdPostRequest.ts
 models/KycUpdateSpouseInfoCorporateIdPostRequest.ts
 models/MaintenanceAccountOfficerPutRequest.ts
