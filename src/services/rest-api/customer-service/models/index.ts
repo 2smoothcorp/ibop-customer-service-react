@@ -118,7 +118,6 @@ export * from './KycResultResponseDataResponse';
 export * from './KycSpouseInfoInput';
 export * from './KycSpouseInfoOutput';
 export * from './KycSpouseInfoOutputDataResponse';
-export * from './KycUpdateAddressInfoCorporateIdPostRequest';
 export * from './KycUpdatePersonalInfoCorporateIdPostRequest';
 export * from './KycUpdateSpouseInfoCorporateIdPostRequest';
 export * from './MaintenanceAccountOfficerPutRequest';
