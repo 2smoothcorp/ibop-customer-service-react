@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { BankInfoOutput } from './BankInfoOutput';
+import type { KycGetAllOutput } from './KycGetAllOutput';
 import {
-    BankInfoOutputFromJSON,
-    BankInfoOutputFromJSONTyped,
-    BankInfoOutputToJSON,
-} from './BankInfoOutput';
+    KycGetAllOutputFromJSON,
+    KycGetAllOutputFromJSONTyped,
+    KycGetAllOutputToJSON,
+} from './KycGetAllOutput';
 
 /**
  * 
  * @export
- * @interface BankInfoOutputListDataResponse
+ * @interface KycGetAllOutputListDataResponse
  */
-export interface BankInfoOutputListDataResponse {
+export interface KycGetAllOutputListDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof BankInfoOutputListDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof BankInfoOutputListDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof BankInfoOutputListDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {Array<BankInfoOutput>}
-     * @memberof BankInfoOutputListDataResponse
+     * @type {Array<KycGetAllOutput>}
+     * @memberof KycGetAllOutputListDataResponse
      */
-    data?: Array<BankInfoOutput> | null;
+    data?: Array<KycGetAllOutput> | null;
 }
 
 /**
- * Check if a given object implements the BankInfoOutputListDataResponse interface.
+ * Check if a given object implements the KycGetAllOutputListDataResponse interface.
  */
-export function instanceOfBankInfoOutputListDataResponse(value: object): boolean {
+export function instanceOfKycGetAllOutputListDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function BankInfoOutputListDataResponseFromJSON(json: any): BankInfoOutputListDataResponse {
-    return BankInfoOutputListDataResponseFromJSONTyped(json, false);
+export function KycGetAllOutputListDataResponseFromJSON(json: any): KycGetAllOutputListDataResponse {
+    return KycGetAllOutputListDataResponseFromJSONTyped(json, false);
 }
 
-export function BankInfoOutputListDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): BankInfoOutputListDataResponse {
+export function KycGetAllOutputListDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycGetAllOutputListDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function BankInfoOutputListDataResponseFromJSONTyped(json: any, ignoreDis
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : (json['data'] === null ? null : (json['data'] as Array<any>).map(BankInfoOutputFromJSON)),
+        'data': !exists(json, 'data') ? undefined : (json['data'] === null ? null : (json['data'] as Array<any>).map(KycGetAllOutputFromJSON)),
     };
 }
 
-export function BankInfoOutputListDataResponseToJSON(value?: BankInfoOutputListDataResponse | null): any {
+export function KycGetAllOutputListDataResponseToJSON(value?: KycGetAllOutputListDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function BankInfoOutputListDataResponseToJSON(value?: BankInfoOutputListD
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': value.data === undefined ? undefined : (value.data === null ? null : (value.data as Array<any>).map(BankInfoOutputToJSON)),
+        'data': value.data === undefined ? undefined : (value.data === null ? null : (value.data as Array<any>).map(KycGetAllOutputToJSON)),
     };
 }
 
