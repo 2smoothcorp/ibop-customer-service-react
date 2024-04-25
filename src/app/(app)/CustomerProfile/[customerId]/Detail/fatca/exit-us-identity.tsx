@@ -66,6 +66,7 @@ export default function ExitUSIndentity() {
                   name="isFatcaIndividualSelfCert"
                   defaultValue={isFATCA}
                   onChange={(e) => setValue('isFatcaIndividualSelfCert', e)}
+                  disabled
                 />
               )
             }

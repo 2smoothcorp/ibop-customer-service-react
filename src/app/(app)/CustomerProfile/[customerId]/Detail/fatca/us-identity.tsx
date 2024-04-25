@@ -88,7 +88,7 @@ export default function USIndentity() {
                                     label={item.questionTextTh || ''}
                                     name={"question-" + item.questionId}
                                     defaultValue={item.isCheck}
-                                // disabled
+                                    disabled
                                 />
                             ))
                         }
@@ -105,7 +105,7 @@ export default function USIndentity() {
                                     label={item.questionTextTh || ''}
                                     name={"question-" + item.questionId}
                                     defaultValue={item.isCheck}
-                                // disabled
+                                    disabled
                                 />
                             ))
                         }
