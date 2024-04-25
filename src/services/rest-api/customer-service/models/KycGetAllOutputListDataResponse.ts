@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Address } from './Address';
+import type { KycGetAllOutput } from './KycGetAllOutput';
 import {
-    AddressFromJSON,
-    AddressFromJSONTyped,
-    AddressToJSON,
-} from './Address';
+    KycGetAllOutputFromJSON,
+    KycGetAllOutputFromJSONTyped,
+    KycGetAllOutputToJSON,
+} from './KycGetAllOutput';
 
 /**
  * 
  * @export
- * @interface AddressListDataResponse
+ * @interface KycGetAllOutputListDataResponse
  */
-export interface AddressListDataResponse {
+export interface KycGetAllOutputListDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof AddressListDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof AddressListDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof AddressListDataResponse
+     * @memberof KycGetAllOutputListDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {Array<Address>}
-     * @memberof AddressListDataResponse
+     * @type {Array<KycGetAllOutput>}
+     * @memberof KycGetAllOutputListDataResponse
      */
-    data?: Array<Address> | null;
+    data?: Array<KycGetAllOutput> | null;
 }
 
 /**
- * Check if a given object implements the AddressListDataResponse interface.
+ * Check if a given object implements the KycGetAllOutputListDataResponse interface.
  */
-export function instanceOfAddressListDataResponse(value: object): boolean {
+export function instanceOfKycGetAllOutputListDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function AddressListDataResponseFromJSON(json: any): AddressListDataResponse {
-    return AddressListDataResponseFromJSONTyped(json, false);
+export function KycGetAllOutputListDataResponseFromJSON(json: any): KycGetAllOutputListDataResponse {
+    return KycGetAllOutputListDataResponseFromJSONTyped(json, false);
 }
 
-export function AddressListDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): AddressListDataResponse {
+export function KycGetAllOutputListDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycGetAllOutputListDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function AddressListDataResponseFromJSONTyped(json: any, ignoreDiscrimina
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : (json['data'] === null ? null : (json['data'] as Array<any>).map(AddressFromJSON)),
+        'data': !exists(json, 'data') ? undefined : (json['data'] === null ? null : (json['data'] as Array<any>).map(KycGetAllOutputFromJSON)),
     };
 }
 
-export function AddressListDataResponseToJSON(value?: AddressListDataResponse | null): any {
+export function KycGetAllOutputListDataResponseToJSON(value?: KycGetAllOutputListDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function AddressListDataResponseToJSON(value?: AddressListDataResponse | 
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': value.data === undefined ? undefined : (value.data === null ? null : (value.data as Array<any>).map(AddressToJSON)),
+        'data': value.data === undefined ? undefined : (value.data === null ? null : (value.data as Array<any>).map(KycGetAllOutputToJSON)),
     };
 }
 
