@@ -4,18 +4,20 @@
 
 'use client'
 
-import { Button, Grid } from '@mui/material';
-import type { GridPaginationModel } from '@mui/x-data-grid';
-import { useParams, useRouter } from 'next/navigation';
 import {
   type ReactElement,
   Fragment,
   useEffect,
   useState
 } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { Button, Grid } from '@mui/material';
+import type { GridPaginationModel } from '@mui/x-data-grid';
+import { useQuery } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 
 import Table from '@/components/table/table';
-// import DatePicker from '@/components/custom/input-date';
+import { InputText } from '@/components/input-text';
 
 import { search } from './actions';
 
@@ -24,29 +26,83 @@ const Page = (): ReactElement => {
   const [ tableTotalItem, setTableTotalItem ] = useState(0);
   const [ tableTotalPage, setTableTotalPage ] = useState(0);
   const [ tablePaginator, setTablePaginator ] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
+  const [ tableFilter, setTableFilter ] = useState<TableFilter>({});
   const router = useRouter();
   const params = useParams<{ customerId: string; }>();
 
   useEffect(() => {}, []);
 
+  const { data, isLoading, error } = useQuery({
+    queryFn: () => fetchGetTableData(),
+    queryKey: [
+      'kyccdd-table-data',
+      params.customerId,
+      tablePaginator.page, tablePaginator.pageSize,
+      tableFilter.corporateId,
+      tableFilter.refId,
+      tableFilter.fullname,
+      tableFilter.dateStart,
+      tableFilter.dateEnd
+    ],
+  })
+
+  const fetchGetTableData = async () => {
+    const { pageSize } = tablePaginator;
+    const response = await search({ ...tableFilter, ...tablePaginator });
+
+    const { data } = response;
+    if(!data) { return; }
+
+    const tableDs: Array<TableDataModel> = [];
+    for(const item of data) {
+      const {
+        logTimestamp,
+        corporateId,
+        referenceType,
+        referenceId,
+        name,
+        kycRiskLevel, kycRiskLevelDescription,
+        kycScore,
+        logUser
+      } = item;
+
+      tableDs.push({
+        createdDate: dayjs(logTimestamp).format('DD/MM/YYYY'),
+        corporateId: corporateId || '',
+        referenceType: referenceType || '',
+        referenceId: referenceId || '',
+        fullname: name || '',
+        riskGroup: `${ kycRiskLevel } - ${ kycRiskLevelDescription }`,
+        riskScore: 0, //
+        createdBy: logUser || ''
+      });
+    }
+
+    setTableDatasource(tableDs);
+    setTableTotalItem(tableDs.length);
+    setTableTotalPage(Math.ceil(tableDs.length / pageSize));
+  }
+
   const formActionSearch = async (data: FormData) => {
-    const { items, totalItems, totalPages } = await search(data);
-    console.log('formActionSearch', { items, totalItems, totalPages });
+    const corporateId = (data.get('corporateId') || '').toString();
+    const refId = (data.get('refId') || '').toString();
+    const fullname = (data.get('fullname') || '').toString();
+    const _dateStart = (data.get('dateStart') || '').toString();
+    const _dateEnd = (data.get('dateEnd') || '').toString();
+    setTableFilter({
+      corporateId,
+      refId,
+      fullname,
+      dateStart: (_dateStart) ? new Date(_dateStart) : undefined,
+      dateEnd: (_dateEnd) ? new Date(_dateEnd) : undefined
+    });
   }
 
   const onClickReviewButton = () => {
     router.push(`/KycCdd/Review/Info`);
   }
 
-  const renderTextInput = (name: string) => {
-    return (
-      <input
-        type={'text'}
-        name={ name }
-        className={`w-full px-3 py-2 h-10 bg-[#D9D9D9] border border-slate-300 rounded-md text-xl shadow-sm placeholder-slate-400`}
-      />
-    );
-  }
+  const renderTextInput = (name: string) => (<InputText name={ name } />);
 
   // const renderDateInput = (name: string) => {
   //   return (
@@ -109,18 +165,6 @@ const Page = (): ReactElement => {
   }
 
   const renderTable = () => {
-    const mockupRows: Array<TableDataModel> = [];
-    mockupRows.push({
-      createdDate: new Date(),
-      corporateId: '12345',
-      referenceType: 'บัตรประชาชน',
-      referenceId: '1234567890123',
-      fullname: 'mock',
-      riskGroup: 3,
-      rishScore: 7,
-      createdBy: '???'
-    });
-
     return (
       <div className={'p-4'}>
         <Table<TableDataModel>
@@ -143,21 +187,22 @@ const Page = (): ReactElement => {
                 );
               }
             },
-            { field: 'createdDate', headerName: 'วันที่ทำรายการ', type: 'date', flex: 1 },
+            { field: 'createdDate', headerName: 'วันที่ทำรายการ', flex: 1 },
             { field: 'corporateId', headerName: 'Corporate ID', flex: 1 },
             { field: 'referenceType', headerName: 'ประเภทหลักฐาน', flex: 1 },
             { field: 'referenceId', headerName: 'เลขที่หลักฐาน', flex: 1 },
             { field: 'fullname', headerName: 'ชื่อ - นามสกุล', flex: 1 },
             { field: 'riskGroup', headerName: 'กลุ่มความเสี่ยง', type: 'number', width: 100 },
-            { field: 'rishScore', headerName: 'คะแนน', type: 'number', width: 100 },
+            { field: 'riskScore', headerName: 'คะแนน', type: 'number', width: 100 },
             { field: 'createdBy', headerName: 'ผู้ทำรายการ', flex: 1 }
           ]}
-          rows={ mockupRows } // <-- tableDatasource
+          rows={ tableDatasource }
           totalItems={ tableTotalItem }
           totalPages={ tableTotalPage }
           getRowId={(row) => row.corporateId}
           paginationModel={ tablePaginator }
           setPaginationModel={ setTablePaginator }
+          isLoading={ isLoading }
         />
       </div>
     );
@@ -167,7 +212,7 @@ const Page = (): ReactElement => {
     <Fragment>
       { renderSearchPanel() }
 
-      <div className={'flex justify-end'}>
+      <div className={'px-4 mt-4 flex justify-end'}>
         <Button variant={'contained'} onClick={ onClickReviewButton }>
           ทบทวนกลุ่มความเสี่ยง
         </Button>
@@ -179,14 +224,22 @@ const Page = (): ReactElement => {
 }
 
 interface TableDataModel {
-  createdDate: Date;
+  createdDate: string;
   corporateId: string;
   referenceType: string;
   referenceId: string;
   fullname: string;
-  riskGroup: number;
-  rishScore: number;
+  riskGroup: string;
+  riskScore: number;
   createdBy: string;
+}
+
+interface TableFilter {
+  corporateId?: string;
+  refId?: string;
+  fullname?: string;
+  dateStart?: Date;
+  dateEnd?: Date;
 }
 
 export default Page;

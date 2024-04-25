@@ -4,38 +4,48 @@
 
 'use server'
 
-// import { services } from '@/services';
+import { services } from '@/services';
+import type { KycGetAllOutputListDataResponse } from '@/services/rest-api/customer-service';
 
-export const search = async (fields: FormData): Promise<ActionSearch.Output> => {
-  const corporateId = (fields.get('corporateId') || '').toString();
-  const refId = (fields.get('refId') || '').toString();
-  const fullname = (fields.get('fullname') || '').toString();
-  const dateStart = (fields.get('dateStart') || '').toString();
-  const dateEnd = (fields.get('dateEnd') || '').toString();
+export const search = async (input: ActionSearch.Input): Promise<ActionSearch.Output> => {
+  const {
+    corporateId,
+    referenceId,
+    fullname,
+    dateStart,
+    dateEnd,
+    page = 1,
+    pageSize = 10
+  } = input;
 
-  console.log('[Server Action] Search', { corporateId, refId, fullname, dateStart, dateEnd });
+  try {
+    const apiService = await services.getCustomerServiceApi();
+    const result = await apiService.getKycApi().kycGetAllGet({
+      corporateId, referenceId,
+      name: fullname,
+      startDate: dateStart,
+      endDate: dateEnd,
+      pageNumber: page,
+      pageSize
+    });
 
-  // const apiService = await services.getCustomerServiceApi();
-
-  return ({
-    items: [],
-    totalItems: 0,
-    totalPages: 0
-  });
+    return result;
+  }
+  catch(err) {
+    return ({ data: [] });
+  }
 }
 
 export module ActionSearch {
   export interface Input {
-    corporateId: string;
-    referenceId: string;
-    fullname: string;
-    dateStart: Date;
-    dateEnd: Date;
+    corporateId?: string;
+    referenceId?: string;
+    fullname?: string;
+    dateStart?: Date;
+    dateEnd?: Date;
+    page?: number;
+    pageSize?: number;
   }
 
-  export interface Output {
-    items: Array<any>;
-    totalItems: number;
-    totalPages: number;
-  }
+  export type Output = KycGetAllOutputListDataResponse;
 }
