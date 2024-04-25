@@ -63,6 +63,16 @@ export const mainTheme = createTheme({
 
   /** Custom Component Specific Theme here */
   components: {
+    MuiBreadcrumbs: {
+      styleOverrides: {
+        root: {
+          fontSize: '20px',
+          height: '35px',
+          color: '#43AD9E',
+          fontWeight: 700,
+        },
+      }
+    },
     MuiDataGrid: {
       styleOverrides: {
         root: {
