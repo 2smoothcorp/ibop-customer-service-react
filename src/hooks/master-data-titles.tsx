@@ -1,14 +1,13 @@
 import { ComboBoxListDataResponse } from "@/services/rest-api/customer-service";
 import { useQuery } from "@tanstack/react-query";
 
-const useMasterDataIncomeRate = () => {
-    const MasterDataIncomeRate = useQuery({
-        queryKey: ['incomeRate'],
+const useMasterDataTitles = () => {
+    const masterData = useQuery({
+        queryKey: ['Titles'],
         queryFn: async function () {
             try {
-                const request = await fetch(`/api/master-data/income-rate`)
+                const request = await fetch(`/api/master-data/titles`)
                 const response: ComboBoxListDataResponse = await request.json();
-                console.log(`response`, response)
                 return response.data
             } catch (e) {
             } finally {
@@ -16,15 +15,15 @@ const useMasterDataIncomeRate = () => {
         }
     })
 
-    return { ...MasterDataIncomeRate }
+    return { ...masterData }
 }
 
-export const useMasterDataIncomeRateCustom = () => {
-    const MasterDataIncomeRate = useQuery({
-        queryKey: ['countries'],
+export const useMasterDataTitlesCustom = () => {
+    const masterData = useQuery({
+        queryKey: ['TitlesCustom'],
         queryFn: async function () {
             try {
-                const request = await fetch(`/api/master-data/income-rate`)
+                const request = await fetch(`/api/master-data/titles`)
                 const response: ComboBoxListDataResponse = await request.json();
                 if (response && response.data && response.data.length > 0) {
                     const customData = response.data.map((item) => {
@@ -41,7 +40,7 @@ export const useMasterDataIncomeRateCustom = () => {
         }
     })
 
-    return { ...MasterDataIncomeRate }
+    return { ...masterData }
 }
 
-export default useMasterDataIncomeRate
+export default useMasterDataTitles

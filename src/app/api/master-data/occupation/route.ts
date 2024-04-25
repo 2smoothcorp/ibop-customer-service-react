@@ -20,7 +20,7 @@ export async function GET(_: NextRequest, { }: ParamSegment) {
         return NextResponse.json(result);
     }
     catch (err: any) {
-        return NextResponse.json({ message: `[ERROR] /api/customer-profile/master-data/[${employeeId}]/occupation`, err }, { status: 500 });
+        return NextResponse.json({ message: `[ERROR] /api/master-data/[${employeeId}]/occupation`, err }, { status: 500 });
     }
 }
 
