@@ -3,7 +3,7 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
-import { DocReceiveAddressInfoModel, DocReceiveAddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
+import { AddressInfoResponseDataResponse, DocReceiveAddressInfoModel } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
@@ -109,8 +109,8 @@ export default function ContractInformation() {
         const { customerId } = params
         if (customerId) {
             try {
-                const request = await fetch(`/api/customer-profile/contract-info/${customerId}`, { method: 'GET' });
-                const response: DocReceiveAddressInfoResponseDataResponse = await request.json();
+                const request = await fetch(`/api/customer-profile/address-info/${customerId}/04`, { method: 'GET' });
+                const response: AddressInfoResponseDataResponse = await request.json();
                 if (response.status == 200) {
                     const { data } = response;
 

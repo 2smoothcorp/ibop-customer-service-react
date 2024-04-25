@@ -15,6 +15,7 @@ export default function InputHorizontal({
     name,
     labelWidth,
     defaultValue,
+    textShow,
     isRequired = false,
     isLableCols1,
     allGridCols = "grid-cols-8",
@@ -90,7 +91,7 @@ export default function InputHorizontal({
                                     ? String(defaultValue).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')
                                     : type === "date"
                                         ? dayjs(defaultValue).format("DD/MM/YYYY").toString()
-                                        : defaultValue
+                                        : textShow || defaultValue
                             }
                         </div>
                     )
@@ -113,6 +114,7 @@ interface InputHorizontalProps {
     isLableCols1?: boolean;
     allGridCols?: string;
     defaultValue?: string;
+    textShow?: string;
     placeholder?: string;
     isRequired?: boolean;
     labelAlign?: Property.TextAlign | undefined;
