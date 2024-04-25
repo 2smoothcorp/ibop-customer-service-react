@@ -46,8 +46,10 @@ export default function PersonalInfo() {
                 return handleEmptyStringFormApi(personalInfo.personTypeCode);
             case 'personType':
                 return !isEmptyStringFormApi(personalInfo.personTypeCode) ? `${personalInfo.personTypeCode} - ${personalInfo.personTypeDesc}` : '-';
+            case 'referenceType':
+                return handleEmptyStringFormApi(personalInfo.referenceType);
             case 'referenceTypeDesc':
-                return !isEmptyStringFormApi(personalInfo.referenceTypeDesc) ? ` - ${personalInfo.referenceTypeDesc} ` : '-';
+                return !isEmptyStringFormApi(personalInfo.referenceType) ? `${personalInfo.referenceType} - ${personalInfo.referenceTypeDesc} ` : '-';
             case 'referenceID':
                 return handleEmptyStringFormApi(personalInfo.referenceID);
             case 'countryCode':
@@ -61,9 +63,28 @@ export default function PersonalInfo() {
             case 'identityExpireDate':
                 return !isEmptyStringFormApi(personalInfo.identityExpireDate) ? dayjs(personalInfo.identityExpireDate).format('DD/MM/YYYY') : '-';
             case 'genderCode':
+                if (personalInfo.genderCode == 'M') {
+                    return '0'
+                }
+                if (personalInfo.genderCode == 'F') {
+                    return '1'
+                }
+                if (personalInfo.genderCode == 'O') {
+                    return '2'
+                }
                 return handleEmptyStringFormApi(personalInfo.genderCode);
             case 'gender':
-                return !isEmptyStringFormApi(personalInfo.genderCode) ? `${personalInfo.genderCode} - ${personalInfo.gender}` : '-';
+                let gender = '';
+                if (personalInfo.genderCode == 'M') {
+                    gender = '0'
+                }
+                if (personalInfo.genderCode == 'F') {
+                    gender = '1'
+                }
+                if (personalInfo.genderCode == 'O') {
+                    gender = '2'
+                }
+                return !isEmptyStringFormApi(personalInfo.genderCode) ? `${gender !== '' ? gender : personalInfo.genderCode} - ${personalInfo.gender}` : '-';
             case 'titleCode':
                 return handleEmptyStringFormApi(personalInfo.titleCodeTh);
             case 'title':
@@ -87,6 +108,7 @@ export default function PersonalInfo() {
         setValue('personType', normalizationData('personType', personalInfo));
         setValue('personTypeCode', normalizationData('personTypeCode', personalInfo));
         setValue('referenceTypeDesc', normalizationData('referenceTypeDesc', personalInfo));
+        setValue('referenceType', normalizationData('referenceType', personalInfo));
         setValue('referenceID', normalizationData('referenceID', personalInfo));
         setValue('country', normalizationData('country', personalInfo));
         setValue('countryCode', normalizationData('countryCode', personalInfo));
@@ -153,11 +175,11 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="ประเภทหลักฐานลูกค้า"
-                        defaultValue={data && normalizationData('referenceTypeDesc', data) || '-'}
+                        defaultValue={data && normalizationData('referenceType', data) || '-'}
                         textShow={data && normalizationData('referenceTypeDesc', data) || '-'}
                         isEditable={isEditable}
                         register={register}
-                        name="referenceTypeDesc"
+                        name="referenceType"
                         type="select"
                         list={reference}
                         isRequired
@@ -252,6 +274,7 @@ export default function PersonalInfo() {
                     <InputHorizontal
                         label="เพศ"
                         defaultValue={data && normalizationData('genderCode', data) || '-'}
+                        textShow={data && normalizationData('gender', data) || '-'}
                         isEditable={isEditable}
                         register={register}
                         name="genderCode"
@@ -283,7 +306,7 @@ interface SubmitInput {
     personType: string;
     personTypeCode: string;
     referenceTypeDesc: string;
-    referenceTypeCode: string;
+    referenceType: string;
     referenceID: string;
     riskGroup: string;
     country: string;
