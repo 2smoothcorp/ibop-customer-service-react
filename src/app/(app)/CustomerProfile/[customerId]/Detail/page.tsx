@@ -1,6 +1,7 @@
 'use client'
 
 
+import BreadcrumbsNavbar from "@/components/navbar/breadcrumbs-navbar"
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
@@ -59,6 +60,13 @@ export default function DetailPage() {
     const [stepIndex, setStepIndex] = React.useState(0)
     return (
         <div className="">
+            <BreadcrumbsNavbar
+                className="px-10"
+                data={[
+                    { title: "ข้อมูลลูกค้า", link: "/CustomerProfile" },
+                    { title: "รายละเอียดลูกค้า" }
+                ]}
+            />
             <HeaderNavbar
                 title={stepper[stepIndex].title}
             />
@@ -68,7 +76,7 @@ export default function DetailPage() {
                     onChange={(index) => setStepIndex(index)}
                 />
                 <div className="border border-b-[1px] h-[1px]" />
-                <div className="h-[calc(100vh-250px)] overflow-y-auto">
+                <div className="h-[calc(100vh-300px)] overflow-y-auto">
                     {
                         stepper[stepIndex].component
                     }
