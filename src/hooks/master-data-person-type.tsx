@@ -1,30 +1,34 @@
 import { ComboBoxListDataResponse } from "@/services/rest-api/customer-service";
 import { useQuery } from "@tanstack/react-query";
 
-const useMasterDataIncomeRate = () => {
-    const MasterDataIncomeRate = useQuery({
-        queryKey: ['incomeRate'],
+const useMasterDataPersonType = () => {
+    const masterData = useQuery({
+        queryKey: ['personType'],
         queryFn: async function () {
             try {
-                const request = await fetch(`/api/master-data/income-rate`)
+                const request = await fetch(`/api/master-data/person-type`)
                 const response: ComboBoxListDataResponse = await request.json();
-                console.log(`response`, response)
-                return response.data
+                if (response && response.data && response.data.length > 0) {
+                    return response.data
+                }
+                return [];
             } catch (e) {
+                console.error(e);
+                return [];
             } finally {
             }
         }
     })
 
-    return { ...MasterDataIncomeRate }
+    return { ...masterData }
 }
 
-export const useMasterDataIncomeRateCustom = () => {
-    const MasterDataIncomeRate = useQuery({
-        queryKey: ['countries'],
+export const useMasterDataPersonTypeCustom = () => {
+    const masterData = useQuery({
+        queryKey: ['personTypeCustom'],
         queryFn: async function () {
             try {
-                const request = await fetch(`/api/master-data/income-rate`)
+                const request = await fetch(`/api/master-data/person-type`)
                 const response: ComboBoxListDataResponse = await request.json();
                 if (response && response.data && response.data.length > 0) {
                     const customData = response.data.map((item) => {
@@ -41,7 +45,7 @@ export const useMasterDataIncomeRateCustom = () => {
         }
     })
 
-    return { ...MasterDataIncomeRate }
+    return { ...masterData }
 }
 
-export default useMasterDataIncomeRate
+export default useMasterDataPersonType;

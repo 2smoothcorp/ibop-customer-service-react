@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(_: NextRequest, { params: { corporateId } }: ParamSegment) {
     if (!corporateId) {
         return NextResponse.json({
-            message: `[ERROR] /api/customer-profile/contract-info`,
+            message: `[ERROR] /api/customer-profile/ats`,
             reason: 'Parameters are missing'
         }, { status: 400 });
     }
@@ -14,7 +14,7 @@ export async function GET(_: NextRequest, { params: { corporateId } }: ParamSegm
         return NextResponse.json(result);
     }
     catch (err: any) {
-        return NextResponse.json({ message: `[ERROR] /api/customer-profile/contract-info`, err }, { status: 500 });
+        return NextResponse.json({ message: `[ERROR] /api/customer-profile/ats`, err }, { status: 500 });
     }
 }
 
