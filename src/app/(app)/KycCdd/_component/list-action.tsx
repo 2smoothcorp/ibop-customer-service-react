@@ -1,5 +1,5 @@
 /**
- *  KYC CSS : Review - List Action
+ *  KYC CDD - List Action
  */
 
 'use server'

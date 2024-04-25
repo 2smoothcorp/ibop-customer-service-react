@@ -13,7 +13,6 @@ import {
   useMemo
 } from 'react';
 import { Button, Grid } from '@mui/material';
-// import { Stepper } from '@/components/stepper';
 import TabNavbar from '@/components/navbar/tab-navbar';
 
 import {
@@ -94,7 +93,6 @@ const Page = (): ReactElement => {
 
   return (
     <Fragment>
-      {/* <Stepper isLinear steps={ stepData } currentIndex={ stepIndex } onChangeStep={ onChangeStep } /> */}
       <TabNavbar list={ stepData } onChange={ onChangeStep } />
       <div className={'p-4'}>
         { renderSearchCorporateId() }
