@@ -111,6 +111,12 @@ export default function OccupationInfo() {
                 return occupation.addressInfoModel && handleEmptyStringFormApi(occupation.addressInfoModel.districtNameTh) || '-';
             case 'subDistrict':
                 return occupation.addressInfoModel && handleEmptyStringFormApi(occupation.addressInfoModel.subDistrictNameTh) || '-';
+            case 'customAddress1':
+                return occupation.addressInfoModel && handleEmptyStringFormApi(occupation.addressInfoModel.customAddress1) || '-';
+            case 'customAddress2':
+                return occupation.addressInfoModel && handleEmptyStringFormApi(occupation.addressInfoModel.customAddress2) || '-';
+            case 'customAddress3':
+                return occupation.addressInfoModel && handleEmptyStringFormApi(occupation.addressInfoModel.customAddress3) || '-';
 
             default:
                 return '-';
@@ -143,6 +149,9 @@ export default function OccupationInfo() {
             setValue('province', normalizationData('province', occupation));
             setValue('district', normalizationData('district', occupation));
             setValue('subDistrict', normalizationData('subDistrict', occupation));
+            setValue('customAddress1', normalizationData('customAddress1', occupation));
+            setValue('customAddress2', normalizationData('customAddress2', occupation));
+            setValue('customAddress3', normalizationData('customAddress3', occupation));
         }
     }
 
@@ -256,30 +265,62 @@ export default function OccupationInfo() {
                                 name="zipCode"
                                 isRequired
                             />
-                            <InputHorizontal
-                                label="จังหวัด"
-                                defaultValue={data && normalizationData('province', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="province"
-                                isRequired
-                            />
-                            <InputHorizontal
-                                label="อำเภอ / เขต"
-                                defaultValue={data && normalizationData('district', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="district"
-                                isRequired
-                            />
-                            <InputHorizontal
-                                label="ตำบล / แขวง"
-                                defaultValue={data && normalizationData('subDistrict', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="subDistrict"
-                                isRequired
-                            />
+                            {
+                                data && data.addressInfoModel?.countryCode !== '000'
+                                    ? <>
+                                        <InputHorizontal
+                                            label="ที่อยู่ 1"
+                                            defaultValue={data && normalizationData('customAddress1', data) || "-"}
+                                            isEditable={isEditable}
+                                            register={register}
+                                            name="customAddress1"
+                                            isRequired
+                                        />
+                                        <InputHorizontal
+                                            label="ที่อยู่ 2"
+                                            defaultValue={data && normalizationData('customAddress2', data) || "-"}
+                                            isEditable={isEditable}
+                                            register={register}
+                                            name="customAddress2"
+                                            isRequired
+                                        />
+                                        <InputHorizontal
+                                            label="ที่อยู่ 3"
+                                            defaultValue={data && normalizationData('customAddress3', data) || "-"}
+                                            isEditable={isEditable}
+                                            register={register}
+                                            name="customAddress3"
+                                            isRequired
+                                        />
+                                    </>
+                                    : <>
+                                        <InputHorizontal
+                                            label="จังหวัด"
+                                            defaultValue={data && normalizationData('province', data) || "-"}
+                                            isEditable={isEditable}
+                                            register={register}
+                                            name="province"
+                                            isRequired
+                                        />
+                                        <InputHorizontal
+                                            label="อำเภอ / เขต"
+                                            defaultValue={data && normalizationData('district', data) || "-"}
+                                            isEditable={isEditable}
+                                            register={register}
+                                            name="district"
+                                            isRequired
+                                        />
+                                        <InputHorizontal
+                                            label="ตำบล / แขวง"
+                                            defaultValue={data && normalizationData('subDistrict', data) || "-"}
+                                            isEditable={isEditable}
+                                            register={register}
+                                            name="subDistrict"
+                                            isRequired
+                                        />
+                                    </>
+                            }
+
                         </div>
                     )
                 }
@@ -307,6 +348,9 @@ interface SubmitInput {
     province: string;
     district: string;
     subDistrict: string;
+    customAddress1: string;
+    customAddress2: string;
+    customAddress3: string;
 }
 
 interface OccupationInfoProps {

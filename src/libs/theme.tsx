@@ -70,6 +70,16 @@ export const mainTheme = createTheme({
         }
       }
     },
+    MuiBreadcrumbs: {
+      styleOverrides: {
+        root: {
+          fontSize: '20px',
+          height: '35px',
+          color: '#43AD9E',
+          fontWeight: 700,
+        },
+      }
+    },
     MuiDataGrid: {
       styleOverrides: {
         root: {

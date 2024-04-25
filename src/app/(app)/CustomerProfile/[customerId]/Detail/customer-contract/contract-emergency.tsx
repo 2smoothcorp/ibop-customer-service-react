@@ -121,7 +121,7 @@ export default function ContractEmergency() {
                                     name={`mobile${index}`}
                                 />
                                 <InputHorizontal
-                                    label="โทรศัพท์มือถือ"
+                                    label="ความสัมพันธ์"
                                     defaultValue={item && normalizationData('relationship', item) || "-"}
                                     isEditable={isEditable}
                                     register={register}

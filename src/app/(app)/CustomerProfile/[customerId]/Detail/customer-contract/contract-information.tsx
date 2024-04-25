@@ -66,6 +66,12 @@ export default function ContractInformation() {
                 return handleEmptyStringFormApi(addressInfo.officeNo);
             case 'email':
                 return handleEmptyStringFormApi(addressInfo.email);
+            case 'customAddress1':
+                return handleEmptyStringFormApi(addressInfo.customAddress1);
+            case 'customAddress2':
+                return handleEmptyStringFormApi(addressInfo.customAddress2);
+            case 'customAddress3':
+                return handleEmptyStringFormApi(addressInfo.customAddress3);
 
 
             default:
@@ -91,6 +97,9 @@ export default function ContractInformation() {
         setValue('mobileNo', normalizationData('mobileNo', addressInfo));
         setValue('officeNo', normalizationData('officeNo', addressInfo));
         setValue('email', normalizationData('email', addressInfo));
+        setValue('customAddress1', normalizationData('customAddress1', addressInfo));
+        setValue('customAddress2', normalizationData('customAddress2', addressInfo));
+        setValue('customAddress3', normalizationData('customAddress3', addressInfo));
     }
 
     const getData = async () => {
@@ -143,7 +152,7 @@ export default function ContractInformation() {
                 </div>
 
                 <div className="text-lg font-bold px-6 py-2">
-                    ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย์ (กรุณาระบุข้อความให้ครบถ้วนแม้ว่าท่านจะได้ระบุวิธีการรับเอกสารทางอีเมล)์  <span className="text-red-500">*</span>
+                    ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย์ (กรุณาระบุข้อความให้ครบถ้วนแม้ว่าท่านจะได้ระบุวิธีการรับเอกสารทางอีเมล)  <span className="text-red-500">*</span>
                 </div>
                 <div className="text-lg px-6 pt-2 py-4">
                     ที่อยู่ปัจจุบันที่ติดต่อได้
@@ -215,30 +224,62 @@ export default function ContractInformation() {
                         name="zipCode"
                         isRequired
                     />
-                    <InputHorizontal
-                        label="จังหวัด"
-                        defaultValue={data && normalizationData('province', data) || "-"}
-                        isEditable={isEditable}
-                        register={register}
-                        name="province"
-                        isRequired
-                    />
-                    <InputHorizontal
-                        label="อำเภอ / เขต"
-                        defaultValue={data && normalizationData('district', data) || "-"}
-                        isEditable={isEditable}
-                        register={register}
-                        name="district"
-                        isRequired
-                    />
-                    <InputHorizontal
-                        label="ตำบล / แขวง"
-                        defaultValue={data && normalizationData('subDistrict', data) || "-"}
-                        isEditable={isEditable}
-                        register={register}
-                        name="subDistrict"
-                        isRequired
-                    />
+                    {
+                        data && data.countryCode !== '000'
+                            ? <>
+                                <InputHorizontal
+                                    label="ที่อยู่ 1"
+                                    defaultValue={data && normalizationData('customAddress1', data) || "-"}
+                                    isEditable={isEditable}
+                                    register={register}
+                                    name="customAddress1"
+                                    isRequired
+                                />
+                                <InputHorizontal
+                                    label="ที่อยู่ 2"
+                                    defaultValue={data && normalizationData('customAddress2', data) || "-"}
+                                    isEditable={isEditable}
+                                    register={register}
+                                    name="customAddress2"
+                                    isRequired
+                                />
+                                <InputHorizontal
+                                    label="ที่อยู่ 3"
+                                    defaultValue={data && normalizationData('customAddress3', data) || "-"}
+                                    isEditable={isEditable}
+                                    register={register}
+                                    name="customAddress3"
+                                    isRequired
+                                />
+                            </>
+                            : <>
+                                <InputHorizontal
+                                    label="จังหวัด"
+                                    defaultValue={data && normalizationData('province', data) || "-"}
+                                    isEditable={isEditable}
+                                    register={register}
+                                    name="province"
+                                    isRequired
+                                />
+                                <InputHorizontal
+                                    label="อำเภอ / เขต"
+                                    defaultValue={data && normalizationData('district', data) || "-"}
+                                    isEditable={isEditable}
+                                    register={register}
+                                    name="district"
+                                    isRequired
+                                />
+                                <InputHorizontal
+                                    label="ตำบล / แขวง"
+                                    defaultValue={data && normalizationData('subDistrict', data) || "-"}
+                                    isEditable={isEditable}
+                                    register={register}
+                                    name="subDistrict"
+                                    isRequired
+                                />
+                            </>
+                    }
+
                     <InputHorizontal
                         label="โทรศัพท์มือถือ"
                         defaultValue={data && normalizationData('mobileNo', data) || "-"}
@@ -288,4 +329,7 @@ interface SubmitInput {
     mobileNo: string;
     officeNo: string;
     email: string;
+    customAddress1: string;
+    customAddress2: string;
+    customAddress3: string;
 }
