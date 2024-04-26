@@ -22,16 +22,13 @@ import { InputText } from '@/components/input-text';
 import { search } from './list-action';
 
 export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
-  const [ tableDatasource, setTableDatasource ] = useState<Array<TableDataModel>>([]);
-  const [ tableTotalItem, setTableTotalItem ] = useState(0);
-  const [ tableTotalPage, setTableTotalPage ] = useState(0);
   const [ tablePaginator, setTablePaginator ] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
   const [ tableFilter, setTableFilter ] = useState<TableFilter>({});
   const router = useRouter();
 
   useEffect(() => {}, []);
 
-  const { isLoading } = useQuery({
+  const { data: tableData, isLoading } = useQuery({
     queryFn: () => fetchGetTableData(),
     queryKey: [
       'kyccdd-table-data',
@@ -50,7 +47,7 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
     const response = await search({ ...tableFilter, ...tablePaginator });
 
     const { data } = response;
-    if(!data) { return; }
+    if(!data) { return ({ items: [], totalItems: 0, totalPages: 0 }); }
 
     const tableDs: Array<TableDataModel> = [];
     for(const item of data) {
@@ -77,9 +74,15 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
       });
     }
 
-    setTableDatasource(tableDs);
-    setTableTotalItem(tableDs.length);
-    setTableTotalPage(Math.ceil(tableDs.length / pageSize));
+    return ({
+      items: tableDs,
+      totalItems: tableDs.length,
+      totalPages: Math.ceil(tableDs.length / pageSize)
+    });
+
+    // setTableDatasource(tableDs);
+    // setTableTotalItem(tableDs.length);
+    // setTableTotalPage(Math.ceil(tableDs.length / pageSize));
   }
 
   const formActionSearch = async (data: FormData) => {
@@ -192,9 +195,9 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
             { field: 'riskScore', headerName: 'คะแนน', type: 'number', width: 100 },
             { field: 'createdBy', headerName: 'ผู้ทำรายการ', flex: 1 }
           ]}
-          rows={ tableDatasource }
-          totalItems={ tableTotalItem }
-          totalPages={ tableTotalPage }
+          rows={ tableData?.items || [] }
+          totalItems={ tableData?.totalItems || 0 }
+          totalPages={ tableData?.totalPages || 0 }
           getRowId={(row) => row.corporateId}
           paginationModel={ tablePaginator }
           setPaginationModel={ setTablePaginator }
