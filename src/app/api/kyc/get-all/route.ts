@@ -15,7 +15,3 @@ export async function GET(_: NextRequest) {
     return NextResponse.json({ message: '[ERROR] /api/kyc/get-all', err }, { status: 500 });
   }
 }
-
-interface ParamSegment {
-  corporateId?: string;
-}
