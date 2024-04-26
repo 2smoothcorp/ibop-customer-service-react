@@ -14,12 +14,12 @@ import { useQuery } from '@tanstack/react-query';
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
 import type {
-  KycBeneficiaryInfoOutputDataResponse,
-  AttorneyDataResponse
+  KycAttornetOutputDataResponse,
+  KycBeneficiaryInfoOutputDataResponse
 } from '@/services/rest-api/customer-service';
 
 export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactElement => {
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const beneficiaryInfo = useQuery({
     queryFn: () => fetchGetBeneficiary(),
@@ -32,20 +32,20 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
   });
 
   const fetchGetBeneficiary = async () => {
-    const request = await fetch(`/api/kyc/get-beneficiary/${ corporateId }`, { method: 'GET' });
+    const request = await fetch(`/api/kyc/get-beneficiary/${corporateId}`, { method: 'GET' });
     const response: KycBeneficiaryInfoOutputDataResponse = await request.json();
 
     const { data } = response;
-    if(!data) { return {}; }
+    if (!data) { return {}; }
     return data;
   }
 
   const fetchGetAttorney = async () => {
-    const request = await fetch(`/api/kyc/get-attorney/${ corporateId }`, { method: 'GET' });
-    const response: AttorneyDataResponse = await request.json();
+    const request = await fetch(`/api/kyc/get-attorney/${corporateId}`, { method: 'GET' });
+    const response: KycAttornetOutputDataResponse = await request.json();
 
     const { data } = response;
-    if(!data) { return {}; }
+    if (!data) { return {}; }
     return data;
   }
 
@@ -62,11 +62,11 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
     const _type = data?.beneficiaryType || '';
     const _firstname = data?.beneficiaryFirstName || '';
     const _lastname = data?.beneficiaryLastName || '';
-    const _refType =  data?.referenceType || '';
+    const _refType = data?.referenceType || '';
     const _refId = data?.referenceId || '';
     return (
       <Form
-        action={ formBeneficiaryAction }
+        action={formBeneficiaryAction}
         fields={[
           {
             type: 'text',
@@ -228,10 +228,10 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
     const { data } = attorneyInfo;
     const _refType = data?.referenceType || '';
     const _refId = data?.referenceId || '';
-    const _nation = `${ data?.nationCode || '' }` //
-    const _title = (data?.titleOther) ? data?.titleOther : `${ data?.titleCode || '' }` //
+    const _nation = `${data?.nationCode || ''}` //
+    const _title = (data?.titleOther) ? data?.titleOther : `${ data?.titleCode || '' } - ${ data?.titleName || '' }`.trim();
     const _name = data?.name || '';
-    const _relationship = `${ data?.relationOther || '' }` //
+    const _relationship = (data?.relationOther) ? data?.relationOther || '' : `${ data?.relationCode || ''} - ${ data?.relationName || '' }`.trim();
     const _mobileNo = data?.mobile || '';
     const _addressNo = data?.addressNo || '';
     const _moo = data?.moo || '';
@@ -240,17 +240,31 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
     const _floor = data?.floor || '';
     const _soi = data?.soi || '';
     const _street = data?.street || '';
-    const _country = `${ data?.countryCode || '' }` //
+    const _country = `${ data?.countryCode || '' } - ${ data?.countryname || '' }`.trim();
     const _postCode = data?.postCode || '';
-    const _province = `${ data?.provinceCode || '' }` //
-    const _amphur = `${ data?.amphurCode || '' }` //
-    const _tambon = `${ data?.tambonCode || '' }` //
+    const _province = `${ data?.provinceCode || '' } - ${ data?.provinceName || '' }`.trim();
+    const _amphur = `${ data?.amphurCode || '' } - ${ data?.amphurName || '' }`.trim();
+    const _tambon = `${ data?.tambonCode || '' } - ${ data?.tambonName || '' }`.trim();
     const _customAddr1 = data?.customAddress1 || '';
     const _customAddr2 = data?.customAddress2 || '';
     const _customAddr3 = data?.customAddress3 || '';
+
+    const _productCodes = (data?.productCode || '').split(',');
+    const _nominatedProducts: Array<string> = [];
+    for (const code of _productCodes) {
+      switch (code) {
+        case 'CASH_ACCOUNT': _nominatedProducts.push('บัญชีเงินสด (Cash)'); break;
+        case 'CASH_BALANCE_THAI': _nominatedProducts.push('บัญชีแคชบาลานซ์หลักทรัพย์ไทย (Cash Balance - Thai)'); break;
+        case 'CASH_BALANCE_GLOBAL': _nominatedProducts.push('บัญชีแคชบาลานซ์หลักทรัพย์ต่างประเทศ (Cash Balance - Global)'); break;
+        case 'DERIVATIVES': _nominatedProducts.push('บัญชีสัญญาซื้อขายล่วงหน้า (Derivatives)'); break;
+        case 'CREDIT_BALANCE': _nominatedProducts.push('บัญชีกู้ยืมเงินเพื่อซื้อหลักทรัพย์ประเภทมาร์จิน (Credit Balance)'); break;
+        case 'MUTUAL_FUND_SEGREGATE': _nominatedProducts.push('บัญชีหน่วยลงทุน (Mutual Fund)'); break;
+      }
+    }
+
     return (
       <Form
-        action={ formAttorneyAction }
+        action={formAttorneyAction}
         fields={[
           {
             type: 'text',
@@ -415,8 +429,8 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
       </div>
       {
         (beneficiaryInfo.isLoading)
-        ? (<AppLoader asContentLoader />)
-        : (renderFormBeneficiary())
+          ? (<AppLoader asContentLoader />)
+          : (renderFormBeneficiary())
       }
 
       <div className={'my-4 border-b-2 border-b-slate-500'}>
@@ -424,8 +438,8 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
       </div>
       {
         (attorneyInfo.isLoading)
-        ? (<AppLoader asContentLoader />)
-        : (renderFormAttorney())
+          ? (<AppLoader asContentLoader />)
+          : (renderFormAttorney())
       }
     </Fragment>
   );

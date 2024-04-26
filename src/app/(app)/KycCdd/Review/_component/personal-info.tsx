@@ -12,7 +12,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 
 import { AppLoader } from '@/components/app-loader';
-import type { KycPersonalInfoOutputDataResponse } from '@/services/rest-api/customer-service';
+import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
 
 import { Form } from '@/components/form';
 
@@ -26,7 +26,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
   const fetchGetPersonalInfo = async () => {
     const request = await fetch(`/api/kyc/get-personal/${ corporateId }`, { method: 'GET' });
-    const response: KycPersonalInfoOutputDataResponse = await request.json();
+    const response: KycPersonalOutputDataResponse = await request.json();
 
     const { data } = response;
     if(!data) { return {}; }

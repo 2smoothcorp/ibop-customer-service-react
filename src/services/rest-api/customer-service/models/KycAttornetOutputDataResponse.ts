@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PersonalInfoResponse } from './PersonalInfoResponse';
+import type { KycAttornetOutput } from './KycAttornetOutput';
 import {
-    PersonalInfoResponseFromJSON,
-    PersonalInfoResponseFromJSONTyped,
-    PersonalInfoResponseToJSON,
-} from './PersonalInfoResponse';
+    KycAttornetOutputFromJSON,
+    KycAttornetOutputFromJSONTyped,
+    KycAttornetOutputToJSON,
+} from './KycAttornetOutput';
 
 /**
  * 
  * @export
- * @interface PersonalInfoResponseDataResponse
+ * @interface KycAttornetOutputDataResponse
  */
-export interface PersonalInfoResponseDataResponse {
+export interface KycAttornetOutputDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof PersonalInfoResponseDataResponse
+     * @memberof KycAttornetOutputDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof PersonalInfoResponseDataResponse
+     * @memberof KycAttornetOutputDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof PersonalInfoResponseDataResponse
+     * @memberof KycAttornetOutputDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {PersonalInfoResponse}
-     * @memberof PersonalInfoResponseDataResponse
+     * @type {KycAttornetOutput}
+     * @memberof KycAttornetOutputDataResponse
      */
-    data?: PersonalInfoResponse | null;
+    data?: KycAttornetOutput | null;
 }
 
 /**
- * Check if a given object implements the PersonalInfoResponseDataResponse interface.
+ * Check if a given object implements the KycAttornetOutputDataResponse interface.
  */
-export function instanceOfPersonalInfoResponseDataResponse(value: object): boolean {
+export function instanceOfKycAttornetOutputDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function PersonalInfoResponseDataResponseFromJSON(json: any): PersonalInfoResponseDataResponse {
-    return PersonalInfoResponseDataResponseFromJSONTyped(json, false);
+export function KycAttornetOutputDataResponseFromJSON(json: any): KycAttornetOutputDataResponse {
+    return KycAttornetOutputDataResponseFromJSONTyped(json, false);
 }
 
-export function PersonalInfoResponseDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): PersonalInfoResponseDataResponse {
+export function KycAttornetOutputDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycAttornetOutputDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function PersonalInfoResponseDataResponseFromJSONTyped(json: any, ignoreD
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : PersonalInfoResponseFromJSON(json['data']),
+        'data': !exists(json, 'data') ? undefined : KycAttornetOutputFromJSON(json['data']),
     };
 }
 
-export function PersonalInfoResponseDataResponseToJSON(value?: PersonalInfoResponseDataResponse | null): any {
+export function KycAttornetOutputDataResponseToJSON(value?: KycAttornetOutputDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function PersonalInfoResponseDataResponseToJSON(value?: PersonalInfoRespo
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': PersonalInfoResponseToJSON(value.data),
+        'data': KycAttornetOutputToJSON(value.data),
     };
 }
 

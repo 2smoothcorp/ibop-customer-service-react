@@ -13,10 +13,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
-import type { AddressListDataResponse, Address } from '@/services/rest-api/customer-service';
+import type { KycAddressOutputListDataResponse } from '@/services/rest-api/customer-service';
 
 export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => {
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const { data: addressList, isLoading } = useQuery({
     queryFn: () => fetchGetAddress(),
@@ -24,11 +24,11 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
   });
 
   const fetchGetAddress = async () => {
-    const request = await fetch(`/api/kyc/get-address/${ corporateId }`, { method: 'GET' });
-    const response: AddressListDataResponse = await request.json();
+    const request = await fetch(`/api/kyc/get-address/${corporateId}`, { method: 'GET' });
+    const response: KycAddressOutputListDataResponse = await request.json();
 
     const { data } = response;
-    if(!data) { return ({ currentAddr: {}, workAddr: {} }); }
+    if (!data) { return ({ currentAddr: {}, workAddr: {} }); }
 
     const currentAddr = data.find((_f) => _f.addressTypeCode === '02');
     const workAddr = data.find((_f) => _f.addressTypeCode === '03');
@@ -52,17 +52,17 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _floor = _info?.floor || '';
     const _soi = _info?.soi || '';
     const _street = _info?.street || '';
-    const _country = `${ _info?.countryCode || '' }`.trim();
+    const _country = `${ _info?.countryCode || '' } - ${ _info}`.trim();
     const _zipCode = _info?.zipCode || '';
-    const _province = `${ _info?.provinceCode || '' }`.trim();
-    const _district = `${ _info?.districtCode || '' }`.trim();
-    const _subDistrict = `${ _info?.subDistrictCode || '' }`.trim();
+    const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
+    const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
+    const _subDistrict = `${ _info?.subDistrictCode || '' } - ${ _info?.subDistrictName || '' }`.trim();
     const _customAddress1 = _info?.customAddress1 || '';
     const _customAddress2 = _info?.customAddress2 || '';
     const _customAddress3 = _info?.customAddress3 || '';
     return (
       <Form
-        action={ formCurrentAddrAction }
+        action={formCurrentAddrAction}
         fields={[
           {
             type: 'text',
@@ -182,7 +182,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _customAddress3 = _info?.customAddress3 || '';
     return (
       <Form
-        action={ formWorkAddrAction }
+        action={formWorkAddrAction}
         fields={[
           {
             type: 'text',
@@ -290,8 +290,8 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       </div>
       {
         (isLoading)
-        ? (<AppLoader asContentLoader />)
-        : (renderFormCurrentAddress())
+          ? (<AppLoader asContentLoader />)
+          : (renderFormCurrentAddress())
       }
 
       <div className={'my-4 border-b-2 border-b-slate-500'}>
@@ -299,8 +299,8 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       </div>
       {
         (isLoading)
-        ? (<AppLoader asContentLoader />)
-        : (renderFormWorkAddress())
+          ? (<AppLoader asContentLoader />)
+          : (renderFormWorkAddress())
       }
     </Fragment>
   );
