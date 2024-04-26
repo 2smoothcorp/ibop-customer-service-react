@@ -13,6 +13,7 @@ apis/MaintenanceApi.ts
 apis/MasterDataApi.ts
 apis/ReportApi.ts
 apis/SuitabilityApi.ts
+apis/TestDataChangeApprovalApi.ts
 apis/VerificationApi.ts
 apis/index.ts
 index.ts
@@ -34,12 +35,10 @@ models/AccountSettingInput.ts
 models/AccountSettingSP.ts
 models/AccountSettingSPListDataResponse.ts
 models/ActivateProductInput.ts
-models/Address.ts
 models/AddressInfoModel.ts
 models/AddressInfoOutput.ts
 models/AddressInfoResponse.ts
 models/AddressInfoResponseDataResponse.ts
-models/AddressListDataResponse.ts
 models/AddressRequest.ts
 models/Answer.ts
 models/AnswerFACTA.ts
@@ -90,6 +89,7 @@ models/CustomerValid.ts
 models/CustomerValidDataResponse.ts
 models/CustomerW8ben.ts
 models/CustomerW9america.ts
+models/DataChangeKey.ts
 models/DecimalNullableDataResponse.ts
 models/DocReceiveAddressInfoModel.ts
 models/DocReceiveAddressInfoResponse.ts
@@ -121,6 +121,8 @@ models/Int32NullableDataResponse.ts
 models/IsValidOutput.ts
 models/IsValidOutputDataResponse.ts
 models/KycAddressInfoInput.ts
+models/KycAddressOutput.ts
+models/KycAddressOutputListDataResponse.ts
 models/KycBeneficiaryInfoOutput.ts
 models/KycBeneficiaryInfoOutputDataResponse.ts
 models/KycGetAllOutput.ts
@@ -170,6 +172,10 @@ models/SelectProductRequest.ts
 models/SpouseInfoModel.ts
 models/SpouseInfoResponse.ts
 models/SpouseInfoResponseDataResponse.ts
+models/TestDataChangeApprovalGetGetRequest.ts
+models/TestDataChangeApprovalSavePostRequest.ts
+models/TestDataChangeInput.ts
+models/TestDataChangeOutput.ts
 models/TinInfoOutput.ts
 models/Title.ts
 models/VerifyRequestOutput.ts
