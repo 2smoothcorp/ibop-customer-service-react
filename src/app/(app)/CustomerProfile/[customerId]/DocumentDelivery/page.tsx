@@ -109,7 +109,7 @@ export default function OfficialDocumentPage() {
     const onSubmit: SubmitHandler<SubmitInput> = (data) => {
         if (!isLoadingSubmit) {
             setIsLoadingSubmit(true);
-            console.log(data);
+            // console.log(data);
             setTimeout(() => {
                 setIsLoadingSubmit(false);
                 setIsEditable(false);

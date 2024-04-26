@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(_: NextRequest, { params }: { params: { corporateId?: string } }): Promise<NextResponse<ApiResponse<FinancialInfoResponseDataResponse>>> {
 
-  console.log('corporateId', params.corporateId)
+  // console.log('corporateId', params.corporateId)
 
   if (!params.corporateId) {
     return NextResponse.json({

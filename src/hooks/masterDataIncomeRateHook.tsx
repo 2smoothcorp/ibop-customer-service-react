@@ -8,7 +8,7 @@ const useMasterDataIncomeRate = () => {
             try {
                 const request = await fetch(`/api/master-data/income-rate`)
                 const response: ComboBoxListDataResponse = await request.json();
-                console.log(`response`, response)
+                // console.log(`response`, response)
                 return response.data
             } catch (e) {
             } finally {
