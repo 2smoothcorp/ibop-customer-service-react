@@ -8,7 +8,7 @@ export async function GET(_: NextRequest, { }: ParamSegment) {
     try {
         const apiService = await services.getCustomerServiceApi();
         const result = await apiService.getMasterDataApi().masterDataAORoleGet();
-        console.log(result)
+        // console.log(result)
         return NextResponse.json(result);
     }
     catch (err: any) {

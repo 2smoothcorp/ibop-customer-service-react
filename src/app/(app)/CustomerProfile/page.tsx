@@ -28,7 +28,7 @@ const CustomerInfoPage = ({
   searchParams?: SearchParams
 }) => {
 
-  console.log(`page`, searchParams?.pageIndex)
+  // console.log(`page`, searchParams?.pageIndex)
 
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);

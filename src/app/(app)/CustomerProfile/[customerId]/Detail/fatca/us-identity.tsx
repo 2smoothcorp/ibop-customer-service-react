@@ -37,7 +37,7 @@ export default function USIndentity() {
                 const responseAnswers: AnswerFACTA = await requestAnswers.json();
                 const { questions } = response;
                 const { answers, isFatcaIndividualSelfCert } = responseAnswers;
-                console.log(isFatcaIndividualSelfCert)
+                // console.log(isFatcaIndividualSelfCert)
                 if (questions && answers) {
                     let data = questions.map((question) => {
                         const answer = answers.find((answer) => answer.questionId === question.questionId)

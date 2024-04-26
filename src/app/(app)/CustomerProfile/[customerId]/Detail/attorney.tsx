@@ -168,7 +168,7 @@ const AttorneySection = () => {
             try {
                 const request = await fetch(`/api/customer-profile/attorney/${params.customerId}`)
                 const response: ApiResponse<AttorneyInfoResponseDataResponse> = await request.json();
-                console.log(`response`, response)
+                // console.log(`response`, response)
                 return response.data
             } catch (e) {
             } finally {
@@ -177,7 +177,7 @@ const AttorneySection = () => {
     })
 
     const masterDataProduct = useMasterDataProduct();
-    console.log(`masterDataProduct`, masterDataProduct.data)
+    // console.log(`masterDataProduct`, masterDataProduct.data)
 
     return (
         <ContentLoading

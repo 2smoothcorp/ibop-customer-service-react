@@ -8,11 +8,11 @@ import { ApiResponse } from '@/type/api';
 import { NextRequest, NextResponse } from 'next/server';
 
 
-export async function GET(_: NextRequest, { params }: { params: { corporateId?: string } }) : Promise<NextResponse<ApiResponse<AttorneyInfoResponseDataResponse>>> {
+export async function GET(_: NextRequest, { params }: { params: { corporateId?: string } }): Promise<NextResponse<ApiResponse<AttorneyInfoResponseDataResponse>>> {
 
-  console.log( 'corporateId', params.corporateId )
+  // console.log( 'corporateId', params.corporateId )
 
-  if(!params.corporateId) {
+  if (!params.corporateId) {
     return NextResponse.json({
       message: '[ERROR] /api/customer-profile/attorney',
       err: 'Parameters are missing'
@@ -27,7 +27,7 @@ export async function GET(_: NextRequest, { params }: { params: { corporateId?: 
     })
     return NextResponse.json({ success: true, data: result });
   }
-  catch(err: any) {
+  catch (err: any) {
     return NextResponse.json({ success: false, message: '[ERROR] /api/customer-profile/attorney', err }, { status: 500 });
   }
 }

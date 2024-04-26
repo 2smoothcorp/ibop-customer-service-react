@@ -5,11 +5,11 @@ import BreadcrumbsNavbar from "@/components/navbar/breadcrumbs-navbar"
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
 import React from "react"
-import Beneficiary from "../Beneficiary/page"
 import Consent from "../Consent/page"
 import AccountInformation from "./account-information"
 import ATS from "./ats"
 import AttorneySection from "./attorney"
+import Beneficiary from "./beneficiary"
 import CustomerContract from "./customer-contract"
 import CustomerInformation from "./customer-information"
 import EDividend from "./e-dividend"
@@ -32,7 +32,7 @@ export default function DetailPage() {
         },
         {
             title: "ผู้รับผลประโยชน์ที่แท้จริง",
-            component: <Consent />
+            component: <Beneficiary />
         },
         {
             title: "บัญชี ATS ",
@@ -48,7 +48,7 @@ export default function DetailPage() {
         },
         {
             title: "ความยินยอมและวัตถุประสงค์อื่น",
-            component: <Beneficiary />
+            component: <Consent />
         },
         {
             title: "FATCA - CRS",
