@@ -1,4 +1,4 @@
-import { MobileDatePicker } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -10,41 +10,27 @@ export default function InputDate({
     required = false,
     disabled = false,
     readonly = false,
+    maxDate,
+    minDate,
     onChange,
 }: InputDateProps) {
     return (
         <div className={'w-full' + className}>
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="th-TH">
                 <DemoContainer sx={{ padding: 0 }} components={['DatePicker']}>
-                    <MobileDatePicker
-                        className="bg-white"
-                        format="DD/MM/YYYY"
+                    <DatePicker
                         disabled={disabled}
                         readOnly={readonly}
-                        value={dayjs(defaultValue)}
+                        maxDate={maxDate && dayjs(maxDate) || undefined}
+                        minDate={minDate && dayjs(minDate) || undefined}
+                        value={defaultValue && dayjs(defaultValue) || null}
+                        defaultValue={defaultValue && dayjs(defaultValue) || null}
                         onChange={(newValue) => onChange && onChange(newValue?.format('YYYY-MM-DD').toString() ?? '')}
                         slotProps={{
                             textField: {
                                 required: required,
-                                size: 'small',
-                                color: 'primary',
-                                fullWidth: true,
-                                InputProps: {
-                                    sx: {
-                                        fontFamily: 'Cordia New',
-                                        fontSize: '18px',
-                                    }
-                                },
-                            },
-                            day: {
-                                sx: {
-                                    "&.MuiPickersDay-root.Mui-selected": {
-                                        backgroundColor: "#1F346B",
-                                    },
-                                },
                             },
                         }}
-                        defaultValue={defaultValue}
                     />
                 </DemoContainer>
             </LocalizationProvider>
@@ -55,6 +41,8 @@ export default function InputDate({
 interface InputDateProps {
     required?: boolean;
     name: string;
+    maxDate?: string;
+    minDate?: string;
     defaultValue?: string;
     className?: string;
     onChange?: (value: string) => void;

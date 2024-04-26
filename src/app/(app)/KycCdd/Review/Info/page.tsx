@@ -13,7 +13,6 @@ import {
   useMemo
 } from 'react';
 import { Button, Grid } from '@mui/material';
-// import { Stepper } from '@/components/stepper';
 import TabNavbar from '@/components/navbar/tab-navbar';
 
 import {
@@ -24,10 +23,9 @@ import {
 } from '../_component';
 
 const Page = (): ReactElement => {
+  const [ inputCorp, setInputCorp ] = useState('');
   const [ corporateId, setCorporateId ] = useState('');
   const [ stepIndex, setStepIndex ] = useState(0);
-  const [ isEditing, setIsEditing ] = useState(false);
-  const [ isLoading, setIsLoading ] = useState(false);
   const stepData = ['ข้อมูลส่วนตัว', 'ข้อมูลที่อยู่', 'ข้อมูลคู่สมรส', 'ข้อมูลบุคคลที่เกี่ยวข้อง'];
 
   useEffect(() => {}, []);
@@ -36,12 +34,11 @@ const Page = (): ReactElement => {
 
   const onChangeCorporateId = (evt: ChangeEvent<HTMLInputElement>) => {
     const inputValue = evt.target.value;
-    setCorporateId(inputValue);
+    setInputCorp(inputValue);
   }
 
-  const onClickSearch = () => {}
-
-  const onClickClear = () => {}
+  const onClickSearch = () => { setCorporateId(inputCorp || ''); }
+  const onClickClear = () => { setInputCorp(''); setCorporateId(''); }
 
   const renderSearchCorporateId = () => {
     return (
@@ -84,17 +81,16 @@ const Page = (): ReactElement => {
 
   const renderStepperView = () => {
     switch(stepIndex) {
-      case 0: return (<ReviewPersonalInfo />);
-      case 1: return (<ReviewAddrInfo />);
-      case 2: return (<ReviewSpouseInfo />);
-      case 3: return (<ReviewRelativeInfo />);
+      case 0: return (<ReviewPersonalInfo corporateId={ corporateId } />);
+      case 1: return (<ReviewAddrInfo corporateId={ corporateId } />);
+      case 2: return (<ReviewSpouseInfo corporateId={ corporateId } />);
+      case 3: return (<ReviewRelativeInfo corporateId={ corporateId } />);
       default: return (<div></div>);
     }
   }
 
   return (
     <Fragment>
-      {/* <Stepper isLinear steps={ stepData } currentIndex={ stepIndex } onChangeStep={ onChangeStep } /> */}
       <TabNavbar list={ stepData } onChange={ onChangeStep } />
       <div className={'p-4'}>
         { renderSearchCorporateId() }

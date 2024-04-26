@@ -5,7 +5,7 @@ import { ironSessionService } from "../iron-session/iron-session";
 import { PortalService } from "../portal-service/portal-service";
 import { VaultService } from "../vault-service/vault-service";
 
-export class AuthService{
+export class AuthService {
 
     _pathUrl: string;
 
@@ -13,18 +13,18 @@ export class AuthService{
         this._pathUrl = pathUrl;
     };
 
-    async searchUserDirectory(token: string, employeeID: string): Promise<SearchUserDirectoryResponse>{
-        try{
+    async searchUserDirectory(token: string, employeeID: string): Promise<SearchUserDirectoryResponse> {
+        try {
             const vaultService = new VaultService();
             const _token = await vaultService.getJWTTokenByService('authen-jwt');
-            
+
             const portalService = new PortalService(Constants.PortalUrl);
             const verifyToken = portalService.verifyToken(token);
-    
+
             const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/SearchDirectory/SearchDirectory`;
             const formData = new URLSearchParams();
             formData.append('employeeID', employeeID)
-    
+
             const response = await fetch(pathUrl, {
                 method: 'POST',
                 headers: {
@@ -35,24 +35,23 @@ export class AuthService{
             });
             const responseJson = await response.json();
             return responseJson;
-        }catch(e)
-        {
+        } catch (e) {
             console.error(e)
         }
 
         return {} as SearchUserDirectoryResponse
     }
 
-    async getPermission(): Promise<PermissionResponse>{
+    async getPermission(): Promise<PermissionResponse> {
         const vaultService = new VaultService();
 
         const token = await vaultService.getJWTTokenByService('authen-jwt');
 
         const pathUrl = `${VaultService.vaultInfo?.data.data.baseUrlAuthen}/api/UserPermission`
 
-        const employeeID = await ironSessionService.getEmployeeId() 
+        const employeeID = await ironSessionService.getEmployeeId()
 
-        if( !employeeID ) return {
+        if (!employeeID) return {
             data: [],
             message: '',
             status: 'error'
@@ -64,11 +63,11 @@ export class AuthService{
             menuAction: "",
             userId: employeeID
         }
-    
+
         const queryParams = Object.keys(payload).map((key) => {
-            return encodeURIComponent(key) + '=' + encodeURIComponent(payload[key as keyof PermissionRequest ] );
+            return encodeURIComponent(key) + '=' + encodeURIComponent(payload[key as keyof PermissionRequest]);
         }).join('&');
-        
+
         const permissionResp = await fetch(pathUrl + `?${queryParams}`, {
             method: 'GET',
             headers: {
@@ -82,8 +81,8 @@ export class AuthService{
     }
 
     async login(username: string, password: string): Promise<LoginResponse> {
-        try{
-            console.log(`AuthService login`, username, password)
+        try {
+            // console.log(`AuthService login`, username, password)
             const vaultService = new VaultService();
             const token = await vaultService.getJWTTokenByService('authen-jwt');
 
@@ -113,7 +112,7 @@ export class AuthService{
             const responseJson = await loginResp.json()
             return responseJson;
 
-        }catch(e){
+        } catch (e) {
             console.error(e)
         }
 
@@ -121,26 +120,26 @@ export class AuthService{
     }
 }
 
-export interface PermissionRequest{
+export interface PermissionRequest {
     appCode: string
     menuCode: string
     menuAction: string
     userId: string
 }
 
-export interface PermissionResponse{
+export interface PermissionResponse {
     data: Permission[]
     status: string
     message: string
 }
 
-export interface Permission{
+export interface Permission {
     menuCode: string
     menuName: string
     menuAction: string
 }
 
-export interface LoginResponse{
+export interface LoginResponse {
     status: string
     message: string
     sAMAccountName: string
@@ -152,6 +151,6 @@ export interface LoginResponse{
     ipPhone: string
 }
 
-export interface SearchUserDirectoryResponse extends LoginResponse{
+export interface SearchUserDirectoryResponse extends LoginResponse {
 
 }

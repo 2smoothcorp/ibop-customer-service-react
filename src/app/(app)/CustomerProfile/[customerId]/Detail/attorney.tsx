@@ -26,7 +26,7 @@ const attorneySectionList: Array<DetailSection> = [
         normalize: 'reference'
     },
     {
-        name: 'referenceId',
+        name: 'referenceNo',
         label: 'เลขที่บัตร',
         defaultValue: '',
         isRequired: true
@@ -42,7 +42,8 @@ const attorneySectionList: Array<DetailSection> = [
         name: 'titleDesc',
         label: 'คำนำหน้า',
         defaultValue: '',
-        isRequired: true
+        isRequired: true,
+        normalize: 'title'
     },
     {
         name: 'name',
@@ -54,6 +55,7 @@ const attorneySectionList: Array<DetailSection> = [
         name: 'relationDesc',
         label: 'ความสัมพันธ์',
         defaultValue: 'สามี',
+        normalize: 'relation'
     },
     {
         name: 'mobileNo',
@@ -150,6 +152,10 @@ const normalizationData = (attributeName: string, data: AttorneyInfoModel | unde
             return data?.referenceTypeCode ? `${data?.referenceTypeCode} - ${data?.referenceTypeDesc}` : '-';
         case 'country':
             return data?.countryCode ? `${data?.countryCode} - ${data?.countryDesc}` : '-';
+        case 'relation':
+            return data?.relationCode ? `${data?.relationCode} - ${data?.relationDesc}` : '-';
+        case 'title':
+            return data?.titleCode ? `${data?.titleCode} - ${data?.titleDesc}` : '-';
         default:
             return defaultValue;
     }
@@ -177,7 +183,7 @@ const AttorneySection = () => {
     })
 
     const masterDataProduct = useMasterDataProduct();
-    console.log(`masterDataProduct`, masterDataProduct.data)
+    // console.log(`masterDataProduct`, masterDataProduct.data)
 
     return (
         <ContentLoading

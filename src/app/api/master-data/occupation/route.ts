@@ -1,7 +1,3 @@
-/**
- *  API Route - Consent Answer
- */
-
 import { services } from '@/services';
 import { ironSessionService } from '@/services/iron-session/iron-session';
 import { NextRequest, NextResponse } from 'next/server';
