@@ -3,7 +3,13 @@
  */
 
 import { Configuration } from "./customer-service";
-import { ConsentApi, CustomerProfileV2Api, FATCAApi, MasterDataApi } from "./customer-service/apis";
+import {
+  ConsentApi,
+  CustomerProfileV2Api,
+  FATCAApi,
+  MasterDataApi,
+  KycApi
+} from "./customer-service/apis";
 
 
 export class ApiCustomerService {
@@ -12,6 +18,7 @@ export class ApiCustomerService {
   private apiConsent?: ConsentApi;
   private apiMasterData?: MasterDataApi;
   private apiFATCA?: FATCAApi;
+  private apiKyc?: KycApi;
 
   constructor(config: Configuration) { this.apiConfig = config; }
 
@@ -33,6 +40,11 @@ export class ApiCustomerService {
   public getFATCAApi() {
     if (!this.apiFATCA) { this.apiFATCA = new FATCAApi(this.apiConfig); }
     return this.apiFATCA;
+  }
+
+  public getKycApi() {
+    if (!this.apiKyc) { this.apiKyc = new KycApi(this.apiConfig); }
+    return this.apiKyc;
   }
 }
 
