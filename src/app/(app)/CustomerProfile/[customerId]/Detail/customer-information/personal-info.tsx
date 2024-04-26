@@ -65,7 +65,7 @@ export default function PersonalInfo() {
                 return !isEmptyStringFormApi(personalInfo.nationalityCode) ? `${personalInfo.nationalityCode} - ${personalInfo.nationDesc}` : '-';
             case 'identityNeverExpire':
                 if (personalInfo.identityNeverExpire) {
-                    return 'ไม่มีวันหมดอายุ';
+                    return 'ตลอดชีพ';
                 }
                 return handleEmptyStringFormApi(personalInfo.identityExpireDate);
             case 'identityExpireDate':
