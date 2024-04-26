@@ -24,7 +24,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
   });
 
   const fetchGetSpouse = async () => {
-    const request = await fetch(`/api/kyc/get-address/${ corporateId }`, { method: 'GET' });
+    const request = await fetch(`/api/kyc/get-spouse/${ corporateId }`, { method: 'GET' });
     const response: KycSpouseInfoOutputDataResponse = await request.json();
 
     const { data } = response;
@@ -37,11 +37,11 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
   }
 
   const renderFormSpouse = () => {
-    const _maritalStatus = spouseInfo?.familyStatus || '';
-    const _refType = spouseInfo?.spouseReferenceType || '';
-    const _refId = spouseInfo?.spouseIdentityId || '';
-    const _firstname = spouseInfo?.spouseFirstName || '';
-    const _lastname = spouseInfo?.spouseLastName || '';
+    const _maritalStatus = spouseInfo?.familyStatus || '-';
+    const _refType = spouseInfo?.spouseReferenceType || '-';
+    const _refId = spouseInfo?.spouseIdentityId || '-';
+    const _firstname = spouseInfo?.spouseFirstName || '-';
+    const _lastname = spouseInfo?.spouseLastName || '-';
     return (
       <Form
         action={ formAction }
