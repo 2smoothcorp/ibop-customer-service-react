@@ -5,6 +5,7 @@
 'use client'
 
 import type { } from '@mui/x-data-grid/themeAugmentation';
+import type { } from '@mui/x-date-pickers/themeAugmentation';
 
 import { createTheme } from "@mui/material";
 
@@ -114,6 +115,28 @@ export const mainTheme = createTheme({
             fontSize: '18px',
           }
         },
+      }
+    },
+    MuiDatePicker: {
+      defaultProps: {
+        format: 'DD/MM/YYYY',
+        slotProps: {
+          textField: {
+            size: 'small',
+            color: 'primary',
+            fullWidth: true,
+            InputProps: {
+              sx: {
+                backgroundColor: '#fff',
+                fontSize: '18px',
+              }
+            },
+
+          },
+          openPickerButton: {
+            color: 'primary',
+          }
+        }
       }
     }
   }

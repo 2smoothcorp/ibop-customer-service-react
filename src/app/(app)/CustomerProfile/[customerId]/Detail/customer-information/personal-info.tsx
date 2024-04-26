@@ -1,8 +1,10 @@
 "use client"
 
 import ContentLoading from "@/components/content/content-loading";
+import InputCheckbox from "@/components/custom/input-checkbox";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
+import { useMasterDataNationCustom } from "@/hooks/master-data-nation";
 import { useMasterDataPersonTypeCustom } from "@/hooks/master-data-person-type";
 import { useMasterDataReferenceCustom } from "@/hooks/master-data-reference";
 import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
@@ -29,6 +31,7 @@ export default function PersonalInfo() {
     const { data: reference, isLoading: isLoadingReference } = useMasterDataReferenceCustom();
     const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
     const { data: titles, isLoading: isLoadingTitles } = useMasterDataTitlesCustom();
+    const { data: nation, isLoading: isLoadingNation } = useMasterDataNationCustom();
 
 
     const {
@@ -60,31 +63,17 @@ export default function PersonalInfo() {
                 return handleEmptyStringFormApi(personalInfo.nationalityCode);
             case 'nation':
                 return !isEmptyStringFormApi(personalInfo.nationalityCode) ? `${personalInfo.nationalityCode} - ${personalInfo.nationDesc}` : '-';
+            case 'identityNeverExpire':
+                if (personalInfo.identityNeverExpire) {
+                    return 'ตลอดชีพ';
+                }
+                return handleEmptyStringFormApi(personalInfo.identityExpireDate);
             case 'identityExpireDate':
                 return !isEmptyStringFormApi(personalInfo.identityExpireDate) ? dayjs(personalInfo.identityExpireDate).format('DD/MM/YYYY') : '-';
             case 'genderCode':
-                if (personalInfo.genderCode == 'M') {
-                    return '0'
-                }
-                if (personalInfo.genderCode == 'F') {
-                    return '1'
-                }
-                if (personalInfo.genderCode == 'O') {
-                    return '2'
-                }
                 return handleEmptyStringFormApi(personalInfo.genderCode);
             case 'gender':
-                let gender = '';
-                if (personalInfo.genderCode == 'M') {
-                    gender = '0'
-                }
-                if (personalInfo.genderCode == 'F') {
-                    gender = '1'
-                }
-                if (personalInfo.genderCode == 'O') {
-                    gender = '2'
-                }
-                return !isEmptyStringFormApi(personalInfo.genderCode) ? `${gender !== '' ? gender : personalInfo.genderCode} - ${personalInfo.gender}` : '-';
+                return !isEmptyStringFormApi(personalInfo.genderCode) ? `${personalInfo.genderCode} - ${personalInfo.gender}` : '-';
             case 'titleCode':
                 return handleEmptyStringFormApi(personalInfo.titleCodeTh);
             case 'title':
@@ -98,7 +87,7 @@ export default function PersonalInfo() {
             case 'lastNameEn':
                 return handleEmptyStringFormApi(personalInfo.lastNameEn);
             case 'birthDate':
-                return !isEmptyStringFormApi(personalInfo.birthDate) ? dayjs(personalInfo.birthDate).format('DD/MM/YYYY') : '-';
+                return !isEmptyStringFormApi(personalInfo.birthDate) ? dayjs(personalInfo.birthDate).format('YYYY-MM-DD') : '-';
             default:
                 return '-';
         }
@@ -158,7 +147,7 @@ export default function PersonalInfo() {
                 title="ข้อมูลส่วนตัว"
             />
             <ContentLoading
-                isLoading={isLoading || isLoadingPersonType || isLoadingReference || isLoadingCountries || isLoadingTitles}
+                isLoading={isLoading || isLoadingPersonType || isLoadingReference || isLoadingCountries || isLoadingTitles || isLoadingNation}
                 error={error ? error.message : undefined}
             >
                 <div className="grid grid-cols-3">
@@ -210,17 +199,36 @@ export default function PersonalInfo() {
                         isEditable={isEditable}
                         register={register}
                         name="nationalityCode"
-                        // type="select"
-                        // list={branches}
+                        type="select"
+                        list={nation}
                         isRequired
                     />
                     <InputHorizontal
                         label="วันที่หมดอายุบัตร (ค.ศ.)"
-                        defaultValue={data && normalizationData('identityExpireDate', data) || '-'}
+                        defaultValue={data &&
+                            (
+                                normalizationData('identityExpireDate', data) !== '-'
+                                    ? normalizationData('identityExpireDate', data)
+                                    : null
+                            )
+                            || undefined}
+                        textShow={data && normalizationData('identityNeverExpire', data) || '-'}
                         isEditable={isEditable}
                         register={register}
+                        type="date"
+                        minDate={dayjs().format('YYYY-MM-DD')}
                         name="identityExpireDate"
-                        isRequired
+                        isRequired={false}
+                        rightInputComponent={
+                            isEditable ?
+                                <div className="w-[120px] flex justify-center">
+                                    <InputCheckbox
+                                        width={100}
+                                        label="ตลอดชีพ"
+                                        name="identityNeverExpire"
+                                        defaultValue={data && data.identityNeverExpire || false} />
+                                </div> : <></>
+                        }
                     />
                     <InputHorizontal
                         label="คำนำหน้า"
@@ -293,7 +301,9 @@ export default function PersonalInfo() {
                         isEditable={isEditable}
                         register={register}
                         name="birthDate"
-                        // type="date"
+                        type="date"
+                        maxDate={dayjs().subtract(18, 'year').format('YYYY-MM-DD')}
+                        onChange={(val) => setValue("birthDate", val)}
                         isRequired
                     />
                 </div>
