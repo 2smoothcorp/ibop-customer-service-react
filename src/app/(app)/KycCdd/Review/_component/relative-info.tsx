@@ -426,8 +426,8 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
             }
           ]}
         />
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
+        <Grid container spacing={4} className={'mt-4'}>
+          <Grid item xs={4} className={'text-right'}>
             <strong>มอบอำนาจในการแทนข้าพเจ้าในบัญชี</strong>
           </Grid>
           <Grid item xs={8}>
