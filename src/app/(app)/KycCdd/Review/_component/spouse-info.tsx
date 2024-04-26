@@ -24,7 +24,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
   });
 
   const fetchGetSpouse = async () => {
-    const request = await fetch(`/api/kyc/get-address/${ corporateId }`, { method: 'GET' });
+    const request = await fetch(`/api/kyc/get-spouse/${ corporateId }`, { method: 'GET' });
     const response: KycSpouseInfoOutputDataResponse = await request.json();
 
     const { data } = response;

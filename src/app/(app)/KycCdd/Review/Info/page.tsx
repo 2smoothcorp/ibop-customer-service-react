@@ -9,9 +9,9 @@ import {
   type ChangeEvent,
   Fragment,
   useEffect,
-  useState,
-  useMemo
+  useState
 } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Grid } from '@mui/material';
 import TabNavbar from '@/components/navbar/tab-navbar';
 
@@ -26,6 +26,7 @@ const Page = (): ReactElement => {
   const [ inputCorp, setInputCorp ] = useState('');
   const [ corporateId, setCorporateId ] = useState('');
   const [ stepIndex, setStepIndex ] = useState(0);
+  const router = useRouter();
   const stepData = ['ข้อมูลส่วนตัว', 'ข้อมูลที่อยู่', 'ข้อมูลคู่สมรส', 'ข้อมูลบุคคลที่เกี่ยวข้อง'];
 
   useEffect(() => {}, []);
@@ -40,7 +41,19 @@ const Page = (): ReactElement => {
   const onClickSearch = () => { setCorporateId(inputCorp || ''); }
   const onClickClear = () => { setInputCorp(''); setCorporateId(''); }
 
-  const renderSearchCorporateId = () => {
+  const onClickPrevStep = () => {
+    const { back } = router;
+    if(stepIndex === 0) { return back(); }
+    setStepIndex((current) => current - 1);
+  }
+
+  const onClickNextStep = () => {
+    const {} = router;
+    if(stepIndex === stepData.length - 1) { return; }
+    setStepIndex((current) => current + 1);
+  }
+
+  const renderSearchCorporateId = (): ReactElement => {
     return (
       <Grid container spacing={4} className={'flex items-center gap-4'}>
         <Grid item>
@@ -79,7 +92,7 @@ const Page = (): ReactElement => {
     );
   }
 
-  const renderStepperView = () => {
+  const renderStepperView = (): ReactElement => {
     switch(stepIndex) {
       case 0: return (<ReviewPersonalInfo corporateId={ corporateId } />);
       case 1: return (<ReviewAddrInfo corporateId={ corporateId } />);
@@ -89,12 +102,26 @@ const Page = (): ReactElement => {
     }
   }
 
+  const renderStepperControlButtons = (): ReactElement => {
+    return (
+      <div className={'flex items-center justify-end gap-x-4 mt-4 p-4'}>
+        <Button variant={'contained'} color={'secondary'} onClick={ onClickPrevStep }>
+          ย้อนกลับ
+        </Button>
+        <Button variant={'contained'} onClick={ onClickNextStep }>
+          ถัดไป
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <Fragment>
       <TabNavbar list={ stepData } onChange={ onChangeStep } />
       <div className={'p-4'}>
         { renderSearchCorporateId() }
         { renderStepperView() }
+        { renderStepperControlButtons() }
       </div>
     </Fragment>
   );

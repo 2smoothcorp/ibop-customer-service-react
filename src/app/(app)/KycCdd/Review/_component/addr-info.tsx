@@ -52,7 +52,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _floor = _info?.floor || '';
     const _soi = _info?.soi || '';
     const _street = _info?.street || '';
-    const _country = `${ _info?.countryCode || '' } - ${ _info}`.trim();
+    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryCode }`.trim();
     const _zipCode = _info?.zipCode || '';
     const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
     const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
@@ -172,11 +172,11 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _floor = _info?.floor || '';
     const _soi = _info?.soi || '';
     const _street = _info?.street || '';
-    const _country = `${ _info?.countryCode || '' }`.trim();
+    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName || '' }`.trim();
     const _zipCode = _info?.zipCode || '';
-    const _province = `${ _info?.provinceCode || '' }`.trim();
-    const _district = `${ _info?.districtCode || '' }`.trim();
-    const _subDistrict = `${ _info?.subDistrictCode || '' }`.trim();
+    const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
+    const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
+    const _subDistrict = `${ _info?.subDistrictCode || '' } - ${ _info?.subDistrictCode || '' }`.trim();
     const _customAddress1 = _info?.customAddress1 || '';
     const _customAddress2 = _info?.customAddress2 || '';
     const _customAddress3 = _info?.customAddress3 || '';
