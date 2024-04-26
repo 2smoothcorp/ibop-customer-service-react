@@ -11,28 +11,27 @@ import {
   useState
 } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Grid } from '@mui/material';
-import type { GridPaginationModel } from '@mui/x-data-grid';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { Button, Grid } from '@mui/material';
+import type { GridPaginationModel } from '@mui/x-data-grid';
 
-import Table from '@/components/table/table';
 import { InputText } from '@/components/input-text';
+import Table from '@/components/table/table';
 
 import { search } from './list-action';
 
-export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
-  const [ tablePaginator, setTablePaginator ] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
-  const [ tableFilter, setTableFilter ] = useState<TableFilter>({});
+export const ListView = ({ }: ListViewProps): ReactElement => {
+  const [tablePaginator, setTablePaginator] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
+  const [tableFilter, setTableFilter] = useState<TableFilter>({});
   const router = useRouter();
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const { data: tableData, isLoading } = useQuery({
     queryFn: () => fetchGetTableData(),
     queryKey: [
       'kyccdd-table-data',
-      corporateId,
       tablePaginator.page, tablePaginator.pageSize,
       tableFilter.corporateId,
       tableFilter.refId,
@@ -47,10 +46,10 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
     const response = await search({ ...tableFilter, ...tablePaginator });
 
     const { data } = response;
-    if(!data) { return ({ items: [], totalItems: 0, totalPages: 0 }); }
+    if (!data) { return ({ items: [], totalItems: 0, totalPages: 0 }); }
 
     const tableDs: Array<TableDataModel> = [];
-    for(const item of data) {
+    for (const item of data) {
       const {
         logTimestamp,
         corporateId,
@@ -68,7 +67,7 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
         referenceType: referenceType || '',
         referenceId: referenceId || '',
         fullname: name || '',
-        riskGroup: `${ kycRiskLevel } - ${ kycRiskLevelDescription }`,
+        riskGroup: `${kycRiskLevel} - ${kycRiskLevelDescription}`,
         riskScore: kycScore || 0,
         createdBy: logUser || ''
       });
@@ -101,7 +100,7 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
   }
 
   const onClickReviewButton = () => { router.push(`/KycCdd/Review/Info`); }
-  const renderTextInput = (name: string) => (<InputText name={ name } />);
+  const renderTextInput = (name: string) => (<InputText name={name} />);
 
   // const renderDateInput = (name: string) => {
   //   return (
@@ -119,18 +118,18 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
     ];
 
     return (
-      <form action={ formActionSearch }>
+      <form action={formActionSearch}>
         <Grid container>
           <Grid item flex={1}>
             <Grid container spacing={2} className={'mt-2 px-6'}>
               {
                 fields.map(({ label, input }, idx) => (
-                  <Grid key={`search-field-${ idx + 1 }`} item xs={12} md={4} className={'flex items-center gap-4'}>
+                  <Grid key={`search-field-${idx + 1}`} item xs={12} md={4} className={'flex items-center gap-4'}>
                     <Grid item flex={1} className={'text-left md:text-right'}>
-                      { label }
+                      {label}
                     </Grid>
                     <Grid item flex={3}>
-                      { input }
+                      {input}
                     </Grid>
                   </Grid>
                 ))
@@ -143,7 +142,7 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
                 <Button type={'submit'}
                   variant={'contained'}
                   className={'bg-primary-950 disabled:bg-primary-900 hover:bg-primary-900 transition-all text-white disabled:text-white text-xl py-0 w-25 h-10'}
-                  // disabled={pending}
+                // disabled={pending}
                 >
                   ค้นหา
                 </Button>
@@ -178,8 +177,8 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
                   <Button
                     variant={'contained'}
                     size={'small'}
-                    tabIndex={ hasFocus ? 0 : -1}
-                    onClick={() => { router.push(`/KycCdd/CustomerInfo/${ id }`) }}
+                    tabIndex={hasFocus ? 0 : -1}
+                    onClick={() => { router.push(`/KycCdd/CustomerInfo/${id}`) }}
                   >
                     <strong>ดูรายละเอียด</strong>
                   </Button>
@@ -195,13 +194,13 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
             { field: 'riskScore', headerName: 'คะแนน', type: 'number', width: 100 },
             { field: 'createdBy', headerName: 'ผู้ทำรายการ', flex: 1 }
           ]}
-          rows={ tableData?.items || [] }
-          totalItems={ tableData?.totalItems || 0 }
-          totalPages={ tableData?.totalPages || 0 }
+          rows={tableData?.items || []}
+          totalItems={tableData?.totalItems || 0}
+          totalPages={tableData?.totalPages || 0}
           getRowId={(row) => row.corporateId}
-          paginationModel={ tablePaginator }
-          setPaginationModel={ setTablePaginator }
-          isLoading={ isLoading }
+          paginationModel={tablePaginator}
+          setPaginationModel={setTablePaginator}
+          isLoading={isLoading}
         />
       </div>
     );
@@ -209,21 +208,21 @@ export const ListView = ({ corporateId }: ListViewProps): ReactElement => {
 
   return (
     <Fragment>
-      { renderSearchPanel() }
+      {renderSearchPanel()}
 
       <div className={'px-4 mt-4 flex justify-end'}>
-        <Button variant={'contained'} onClick={ onClickReviewButton }>
+        <Button variant={'contained'} onClick={onClickReviewButton}>
           ทบทวนกลุ่มความเสี่ยง
         </Button>
       </div>
 
-      { renderTable() }
+      {renderTable()}
     </Fragment>
   );
 }
 
 interface ListViewProps {
-  corporateId: string;
+  //
 }
 
 interface TableDataModel {
