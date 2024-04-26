@@ -12,11 +12,11 @@ export async function GET(_: NextRequest, { }: ParamSegment) {
     const employeeId = await ironSessionService.getEmployeeId()
     try {
         const apiService = await services.getCustomerServiceApi();
-        const result = await apiService.getMasterDataApi().masterDataOccupationGet({ employeeID: employeeId });
+        const result = await apiService.getMasterDataApi().masterDataNationGet();
         return NextResponse.json(result);
     }
     catch (err: any) {
-        return NextResponse.json({ message: `[ERROR] /api/master-data/[${employeeId}]/occupation`, err }, { status: 500 });
+        return NextResponse.json({ message: `[ERROR] /api/master-data/[${employeeId}]/nation`, err }, { status: 500 });
     }
 }
 

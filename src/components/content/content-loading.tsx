@@ -1,4 +1,4 @@
-import IconLoading from "../custom/icon-loading"
+import { CircularProgress } from "@mui/material"
 
 export default function ContentLoading({
     isLoading,
@@ -11,7 +11,8 @@ export default function ContentLoading({
         {
             isLoading
                 ? <div className={"flex justify-center items-center " + className} style={{ height: hight }}>
-                    <IconLoading size={12} />
+                    {/* <IconLoading size={12} /> */}
+                    <CircularProgress color="primary" />
                 </div>
                 : (
                     error
