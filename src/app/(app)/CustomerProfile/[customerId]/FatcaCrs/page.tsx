@@ -1,7 +1,6 @@
 "use client";
 
 import IconLoading from "@/components/custom/icon-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
 import InputSwitch from "@/components/custom/input-switch";
 import HeaderNavbar from "@/components/navbar/header-navbar";
 import HeaderTitle from "@/components/navbar/header-title";
@@ -31,7 +30,7 @@ export default function FatcaCrsPage() {
     const onSubmit: SubmitHandler<SubmitInput> = (data) => {
         if (!isLoadingSubmit) {
             setIsLoadingSubmit(true);
-            console.log(data);
+            // console.log(data);
             setTimeout(() => {
                 setIsLoadingSubmit(false);
                 setIsEditable(false);
