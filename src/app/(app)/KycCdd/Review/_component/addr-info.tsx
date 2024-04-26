@@ -172,7 +172,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _floor = _info?.floor || '';
     const _soi = _info?.soi || '';
     const _street = _info?.street || '';
-    const _country = '';
+    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName || '' }`.trim();
     const _zipCode = _info?.zipCode || '';
     const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
     const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
