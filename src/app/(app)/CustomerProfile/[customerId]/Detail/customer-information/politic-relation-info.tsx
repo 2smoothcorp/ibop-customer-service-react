@@ -77,7 +77,7 @@ export default function PoliticRelationInfo() {
                 hight={120}
             >
                 <div className="flex flex-col">
-                    <span className="mx-4 font-bold">ท่านเป็นผู้มีสถานภาพทางการเมืองหรือเป็นสมาชิกในครอบครัว หรือเป็นผู้ใกล้ชิดกับบุคคลผู้มีสถานภาพทางการเมืองหรือไม่ * </span>
+                    <span className="mx-4 font-bold">ท่านเป็นผู้มีสถานภาพทางการเมืองหรือเป็นสมาชิกในครอบครัว หรือเป็นผู้ใกล้ชิดกับบุคคลผู้มีสถานภาพทางการเมืองหรือไม่ <span className="text-red-500">*</span></span>
                     <span className="mx-4">{data && data.politicianRelation ? `ใช่ - ${data && data.politicianPosition}` : "ไม่ใช่"}</span>
                 </div>
             </ContentLoading>

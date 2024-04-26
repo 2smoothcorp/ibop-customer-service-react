@@ -25,38 +25,40 @@ const SearchCustomerProfileListTable = (props: SearchCustomerProfileListTablePro
             headerName: "Action",
             type: "actions",
             width: 150,
+            align: "center",
             renderCell: (params: GridRenderCellParams<ColProps>) => {
                 return (
-                    <strong>
-                        <Button
-                            variant="contained"
-                            size="small"
-                            className="bg-[#1F346B] hover:bg-[#1F346B] hover:brightness-95 text-xl py-0 w-25 h-10 font-db-helvethaica"
-                            style={{ marginLeft: 16 }}
-                            tabIndex={params.hasFocus ? 0 : -1}
-                            onClick={() => router.push(`/CustomerProfile/${params.id}/Detail`)}
-                        >
+
+                    <Button
+                        variant="contained"
+                        size="small"
+                        className="bg-[#1F346B] hover:bg-[#1F346B] hover:brightness-95 text-[18px] py-0  h-10 font-db-helvethaica"
+                        // style={{ marginLeft: 16 }}
+                        tabIndex={params.hasFocus ? 0 : -1}
+                        onClick={() => router.push(`/CustomerProfile/${params.id}/Detail`)}
+                    >
+                        <strong>
                             ดูรายละเอียด
-                        </Button>
-                    </strong>
+                        </strong>
+                    </Button>
                 )
             }
         },
-        { field: "corporateId", headerName: "Corporate ID" },
-        { field: "fullNameTH", headerName: "ชื่อ - นามสกุล (ไทย)" },
-        { field: "fullNameEN", headerName: "ชื่อ - นามสกุล (Eng)" },
-        { field: "referenceId", headerName: "เลขที่หลักฐาน" },
-        { field: "email", headerName: "อีเมล" },
-        { field: "phoneNumber", headerName: "หมายเลขโทรศัพท์" },
-        { field: "accountCreateDate", headerName: "วันที่เปิดบัญชี" },
-        { field: "accountBranch", headerName: "สาขา" },
-        { field: "advisor", headerName: "ผู้แนะนำการลงทุน", flex: 1 },
+        { field: "corporateId", headerName: "Corporate ID", minWidth: 100, maxWidth: 100, headerAlign: "center", align: "center" },
+        { field: "fullNameTH", headerName: "ชื่อ - นามสกุล (ไทย)", flex: 1, headerAlign: "center", minWidth: 200 },
+        { field: "fullNameEN", headerName: "ชื่อ - นามสกุล (Eng)", flex: 1, headerAlign: "center", minWidth: 200 },
+        { field: "referenceId", headerName: "เลขที่หลักฐาน", minWidth: 120, maxWidth: 120, headerAlign: "center" },
+        { field: "email", headerName: "อีเมล", flex: 1, headerAlign: "center", minWidth: 200 },
+        { field: "phoneNumber", headerName: "หมายเลขโทรศัพท์", minWidth: 120, maxWidth: 120, headerAlign: "center" },
+        { field: "accountCreateDate", headerName: "วันที่เปิดบัญชี", minWidth: 100, maxWidth: 100, align: "center", headerAlign: "center" },
+        { field: "accountBranch", headerName: "สาขา", headerAlign: "center", align: "center" },
+        { field: "advisor", headerName: "ผู้แนะนำการลงทุน", headerAlign: "center" },
     ];
 
 
     const getRowId = (row: any) => row.corporateId;
 
-    console.log(`pending`, pending)
+    // console.log(`pending`, pending)
 
     return (
 
@@ -70,7 +72,7 @@ const SearchCustomerProfileListTable = (props: SearchCustomerProfileListTablePro
                 paginationModel={paginationModel}
                 setPaginationModel={setPaginationModel}
                 //onPageChange={onPageChange}
-                isLoading={ props.isLoading || pending}
+                isLoading={props.isLoading || pending}
             />
         </div>
 

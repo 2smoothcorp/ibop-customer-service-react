@@ -128,7 +128,7 @@ export default function PersonalInfo() {
                 if (response.status == 200) {
                     const { data } = response;
                     if (data && data.personalInfo) {
-                        console.log(`data.personalInfo`, data.personalInfo)
+                        // console.log(`data.personalInfo`, data.personalInfo)
                         setDefaultData(data.personalInfo)
                         return data.personalInfo
                     }
