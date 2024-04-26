@@ -14,4 +14,5 @@ export * from './MaintenanceApi';
 export * from './MasterDataApi';
 export * from './ReportApi';
 export * from './SuitabilityApi';
+export * from './TestDataChangeApprovalApi';
 export * from './VerificationApi';
