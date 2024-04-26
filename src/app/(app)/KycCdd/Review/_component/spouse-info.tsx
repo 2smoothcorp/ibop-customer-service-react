@@ -37,11 +37,11 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
   }
 
   const renderFormSpouse = () => {
-    const _maritalStatus = spouseInfo?.familyStatus || '';
-    const _refType = spouseInfo?.spouseReferenceType || '';
-    const _refId = spouseInfo?.spouseIdentityId || '';
-    const _firstname = spouseInfo?.spouseFirstName || '';
-    const _lastname = spouseInfo?.spouseLastName || '';
+    const _maritalStatus = spouseInfo?.familyStatus || '-';
+    const _refType = spouseInfo?.spouseReferenceType || '-';
+    const _refId = spouseInfo?.spouseIdentityId || '-';
+    const _firstname = spouseInfo?.spouseFirstName || '-';
+    const _lastname = spouseInfo?.spouseLastName || '-';
     return (
       <Form
         action={ formAction }

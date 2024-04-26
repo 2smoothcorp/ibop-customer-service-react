@@ -65,11 +65,11 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
   const renderFormBeneficiary = () => {
     const { data } = beneficiaryInfo;
-    const _type = data?.beneficiaryType || '';
-    const _firstname = data?.beneficiaryFirstName || '';
-    const _lastname = data?.beneficiaryLastName || '';
-    const _refType = data?.referenceType || '';
-    const _refId = data?.referenceId || '';
+    const _type = data?.beneficiaryType || '-';
+    const _firstname = data?.beneficiaryFirstName || '-';
+    const _lastname = data?.beneficiaryLastName || '-';
+    const _refType = data?.referenceType || '-';
+    const _refId = data?.referenceId || '-';
     return (
       <Form isEditing={ isEditingBeneficiary }
         action={formBeneficiaryAction}
@@ -232,28 +232,28 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
   const renderFormAttorney = () => {
     const { data } = attorneyInfo;
-    const _refType = data?.referenceType || '';
-    const _refId = data?.referenceId || '';
-    const _nation = `${data?.nationCode || ''}` //
+    const _refType = data?.referenceType || '-';
+    const _refId = data?.referenceId || '-';
+    const _nation = `${ data?.nationCode || '' } - ${ data?.nationName || '' }`.trim();
     const _title = (data?.titleOther) ? data?.titleOther : `${ data?.titleCode || '' } - ${ data?.titleName || '' }`.trim();
-    const _name = data?.name || '';
+    const _name = data?.name || '-';
     const _relationship = (data?.relationOther) ? data?.relationOther || '' : `${ data?.relationCode || ''} - ${ data?.relationName || '' }`.trim();
-    const _mobileNo = data?.mobile || '';
-    const _addressNo = data?.addressNo || '';
-    const _moo = data?.moo || '';
-    const _buildingOrVillage = data?.buildingOrVillage || '';
-    const _roomNo = data?.roomNo || '';
-    const _floor = data?.floor || '';
-    const _soi = data?.soi || '';
-    const _street = data?.street || '';
+    const _mobileNo = data?.mobile || '-';
+    const _addressNo = data?.addressNo || '-';
+    const _moo = data?.moo || '-';
+    const _buildingOrVillage = data?.buildingOrVillage || '-';
+    const _roomNo = data?.roomNo || '-';
+    const _floor = data?.floor || '-';
+    const _soi = data?.soi || '-';
+    const _street = data?.street || '-';
     const _country = `${ data?.countryCode || '' } - ${ data?.countryname || '' }`.trim();
-    const _postCode = data?.postCode || '';
+    const _postCode = data?.postCode || '-';
     const _province = `${ data?.provinceCode || '' } - ${ data?.provinceName || '' }`.trim();
     const _amphur = `${ data?.amphurCode || '' } - ${ data?.amphurName || '' }`.trim();
     const _tambon = `${ data?.tambonCode || '' } - ${ data?.tambonName || '' }`.trim();
-    const _customAddr1 = data?.customAddress1 || '';
-    const _customAddr2 = data?.customAddress2 || '';
-    const _customAddr3 = data?.customAddress3 || '';
+    const _customAddr1 = data?.customAddress1 || '-';
+    const _customAddr2 = data?.customAddress2 || '-';
+    const _customAddr3 = data?.customAddress3 || '-';
 
     const _productCodes = (data?.productCode || '').split(',');
     const _nominatedProducts: Array<string> = [];

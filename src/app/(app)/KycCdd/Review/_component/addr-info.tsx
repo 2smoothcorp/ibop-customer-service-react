@@ -45,21 +45,21 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
   const renderFormCurrentAddress = () => {
     const _info = addressList?.currentAddr;
-    const _addressNo = _info?.addressNo || '';
-    const _moo = _info?.moo || '';
-    const _buildingOrVillage = _info?.buildingOrVillage || '';
-    const _roomNo = _info?.roomNo || '';
-    const _floor = _info?.floor || '';
-    const _soi = _info?.soi || '';
-    const _street = _info?.street || '';
-    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryCode }`.trim();
-    const _zipCode = _info?.zipCode || '';
+    const _addressNo = _info?.addressNo || '-';
+    const _moo = _info?.moo || '-';
+    const _buildingOrVillage = _info?.buildingOrVillage || '-';
+    const _roomNo = _info?.roomNo || '-';
+    const _floor = _info?.floor || '-';
+    const _soi = _info?.soi || '-';
+    const _street = _info?.street || '-';
+    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName }`.trim();
+    const _zipCode = _info?.zipCode || '-';
     const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
     const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
     const _subDistrict = `${ _info?.subDistrictCode || '' } - ${ _info?.subDistrictName || '' }`.trim();
-    const _customAddress1 = _info?.customAddress1 || '';
-    const _customAddress2 = _info?.customAddress2 || '';
-    const _customAddress3 = _info?.customAddress3 || '';
+    const _customAddress1 = _info?.customAddress1 || '-';
+    const _customAddress2 = _info?.customAddress2 || '-';
+    const _customAddress3 = _info?.customAddress3 || '-';
     return (
       <Form
         action={formCurrentAddrAction}
@@ -165,21 +165,21 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
   const renderFormWorkAddress = () => {
     const _info = addressList?.workAddr;
-    const _addressNo = _info?.addressNo || '';
-    const _moo = _info?.moo || '';
-    const _buildingOrVillage = _info?.buildingOrVillage || '';
-    const _roomNo = _info?.roomNo || '';
-    const _floor = _info?.floor || '';
-    const _soi = _info?.soi || '';
-    const _street = _info?.street || '';
+    const _addressNo = _info?.addressNo || '-';
+    const _moo = _info?.moo || '-';
+    const _buildingOrVillage = _info?.buildingOrVillage || '-';
+    const _roomNo = _info?.roomNo || '-';
+    const _floor = _info?.floor || '-';
+    const _soi = _info?.soi || '-';
+    const _street = _info?.street || '-';
     const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName || '' }`.trim();
-    const _zipCode = _info?.zipCode || '';
+    const _zipCode = _info?.zipCode || '-';
     const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
     const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
     const _subDistrict = `${ _info?.subDistrictCode || '' } - ${ _info?.subDistrictCode || '' }`.trim();
-    const _customAddress1 = _info?.customAddress1 || '';
-    const _customAddress2 = _info?.customAddress2 || '';
-    const _customAddress3 = _info?.customAddress3 || '';
+    const _customAddress1 = _info?.customAddress1 || '-';
+    const _customAddress2 = _info?.customAddress2 || '-';
+    const _customAddress3 = _info?.customAddress3 || '-';
     return (
       <Form
         action={formWorkAddrAction}
