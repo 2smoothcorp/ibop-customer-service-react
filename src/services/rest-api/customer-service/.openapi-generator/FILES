@@ -44,8 +44,6 @@ models/Answer.ts
 models/AnswerFACTA.ts
 models/AnswerInput.ts
 models/AnswerListDataResponse.ts
-models/Attorney.ts
-models/AttorneyDataResponse.ts
 models/AttorneyInfoModel.ts
 models/AttorneyInfoOutput.ts
 models/AttorneyInfoOutputListDataResponse.ts
@@ -79,7 +77,6 @@ models/ConsentSaveCorparateIdPostRequest.ts
 models/ConsentSaveInput.ts
 models/ContactInfoOutput.ts
 models/ContactInfoOutputDataResponse.ts
-models/Country.ts
 models/CustomerInfoListResponse.ts
 models/CustomerInfoListResponsePagination.ts
 models/CustomerProfileReportOutput.ts
@@ -123,13 +120,15 @@ models/IsValidOutputDataResponse.ts
 models/KycAddressInfoInput.ts
 models/KycAddressOutput.ts
 models/KycAddressOutputListDataResponse.ts
+models/KycAttornetOutput.ts
+models/KycAttornetOutputDataResponse.ts
 models/KycBeneficiaryInfoOutput.ts
 models/KycBeneficiaryInfoOutputDataResponse.ts
 models/KycGetAllOutput.ts
 models/KycGetAllOutputListDataResponse.ts
 models/KycPersonalInfoInput.ts
-models/KycPersonalInfoOutput.ts
-models/KycPersonalInfoOutputDataResponse.ts
+models/KycPersonalOutput.ts
+models/KycPersonalOutputDataResponse.ts
 models/KycResultOutput.ts
 models/KycResultResponse.ts
 models/KycResultResponseDataResponse.ts
@@ -142,7 +141,6 @@ models/MaintenanceAccountOfficerPutRequest.ts
 models/MasterATSBankOutput.ts
 models/MenuResponse.ts
 models/MenuResponseListDataResponse.ts
-models/Nation.ts
 models/OccupationInfoModel.ts
 models/OccupationInfoResponse.ts
 models/OccupationInfoResponseDataResponse.ts
@@ -158,8 +156,6 @@ models/PoliticRelationInfoResponseDataResponse.ts
 models/Question.ts
 models/QuestionsOutput.ts
 models/QuestionsOutputDataResponse.ts
-models/ReferenceType.ts
-models/Relation.ts
 models/RequestCustomerInput.ts
 models/ReserveAccountNoInput.ts
 models/ReserveAccountNoOutput.ts
@@ -177,7 +173,6 @@ models/TestDataChangeApprovalSavePostRequest.ts
 models/TestDataChangeInput.ts
 models/TestDataChangeOutput.ts
 models/TinInfoOutput.ts
-models/Title.ts
 models/VerifyRequestOutput.ts
 models/VerifyRequestVerifyRequestOutputPagination.ts
 models/index.ts

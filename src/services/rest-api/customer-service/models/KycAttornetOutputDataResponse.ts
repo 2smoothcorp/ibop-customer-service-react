@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { FinancialInfoOutput } from './FinancialInfoOutput';
+import type { KycAttornetOutput } from './KycAttornetOutput';
 import {
-    FinancialInfoOutputFromJSON,
-    FinancialInfoOutputFromJSONTyped,
-    FinancialInfoOutputToJSON,
-} from './FinancialInfoOutput';
+    KycAttornetOutputFromJSON,
+    KycAttornetOutputFromJSONTyped,
+    KycAttornetOutputToJSON,
+} from './KycAttornetOutput';
 
 /**
  * 
  * @export
- * @interface FinancialInfoOutputDataResponse
+ * @interface KycAttornetOutputDataResponse
  */
-export interface FinancialInfoOutputDataResponse {
+export interface KycAttornetOutputDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof FinancialInfoOutputDataResponse
+     * @memberof KycAttornetOutputDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof FinancialInfoOutputDataResponse
+     * @memberof KycAttornetOutputDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof FinancialInfoOutputDataResponse
+     * @memberof KycAttornetOutputDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {FinancialInfoOutput}
-     * @memberof FinancialInfoOutputDataResponse
+     * @type {KycAttornetOutput}
+     * @memberof KycAttornetOutputDataResponse
      */
-    data?: FinancialInfoOutput | null;
+    data?: KycAttornetOutput | null;
 }
 
 /**
- * Check if a given object implements the FinancialInfoOutputDataResponse interface.
+ * Check if a given object implements the KycAttornetOutputDataResponse interface.
  */
-export function instanceOfFinancialInfoOutputDataResponse(value: object): boolean {
+export function instanceOfKycAttornetOutputDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function FinancialInfoOutputDataResponseFromJSON(json: any): FinancialInfoOutputDataResponse {
-    return FinancialInfoOutputDataResponseFromJSONTyped(json, false);
+export function KycAttornetOutputDataResponseFromJSON(json: any): KycAttornetOutputDataResponse {
+    return KycAttornetOutputDataResponseFromJSONTyped(json, false);
 }
 
-export function FinancialInfoOutputDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): FinancialInfoOutputDataResponse {
+export function KycAttornetOutputDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycAttornetOutputDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function FinancialInfoOutputDataResponseFromJSONTyped(json: any, ignoreDi
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : FinancialInfoOutputFromJSON(json['data']),
+        'data': !exists(json, 'data') ? undefined : KycAttornetOutputFromJSON(json['data']),
     };
 }
 
-export function FinancialInfoOutputDataResponseToJSON(value?: FinancialInfoOutputDataResponse | null): any {
+export function KycAttornetOutputDataResponseToJSON(value?: KycAttornetOutputDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function FinancialInfoOutputDataResponseToJSON(value?: FinancialInfoOutpu
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': FinancialInfoOutputToJSON(value.data),
+        'data': KycAttornetOutputToJSON(value.data),
     };
 }
 
