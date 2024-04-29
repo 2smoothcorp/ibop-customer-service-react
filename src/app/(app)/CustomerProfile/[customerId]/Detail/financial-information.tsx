@@ -16,6 +16,13 @@ const FinancialInformation = () => {
 
     const [isEditable, setIsEditable] = React.useState<boolean>(false);
 
+    const isRequired = () => {
+        if (isEditable) {
+            return <span className="text-red-500">*</span>
+        }
+        return <></>
+    }
+
     const { data, isLoading, error } = useQuery({
         queryKey: ['financialInfo', params.customerId],
         queryFn: async function () {
@@ -64,7 +71,7 @@ const FinancialInformation = () => {
                 className="gap-0"
                 title="ข้อมูลทางการเงิน"
             />
-            <div className="text-lg px-4 font-semibold tracking-wide">วัตถุประสงค์การลงทุน (เลือกได้มากกว่า 1 ข้อ) Investment Objective (You can select more than 1 item) <span className="text-red-500">*</span></div>
+            <div className="text-lg px-4 font-semibold tracking-wide">วัตถุประสงค์การลงทุน (เลือกได้มากกว่า 1 ข้อ) Investment Objective (You can select more than 1 item) {isRequired()}</div>
             {
                 (data?.data?.financialInfo?.investmentPurposeCode || []).map((purpose: string, idx: number) => {
                     const _purpose = masterDataInvestmentPurpose?.data?.filter((d) => d.rValue === purpose)[0]?.rText
@@ -80,9 +87,9 @@ const FinancialInformation = () => {
                 (data?.data?.financialInfo?.investmentPurposeCode || []).length === 0 && !data?.data?.financialInfo?.investmentPurposeOther ?
                     <div className="text-lg px-10 tracking-wide">-</div> : null
             }
-            <div className="text-lg px-4 font-semibold tracking-wide">ประเทศของแหล่งที่มาของรายได้/เงินลงทุน Country's Source of income / Investment Fund <span className="text-red-500">*</span></div>
+            <div className="text-lg px-4 font-semibold tracking-wide">ประเทศของแหล่งที่มาของรายได้/เงินลงทุน Country's Source of income / Investment Fund {isRequired()}</div>
             <div className="text-lg px-10 tracking-wide" >{getCountryText(data?.data?.financialInfo?.investmentFundCode || '-')}</div>
-            <div className="text-lg px-4 font-semibold tracking-wide">แหล่งที่มาของรายได้ (เลือกได้มากกว่า 1 ข้อ) Source of income (You can select more than 1 item) <span className="text-red-500">*</span></div>
+            <div className="text-lg px-4 font-semibold tracking-wide">แหล่งที่มาของรายได้ (เลือกได้มากกว่า 1 ข้อ) Source of income (You can select more than 1 item) {isRequired()}</div>
             {
                 (data?.data?.financialInfo?.incomeSourceCode || []).map((incomeSource: string, idx: number) => {
                     const _incomeSource = masterDataIncomeSource?.data?.filter((d) => d.rValue === incomeSource)[0]?.rText
@@ -98,11 +105,11 @@ const FinancialInformation = () => {
                 (data?.data?.financialInfo?.incomeSourceCode || []).length === 0 && !data?.data?.financialInfo?.incomeSourceOther ?
                     <div className="text-lg px-10 tracking-wide">-</div> : null
             }
-            <div className="text-lg px-4 font-semibold tracking-wide">รายได้ต่อเดือน (บาท) Monthly Income (Baht) <span className="text-red-500">*</span></div>
+            <div className="text-lg px-4 font-semibold tracking-wide">รายได้ต่อเดือน (บาท) Monthly Income (Baht) {isRequired()}</div>
             <div className="text-lg px-10 tracking-wide" >{getIncomeRateText(data?.data?.financialInfo?.incomeRateCode || '-')}</div>
-            <div className="text-lg px-4 font-semibold tracking-wide">ประสบการณ์การลงทุน (ปี) Experience in Investment (Year) <span className="text-red-500">*</span></div>
+            <div className="text-lg px-4 font-semibold tracking-wide">ประสบการณ์การลงทุน (ปี) Experience in Investment (Year) {isRequired()}</div>
             <div className="text-lg px-10 tracking-wide" >{data?.data?.financialInfo?.investmentYear || 'ไม่มีประสบการณ์'}</div>
-            <div className="text-lg px-4 font-semibold tracking-wide">มูลค่าทรัพย์สิน (บาท) Asset Value (Baht) <span className="text-red-500">*</span></div>
+            <div className="text-lg px-4 font-semibold tracking-wide">มูลค่าทรัพย์สิน (บาท) Asset Value (Baht) {isRequired()}</div>
             <div className="text-lg px-10 tracking-wide">
                 {data?.data?.financialInfo?.assetValue?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") || '-'}
             </div>
