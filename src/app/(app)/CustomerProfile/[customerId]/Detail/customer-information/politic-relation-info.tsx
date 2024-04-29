@@ -81,7 +81,7 @@ export default function PoliticRelationInfo() {
                 <ContentLabel
                     label="ท่านเป็นผู้มีสถานภาพทางการเมืองหรือเป็นสมาชิกในครอบครัว หรือเป็นผู้ใกล้ชิดกับบุคคลผู้มีสถานภาพทางการเมืองหรือไม่"
                 >
-                    <span className="mx-4">{data && data.politicianRelation ? `ใช่ - ${data && data.politicianPosition}` : "ไม่ใช่"}</span>
+                    {data && data.politicianRelation ? `ใช่ - ${data && data.politicianPosition}` : "ไม่ใช่"}
                 </ContentLabel>
             </ContentLoading>
 
