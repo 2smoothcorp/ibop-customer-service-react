@@ -21,7 +21,7 @@ import Table from '@/components/table/table';
 import { AppLoader } from '@/components/app-loader';
 import DetailSection from '@/containers/detail-section/detail-section';
 import type {
-  RiskLevelResultResponseDataResponse,
+  RiskLevelResultCallbackDataResponse,
   RiskLevelResponse
 } from '@/services/rest-api/customer-service';
 
@@ -40,7 +40,7 @@ const Page = (): ReactElement => {
 
   const fetchGetRiskInfo = async () => {
     const request = await fetch(`/api/kyc/get-risk/${ corporateId }`, { method: 'GET' });
-    const response: RiskLevelResultResponseDataResponse = await request.json();
+    const response: RiskLevelResultCallbackDataResponse = await request.json();
 
     const { data } = response;
     if(!data) { return {}; }
@@ -57,6 +57,8 @@ const Page = (): ReactElement => {
     const _riskLv = riskData?.riskLevel || '-';
     const _riskDescription = riskData?.riskDescription || '-';
     const _riskScore = riskData?.score || 0;
+    const _dateStart = (riskData?.startDate) ? dayjs(riskData.startDate).format('DD/MM/YYYY') : '-'
+    const _dateEnd = (riskData?.endDate) ? dayjs(riskData.endDate).format('DD/MM/YYYY') : '-'
     return (
       <DetailSection
         topic={'ผลการจัดกลุ่มความเสี่ยงลูกค้า'}
@@ -65,8 +67,8 @@ const Page = (): ReactElement => {
           { title: 'สรุปผลกลุ่มเสี่ยงของลูกค้า', value: _riskDescription },
           { title: 'กลุ่ม', value: _riskLv },
           { title: 'คะแนน', value: `${ _riskScore }` },
-          { title: 'วันที่เริ่มต้น', value: dayjs().format('DD/MM/YYYY') },
-          { title: 'วันหมดอายุ', value: dayjs().format('DD/MM/YYYY') }
+          { title: 'วันที่เริ่มต้น', value: _dateStart },
+          { title: 'วันหมดอายุ', value: _dateEnd }
         ]}
       />
     );
