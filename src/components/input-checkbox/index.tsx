@@ -11,24 +11,24 @@ import {
   FormControlLabel,
   Grid
 } from '@mui/material';
-import type { UseFormRegister, FieldValues } from 'react-hook-form';
+import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form';
 
 export const InputCheckbox = (props: InputCheckboxProps): ReactElement => {
   useEffect(() => {}, []);
 
-  const registerHookForm = () => {
+  const registerHookForm = (): UseFormRegisterReturn | undefined => {
     const { name, register } = props;
-    if(!register) { return ({}); }
+    if(!register) { return; }
     return register(name);
   }
 
   const generateCheckbox = (): Array<ReactElement> => {
-    const { name, options } = props;
+    const { options } = props;
     return options.map(({ label, value, disabled }, idx) => {
       return (
         <Grid item key={`checkbox-item-${ idx }`}>
           <FormControlLabel
-            control={<Checkbox name={ name } disabled={ disabled } { ...registerHookForm() } />}
+            control={<Checkbox disabled={ disabled } { ...(registerHookForm() || {}) } />}
             label={ label }
             value={ value }
           />
@@ -47,5 +47,5 @@ export const InputCheckbox = (props: InputCheckboxProps): ReactElement => {
 type InputCheckboxProps = CheckboxProps & {
   name: string;
   options: Array<{ label: string; value: string; disabled?: boolean; }>;
-  register?: UseFormRegister<FieldValues>;
+  register?: UseFormRegister<any>;
 }
