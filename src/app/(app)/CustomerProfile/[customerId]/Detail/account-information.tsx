@@ -2,7 +2,8 @@
 
 import HeaderTitle from "@/components/navbar/header-title";
 import { AccountInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Button } from "@mui/material";
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
@@ -58,6 +59,13 @@ export default function AccountIn() {
                     columns={columns}
                     autoHeight
                     pageSizeOptions={[]}
+                    initialState={{
+                        pagination: {
+                            paginationModel: {
+                                pageSize: 10,
+                            },
+                        },
+                    }}
                 />
             </div>
         </>
@@ -79,9 +87,23 @@ const columns: GridColDef[] = [
         align: 'center',
         // flex: 2,
         width: 150,
+        renderCell: (params: GridRenderCellParams) => {
+            return (
+                <Button
+                    variant="contained"
+                    size="small"
+                    className="bg-[#1F346B] hover:bg-[#1F346B] hover:brightness-95 text-[16px] py-0  h-8 font-db-helvethaica"
+                    onClick={() => console.log('view detail')}
+                >
+                    <strong>
+                        ดูรายละเอียด
+                    </strong>
+                </Button>
+            )
+        }
     },
     {
-        field: 'accountType',
+        field: 'accountDescription',
         headerName: 'ประเภทบัญชี',
         headerAlign: 'center',
         // align: 'center',
