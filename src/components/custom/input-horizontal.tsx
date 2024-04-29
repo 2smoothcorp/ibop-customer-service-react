@@ -9,6 +9,7 @@ import InputTextHook from "./input-text-hook";
 
 export default function InputHorizontal({
     type = "text",
+    disabled = false,
     isEditable = false,
     label,
     name,
@@ -68,6 +69,7 @@ export default function InputHorizontal({
                                             defaultValue={defaultValue}
                                             // className={isLableCols1 ? inputCol : ""}
                                             list={list}
+                                            disabled={disabled}
                                         />
                                         : type === "number"
                                             ? <InputNumber
@@ -75,6 +77,7 @@ export default function InputHorizontal({
                                                 defaultValue={defaultValue}
                                                 // className={isLableCols1 ? inputCol : ""}
                                                 onChange={onChangeNumber}
+                                                disabled={disabled}
                                             />
                                             : type === "date"
                                                 ?
@@ -86,11 +89,13 @@ export default function InputHorizontal({
                                                     maxDate={maxDate}
                                                     minDate={minDate}
                                                     required={isRequired}
+                                                    disabled={disabled}
                                                 />
                                                 : <InputTextHook
                                                     register={register}
                                                     name={name}
                                                     defaultValue={defaultValue}
+                                                    disabled={disabled}
                                                 // className={isLableCols1 ? inputCol : ""}
                                                 />
                                 )
@@ -135,4 +140,5 @@ interface InputHorizontalProps {
     maxDate?: string;
     minDate?: string;
     rightInputComponent?: React.ReactNode;
+    disabled?: boolean;
 }

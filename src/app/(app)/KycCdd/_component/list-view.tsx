@@ -10,7 +10,7 @@ import {
   useEffect,
   useState
 } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { Button, Grid } from '@mui/material';
@@ -21,12 +21,13 @@ import Table from '@/components/table/table';
 
 import { search } from './list-action';
 
-export const ListView = ({ }: ListViewProps): ReactElement => {
-  const [tablePaginator, setTablePaginator] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
-  const [tableFilter, setTableFilter] = useState<TableFilter>({});
+export const ListView = ({}: ListViewProps): ReactElement => {
+  const [ tablePaginator, setTablePaginator ] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
+  const [ tableFilter, setTableFilter ] = useState<TableFilter>({});
   const router = useRouter();
+  const pathName = usePathname();
 
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
 
   const { data: tableData, isLoading } = useQuery({
     queryFn: () => fetchGetTableData(),
@@ -208,15 +209,19 @@ export const ListView = ({ }: ListViewProps): ReactElement => {
 
   return (
     <Fragment>
-      {renderSearchPanel()}
+      { renderSearchPanel() }
 
-      <div className={'px-4 mt-4 flex justify-end'}>
-        <Button variant={'contained'} onClick={onClickReviewButton}>
-          ทบทวนกลุ่มความเสี่ยง
-        </Button>
-      </div>
+      {
+        (pathName === '/KycCdd/Review') && (
+          <div className={'px-4 mt-4 flex justify-end'}>
+            <Button variant={'contained'} onClick={ onClickReviewButton }>
+              ทบทวนกลุ่มความเสี่ยง
+            </Button>
+          </div>
+        )
+      }
 
-      {renderTable()}
+      { renderTable() }
     </Fragment>
   );
 }
