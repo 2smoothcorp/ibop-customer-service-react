@@ -7,9 +7,11 @@
 import {
   type ReactElement,
   Fragment,
-  useEffect
+  useEffect,
+  useState
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
 import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
@@ -17,6 +19,12 @@ import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer
 import { Form } from '@/components/form';
 
 export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactElement => {
+  const [ isEditing, setIsEditing ] = useState(false);
+  const { register, handleSubmit } = useForm<FormFields>({
+    mode: 'onSubmit',
+    resolver: undefined
+  });
+
   useEffect(() => {}, []);
 
   const { data: personalData, isLoading } = useQuery({
@@ -33,29 +41,41 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     return data;
   }
 
-  const formAction = (data: FormData) => {
-    // console.log('formAction', data)
-    // const investmentObjective = data.getAll('investmentObjective');
-    // console.log('investmentObjective', investmentObjective)
+  const onSubmitForm = (fieldsData: FormFields) => {
+    console.log('onSubmitForm', fieldsData)
   }
 
   const renderFormPersonal = () => {
-    const _firstNameTh = personalData?.firstNameTh || '-';
-    const _lastNameTh = personalData?.lastNameTh || '-';
-    const _firstNameEn = personalData?.firstNameEn || '-';
-    const _lastNameEn = personalData?.lastNameEn || '-';
-    const _nationality = `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
-    const _occupation = `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
-    const _monthlyIncome = personalData?.monthlyIncome || 0;
-    const _incomeSource = `${ personalData?.incomeSourceCode || '' } - ${ personalData?.incomeSourceDesc || '' }`.trim();
-    const _incomeCountry = personalData?.incomeCountry || '-';
-    const _investmentYear = personalData?.investmentYear || 0;
-    const _investmentPurpose = (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '' : `${ personalData?.investmentPurposeCode || '' } - ${ personalData?.investmentPurposeDesc }`;
+    const _titleTh = ''; // `${ personalData?.titleCodeTh || '' } - ${ personalData?.titleNameTh || '' }`.trim();
+    const _firstNameTh = ''; // personalData?.firstNameTh || '-';
+    const _lastNameTh = ''; // personalData?.lastNameTh || '-';
+    const _firstNameEn = ''; // personalData?.firstNameEn || '-';
+    const _lastNameEn = ''; // personalData?.lastNameEn || '-';
+    const _nationality = ''; // `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
+    const _occupation = ''; // `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
+    const _monthlyIncome = ''; // personalData?.monthlyIncome || 0;
+    const _incomeSource = ''; // `${ personalData?.incomeSourceCode || '' } - ${ personalData?.incomeSourceDesc || '' }`.trim();
+    const _incomeCountry = ''; // personalData?.incomeCountry || '-';
+    const _investmentYear = ''; // personalData?.investmentYear || 0;
+    const _investmentPurpose = ''; // (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '' : `${ personalData?.investmentPurposeCode || '' } - ${ personalData?.investmentPurposeDesc }`;
 
     return (
-      <Form
-        action={ formAction }
+      <Form<FormFields>
+        isEditing={ isEditing }
+        baseColSpan={4}
+        register={ register }
+        onSubmit={ handleSubmit(onSubmitForm) }
         fields={[
+          {
+            type: 'select',
+            label: 'คำนำหน้า', viewText: _titleTh,
+            name: 'titleTh',
+            options: [
+              { label: 'aaa', value: 'aaa' },
+              { label: 'bbb', value: 'bbb' },
+              { label: 'ccc', value: 'ccc' }
+            ]
+          },
           {
             type: 'text',
             label: 'ชื่อ (ภาษาไทย)', viewText: _firstNameTh,
@@ -68,6 +88,11 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           },
           {
             type: 'text',
+            label: 'ประเทศเจ้าของสัญชาติ ', viewText: _nationality,
+            name: 'nationality'
+          },
+          {
+            type: 'text',
             label: 'ชื่อ (ภาษาอังกฤษ)', viewText: _firstNameEn,
             name: 'firstnameEn'
           },
@@ -75,11 +100,6 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             type: 'text',
             label: 'นามสกุล (ภาษาอังกฤษ)', viewText: _lastNameEn,
             name: 'lastnameEn'
-          },
-          {
-            type: 'text',
-            label: 'ประเทศเจ้าของสัญชาติ ', viewText: _nationality,
-            name: 'nationality'
           },
           {
             type: 'text',
@@ -94,18 +114,29 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           {
             type: 'checkbox',
             label: 'แหล่งที่มาของรายได้', viewText: _incomeSource,
+            ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {}),
             name: 'incomeSource',
             options: [
-              { label: 'aaa', value: 'aaa' },
-              { label: 'bbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' }
+              { label: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', value: 'aaa' },
+              { label: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', value: 'bbb' },
+              { label: 'ccc', value: 'ccc' },
+              { label: 'ddd', value: 'ddd' },
+              { label: 'eee', value: 'eee' },
+              { label: 'fff', value: 'fff' },
+              { label: 'ggg', value: 'ggg' },
+              { label: 'hhh', value: 'hhh' },
+              { label: 'iii', value: 'iii' }
             ]
           },
           {
             type: 'select',
             label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: _incomeCountry,
             name: 'incomeCountry',
-            options: []
+            options: [
+              { label: 'aaa', value: 'aaa' },
+              { label: 'bbb', value: 'bbb' },
+              { label: 'ccc', value: 'ccc' }
+            ]
           },
           {
             type: 'number',
@@ -115,6 +146,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           {
             type: 'checkbox',
             label: 'วัตถุประสงค์การลงทุน', viewText: _investmentPurpose,
+            ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {}),
             name: 'investmentPurpose',
             options: [
               { label: 'aaa', value: 'aaa' },
@@ -144,4 +176,18 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
 interface PersonalInfoProps {
   corporateId: string;
+}
+
+interface FormFields {
+  firstnameTh: string;
+  lastnameTh: string;
+  firstnameEn: string;
+  lastnameEn: string;
+  nationality: string;
+  occupation: string;
+  monthlyIncome: number;
+  incomeSource: Array<string>;
+  incomeCountry: string;
+  exp: number;
+  investmentPurpose: Array<string>;
 }

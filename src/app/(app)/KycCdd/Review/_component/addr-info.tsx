@@ -7,16 +7,31 @@
 import {
   type ReactElement,
   Fragment,
-  useEffect
+  useEffect,
+  useState
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
 import type { KycAddressOutputListDataResponse } from '@/services/rest-api/customer-service';
 
 export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => {
-  useEffect(() => { }, []);
+  const [ isEditingCurrentAddr, setIsEditingCurrentAddr ] = useState(false);
+  const [ isEditingWorkAddr, setIsEditingWorkAddr ] = useState(false);
+
+  const currentAddrHookForm = useForm<CurrentAddrFormFields>({
+    mode: 'onSubmit',
+    resolver: undefined
+  });
+
+  const workAddrHookForm = useForm<WorkAddrFormFields>({
+    mode: 'onSubmit',
+    resolver: undefined
+  });
+
+  useEffect(() => {}, []);
 
   const { data: addressList, isLoading } = useQuery({
     queryFn: () => fetchGetAddress(),
@@ -35,15 +50,16 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     return ({ currentAddr: currentAddr || {}, workAddr: workAddr || {} });
   }
 
-  const formCurrentAddrAction = (data: FormData) => {
-    //
+  const onSubmitCurrentAddrForm = (fieldsData: CurrentAddrFormFields) => {
+    console.log('onSubmitCurrentAddrForm', fieldsData)
   }
 
-  const formWorkAddrAction = (data: FormData) => {
-    //
+  const onSubmitWorkAddrForm = (fieldsData: WorkAddrFormFields) => {
+    console.log('onSubmitWorkAddrForm', fieldsData)
   }
 
   const renderFormCurrentAddress = () => {
+    const { register, handleSubmit } = currentAddrHookForm;
     const _info = addressList?.currentAddr;
     const _addressNo = _info?.addressNo || '-';
     const _moo = _info?.moo || '-';
@@ -52,7 +68,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _floor = _info?.floor || '-';
     const _soi = _info?.soi || '-';
     const _street = _info?.street || '-';
-    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName }`.trim();
+    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName || '' }`.trim();
     const _zipCode = _info?.zipCode || '-';
     const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
     const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
@@ -61,101 +77,89 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _customAddress2 = _info?.customAddress2 || '-';
     const _customAddress3 = _info?.customAddress3 || '-';
     return (
-      <Form
-        action={formCurrentAddrAction}
+      <Form<CurrentAddrFormFields>
+        isEditing={ isEditingCurrentAddr }
+        baseColSpan={4}
+        register={ register }
+        onSubmit={ handleSubmit(onSubmitCurrentAddrForm) }
         fields={[
           {
             type: 'text',
             label: 'เลขที่', viewText: _addressNo,
-            colSpan: 4,
             name: 'currentAddr_houseNumber'
           },
           {
             type: 'text',
             label: 'หมู่ที่', viewText: _moo,
-            colSpan: 4,
             name: 'currentAddr_moo'
           },
           {
             type: 'text',
             label: 'หมู่บ้าน / อาคาร', viewText: _buildingOrVillage,
-            colSpan: 4,
             name: 'currentAddr_building'
           },
           {
             type: 'text',
             label: 'ห้อง', viewText: _roomNo,
-            colSpan: 4,
             name: 'currentAddr_room'
           },
           {
             type: 'text',
             label: 'ชั้น', viewText: _floor,
-            colSpan: 4,
             name: 'currentAddr_floor'
           },
           {
             type: 'text',
             label: 'ตรอก / ซอย', viewText: _soi,
-            colSpan: 4,
             name: 'currentAddr_soi'
           },
           {
             type: 'text',
             label: 'ถนน', viewText: _street,
-            colSpan: 4,
             name: 'currentAddr_road'
           },
           {
             type: 'select',
             label: 'ประเทศ', viewText: _country,
-            colSpan: 4,
             name: 'currentAddr_country',
             options: []
           },
           {
             type: 'text',
             label: 'รหัสไปรษณีย์', viewText: _zipCode,
-            colSpan: 4,
             name: 'currentAddr_postcode'
           },
           {
             type: 'select',
             label: 'จังหวัด', viewText: _province,
-            colSpan: 4,
             name: 'currentAddr_province', disabled: false,
             options: []
           },
           {
             type: 'select',
             label: 'อำเภอ / เขต', viewText: _district,
-            colSpan: 4,
             name: 'currentAddr_district', disabled: true,
             options: []
           },
           {
             type: 'select',
             label: 'ตำบล / แขวง', viewText: _subDistrict,
-            colSpan: 4,
             name: 'currentAddr_subDistrict', disabled: true,
             options: []
           },
           {
             type: 'text',
             label: 'ที่อยู่ 1', viewText: _customAddress1,
-            colSpan: 4,
             name: 'currentAddr_addr1'
           },
           {
             type: 'text',
             label: 'ที่อยู่ 2', viewText: _customAddress2,
-            colSpan: 4,
             name: 'currentAddr_addr2'
           },
           {
             type: 'text',
             label: 'ที่อยู่ 3', viewText: _customAddress3,
-            colSpan: 4,
             name: 'currentAddr_addr3'
           }
         ]}
@@ -164,6 +168,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
   }
 
   const renderFormWorkAddress = () => {
+    const { register, handleSubmit } = workAddrHookForm;
     const _info = addressList?.workAddr;
     const _addressNo = _info?.addressNo || '-';
     const _moo = _info?.moo || '-';
@@ -181,101 +186,89 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _customAddress2 = _info?.customAddress2 || '-';
     const _customAddress3 = _info?.customAddress3 || '-';
     return (
-      <Form
-        action={formWorkAddrAction}
+      <Form<WorkAddrFormFields>
+        isEditing={ isEditingWorkAddr }
+        baseColSpan={4}
+        register={ register }
+        onSubmit={ handleSubmit(onSubmitWorkAddrForm) }
         fields={[
           {
             type: 'text',
             label: 'เลขที่', viewText: _addressNo,
-            colSpan: 4,
             name: 'workAddr_houseNumber'
           },
           {
             type: 'text',
             label: 'หมู่ที่', viewText: _moo,
-            colSpan: 4,
             name: 'workAddr_moo'
           },
           {
             type: 'text',
             label: 'หมู่บ้าน / อาคาร', viewText: _buildingOrVillage,
-            colSpan: 4,
             name: 'workAddr_building'
           },
           {
             type: 'text',
             label: 'ห้อง', viewText: _roomNo,
-            colSpan: 4,
             name: 'workAddr_room'
           },
           {
             type: 'text',
             label: 'ชั้น', viewText: _floor,
-            colSpan: 4,
             name: 'workAddr_floor'
           },
           {
             type: 'text',
             label: 'ตรอก / ซอย', viewText: _soi,
-            colSpan: 4,
             name: 'workAddr_soi'
           },
           {
             type: 'text',
             label: 'ถนน', viewText: _street,
-            colSpan: 4,
             name: 'workAddr_road'
           },
           {
             type: 'select',
             label: 'ประเทศ', viewText: _country,
-            colSpan: 4,
             name: 'workAddr_country',
             options: []
           },
           {
             type: 'text',
             label: 'รหัสไปรษณีย์', viewText: _zipCode,
-            colSpan: 4,
             name: 'workAddr_postcode'
           },
           {
             type: 'select',
             label: 'จังหวัด', viewText: _province,
-            colSpan: 4,
             name: 'workAddr_province', disabled: false,
             options: []
           },
           {
             type: 'select',
             label: 'อำเภอ / เขต', viewText: _district,
-            colSpan: 4,
             name: 'workAddr_district', disabled: true,
             options: []
           },
           {
             type: 'select',
             label: 'ตำบล / แขวง', viewText: _subDistrict,
-            colSpan: 4,
             name: 'workAddr_subDistrict', disabled: true,
             options: []
           },
           {
             type: 'text',
             label: 'ที่อยู่ 1', viewText: _customAddress1,
-            colSpan: 4,
             name: 'workAddr_addr1'
           },
           {
             type: 'text',
             label: 'ที่อยู่ 2', viewText: _customAddress2,
-            colSpan: 4,
             name: 'workAddr_addr2'
           },
           {
             type: 'text',
             label: 'ที่อยู่ 3', viewText: _customAddress3,
-            colSpan: 4,
             name: 'workAddr_addr3'
           }
         ]}
@@ -308,4 +301,40 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
 interface AddrInfoProps {
   corporateId: string;
+}
+
+interface CurrentAddrFormFields {
+  currentAddr_houseNumber: string;
+  currentAddr_moo: string;
+  currentAddr_building: string;
+  currentAddr_room: string;
+  currentAddr_floor: string;
+  currentAddr_soi: string;
+  currentAddr_road: string;
+  currentAddr_country: string;
+  currentAddr_postcode: string;
+  currentAddr_province: string;
+  currentAddr_district: string;
+  currentAddr_subDistrict: string;
+  currentAddr_addr1: string;
+  currentAddr_addr2: string;
+  currentAddr_addr3: string;
+}
+
+interface WorkAddrFormFields {
+  workAddr_houseNumber: string;
+  workAddr_moo: string;
+  workAddr_building: string;
+  workAddr_room: string;
+  workAddr_floor: string;
+  workAddr_soi: string;
+  workAddr_road: string;
+  workAddr_country: string;
+  workAddr_postcode: string;
+  workAddr_province: string;
+  workAddr_district: string;
+  workAddr_subDistrict: string;
+  workAddr_addr1: string;
+  workAddr_addr2: string;
+  workAddr_addr3: string;
 }

@@ -11,6 +11,7 @@ import {
   useState
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 
 import { AppLoader } from '@/components/app-loader';
@@ -22,8 +23,18 @@ import type {
 } from '@/services/rest-api/customer-service';
 
 export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactElement => {
-  const [ isEditingBeneficiary, _setIsEditingBeneficiary ] = useState(false);
-  const [ isEditingAttorney, _setIsEditingAttorney ] = useState(false);
+  const [ isEditingBeneficiary, _setIsEditingBeneficiary ] = useState(true);
+  const [ isEditingAttorney, _setIsEditingAttorney ] = useState(true);
+
+  const beneficiaryHookForm = useForm<BeneficiaryFormFields>({
+    mode: 'onSubmit',
+    resolver: undefined
+  });
+
+  const attorneyHookForm = useForm<AttorneyFormFields>({
+    mode: 'onSubmit',
+    resolver: undefined
+  });
 
   useEffect(() => {}, []);
 
@@ -55,15 +66,16 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
     return data;
   }
 
-  const formBeneficiaryAction = (data: FormData) => {
+  const onSubmitBeneficiaryForm = (fieldsData: BeneficiaryFormFields) => {
     //
   }
 
-  const formAttorneyAction = (data: FormData) => {
+  const onSubmitAttorneyForm = (fieldsData: AttorneyFormFields) => {
     //
   }
 
   const renderFormBeneficiary = () => {
+    const { register, handleSubmit } = beneficiaryHookForm;
     const { data } = beneficiaryInfo;
     const _type = data?.beneficiaryType || '-';
     const _firstname = data?.beneficiaryFirstName || '-';
@@ -71,159 +83,126 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
     const _refType = data?.referenceType || '-';
     const _refId = data?.referenceId || '-';
     return (
-      <Form isEditing={ isEditingBeneficiary }
-        action={formBeneficiaryAction}
+      <Form<BeneficiaryFormFields>
+        isEditing={ isEditingBeneficiary }
+        baseColSpan={ 4 }
+        register={ register }
+        onSubmit={ handleSubmit(onSubmitBeneficiaryForm) }
         fields={[
           {
             type: 'text',
             label: 'ประเภทผู้รับผลประโยชน์', viewText: _type,
-            colSpan: 4,
             name: 'beneficiaryType'
           },
           {
             type: 'text',
             label: 'ความสัมพันธ์', viewText: 'test relation',
-            colSpan: 4,
-            name: 'relationship'
+            name: 'beneficiary_relationship'
           },
-          {
-            type: 'text',
-            label: '', viewText: '',
-            colSpan: 4,
-            name: ''
-          },
+          { type: 'space', label: '', viewText: '', },
           {
             type: 'text',
             label: 'ชื่อ', viewText: _firstname,
-            colSpan: 4,
-            name: 'firstname'
+            name: 'beneficiary_firstname'
           },
           {
             type: 'text',
             label: 'นามสกุล', viewText: _lastname,
-            colSpan: 4,
-            name: 'lastname'
+            name: 'beneficiary_lastname'
           },
-          {
-            type: 'text',
-            label: '', viewText: '',
-            colSpan: 4,
-            name: ''
-          },
+          { type: 'space', label: '', viewText: '', },
           {
             type: 'text',
             label: 'ประเภทหลักฐาน', viewText: _refType,
-            colSpan: 4,
-            name: 'refType'
+            name: 'beneficiary_refType'
           },
           {
             type: 'text',
             label: 'เลขที่บัตร', viewText: _refId,
-            colSpan: 4,
-            name: 'refId'
+            name: 'beneficiary_refId'
           },
-          {
-            type: 'text',
-            label: '', viewText: '',
-            colSpan: 4,
-            name: ''
-          },
+          { type: 'space', label: '', viewText: '', },
 
           ///////////////////////////////////////////////////////////////////////////////
 
           {
             type: 'text',
             label: 'เลขที่', viewText: 'test_no',
-            colSpan: 4,
-            name: 'houseNumber'
+            name: 'beneficiary_houseNumber'
           },
           {
             type: 'text',
             label: 'หมู่ที่', viewText: 'test_moo',
-            colSpan: 4,
-            name: 'moo'
+            name: 'beneficiary_moo'
           },
           {
             type: 'text',
             label: 'หมู่บ้าน / อาคาร', viewText: 'test_building',
-            colSpan: 4,
-            name: 'building'
+            name: 'beneficiary_building'
           },
           {
             type: 'text',
             label: 'ห้อง', viewText: 'test_room',
-            colSpan: 4,
-            name: 'room'
+            name: 'beneficiary_room'
           },
           {
             type: 'text',
             label: 'ชั้น', viewText: 'test_floor',
-            colSpan: 4,
-            name: 'floor'
+            name: 'beneficiary_floor'
           },
           {
             type: 'text',
             label: 'ตรอก / ซอย', viewText: 'test_soi',
-            colSpan: 4,
-            name: 'soi'
+            name: 'beneficiary_soi'
           },
           {
             type: 'text',
             label: 'ถนน', viewText: 'test_road',
-            colSpan: 4,
-            name: 'road'
+            name: 'beneficiary_road'
           },
           {
             type: 'select',
             label: 'ประเทศ', viewText: 'test_country',
-            colSpan: 4,
-            name: 'country',
+            name: 'beneficiary_country',
             options: []
           },
           {
             type: 'text',
             label: 'รหัสไปรษณีย์', viewText: 'test_postcode',
-            colSpan: 4,
-            name: 'postcode'
+            name: 'beneficiary_postcode'
           },
           {
             type: 'select',
             label: 'จังหวัด', viewText: 'test_province',
-            colSpan: 4,
-            name: 'province', disabled: false,
+            name: 'beneficiary_province', disabled: false,
             options: []
           },
           {
             type: 'select',
             label: 'อำเภอ / เขต', viewText: 'test_district',
-            colSpan: 4,
-            name: 'district', disabled: true,
+            name: 'beneficiary_district', disabled: true,
             options: []
           },
           {
             type: 'select',
             label: 'ตำบล / แขวง', viewText: 'test_subdistrict',
-            colSpan: 4,
-            name: 'subDistrict', disabled: true,
+            name: 'beneficiary_subDistrict', disabled: true,
             options: []
           },
           {
             type: 'text',
             label: 'ที่อยู่ 1', viewText: 'test_addr1',
-            colSpan: 4,
-            name: 'addr1'
+            name: 'beneficiary_addr1'
           },
           {
             type: 'text',
             label: 'ที่อยู่ 2', viewText: 'test_addr2',
-            colSpan: 4,
-            name: 'addr2'
+            name: 'beneficiary_addr2'
           },
           {
             type: 'text',
             label: 'ที่อยู่ 3', viewText: 'test_addr3',
-            colSpan: 4,
-            name: 'addr3'
+            name: 'beneficiary_addr3'
           }
         ]}
       />
@@ -231,6 +210,7 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
   }
 
   const renderFormAttorney = () => {
+    const { register, handleSubmit } = attorneyHookForm;
     const { data } = attorneyInfo;
     const _refType = data?.referenceType || '-';
     const _refId = data?.referenceId || '-';
@@ -270,159 +250,132 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
     return (
       <Fragment>
-        <Form isEditing={ isEditingAttorney }
-          action={formAttorneyAction}
+        <Form<AttorneyFormFields>
+          isEditing={ isEditingAttorney }
+          baseColSpan={ 4 }
+          register={ register }
+          onSubmit={ handleSubmit(onSubmitAttorneyForm) }
           fields={[
             {
               type: 'text',
               label: 'ประเภทหลักฐาน', viewText: _refType,
-              colSpan: 4,
-              name: 'refType'
+              name: 'attorney_refType'
             },
             {
               type: 'text',
               label: 'เลขที่บัตร', viewText: _refId,
-              colSpan: 4,
-              name: 'refId'
+              name: 'attorney_refId'
             },
             {
               type: 'text',
               label: 'ประเทศเจ้าของสัญชาติ', viewText: _nation,
-              colSpan: 4,
-              name: 'nationality'
+              name: 'attorney_nationality'
             },
             {
               type: 'text',
               label: 'คำนำหน้า', viewText: _title,
-              colSpan: 4,
-              name: 'title'
+              name: 'attorney_title'
             },
             {
               type: 'text',
               label: 'ชื่อ-นามสกุล', viewText: _name,
-              colSpan: 4,
-              name: 'fullname'
+              name: 'attorney_fullname'
             },
             {
               type: 'text',
               label: 'ความสัมพันธ์', viewText: _relationship,
-              colSpan: 4,
-              name: 'relationship'
+              name: 'attorney_relationship'
             },
             {
               type: 'text',
               label: 'โทรศัพท์มือถือ', viewText: _mobileNo,
-              colSpan: 4,
-              name: 'mobileNo'
+              name: 'attorney_mobileNo'
             },
             {
-              type: 'text',
-              label: '', viewText: '',
-              colSpan: 4,
-              name: ''
-            },
+              type: 'space', label: '', viewText: ''  },
             {
-              type: 'text',
-              label: '', viewText: '',
-              colSpan: 4,
-              name: ''
-            },
+              type: 'space', label: '', viewText: ''  },
 
             ///////////////////////////////////////////////////////////////////////////////
 
             {
               type: 'text',
               label: 'เลขที่', viewText: _addressNo,
-              colSpan: 4,
-              name: 'houseNumber'
+              name: 'attorney_houseNumber'
             },
             {
               type: 'text',
               label: 'หมู่ที่', viewText: _moo,
-              colSpan: 4,
-              name: 'moo'
+              name: 'attorney_moo'
             },
             {
               type: 'text',
               label: 'หมู่บ้าน / อาคาร', viewText: _buildingOrVillage,
-              colSpan: 4,
-              name: 'building'
+              name: 'attorney_building'
             },
             {
               type: 'text',
               label: 'ห้อง', viewText: _roomNo,
-              colSpan: 4,
-              name: 'room'
+              name: 'attorney_room'
             },
             {
               type: 'text',
               label: 'ชั้น', viewText: _floor,
-              colSpan: 4,
-              name: 'floor'
+              name: 'attorney_floor'
             },
             {
               type: 'text',
               label: 'ตรอก / ซอย', viewText: _soi,
-              colSpan: 4,
-              name: 'soi'
+              name: 'attorney_soi'
             },
             {
               type: 'text',
               label: 'ถนน', viewText: _street,
-              colSpan: 4,
-              name: 'road'
+              name: 'attorney_road'
             },
             {
               type: 'select',
               label: 'ประเทศ', viewText: _country,
-              colSpan: 4,
-              name: 'country',
+              name: 'attorney_country',
               options: []
             },
             {
               type: 'text',
               label: 'รหัสไปรษณีย์', viewText: _postCode,
-              colSpan: 4,
-              name: 'postcode'
+              name: 'attorney_postcode'
             },
             {
               type: 'select',
               label: 'จังหวัด', viewText: _province,
-              colSpan: 4,
-              name: 'province', disabled: false,
+              name: 'attorney_province', disabled: false,
               options: []
             },
             {
               type: 'select',
               label: 'อำเภอ / เขต', viewText: _amphur,
-              colSpan: 4,
-              name: 'district', disabled: true,
+              name: 'attorney_district', disabled: true,
               options: []
             },
             {
               type: 'select',
               label: 'ตำบล / แขวง', viewText: _tambon,
-              colSpan: 4,
-              name: 'subDistrict', disabled: true,
+              name: 'attorney_subDistrict', disabled: true,
               options: []
             },
             {
               type: 'text',
               label: 'ที่อยู่ 1', viewText: _customAddr1,
-              colSpan: 4,
-              name: 'addr1'
+              name: 'attorney_addr1'
             },
             {
               type: 'text',
               label: 'ที่อยู่ 2', viewText: _customAddr2,
-              colSpan: 4,
-              name: 'addr2'
+              name: 'attorney_addr2'
             },
             {
               type: 'text',
               label: 'ที่อยู่ 3', viewText: _customAddr3,
-              colSpan: 4,
-              name: 'addr3'
+              name: 'attorney_addr3'
             }
           ]}
         />
@@ -479,4 +432,55 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
 interface RelativeInfoProps {
   corporateId: string;
+}
+
+interface BeneficiaryFormFields {
+  beneficiaryType: string;
+  beneficiary_relationship: string;
+  beneficiary_firstname: string;
+  beneficiary_lastname: string;
+  beneficiary_refType: string;
+  beneficiary_refId: string;
+
+  beneficiary_houseNumber: string;
+  beneficiary_moo: string;
+  beneficiary_building: string;
+  beneficiary_room: string;
+  beneficiary_floor: string;
+  beneficiary_soi: string;
+  beneficiary_road: string;
+  beneficiary_country: string;
+  beneficiary_postcode: string;
+  beneficiary_province: string;
+  beneficiary_district: string;
+  beneficiary_subDistrict: string;
+  beneficiary_addr1: string;
+  beneficiary_addr2: string;
+  beneficiary_addr3: string;
+}
+
+interface AttorneyFormFields {
+  attorney_refType: string;
+  attorney_refId: string;
+  attorney_nationality: string;
+  attorney_title: string;
+  attorney_fullname: string;
+  attorney_relationship: string;
+  attorney_mobileNo: string;
+  
+  attorney_houseNumber: string;
+  attorney_moo: string;
+  attorney_building: string;
+  attorney_room: string;
+  attorney_floor: string;
+  attorney_soi: string;
+  attorney_road: string;
+  attorney_country: string;
+  attorney_postcode: string;
+  attorney_province: string;
+  attorney_district: string;
+  attorney_subDistrict: string;
+  attorney_addr1: string;
+  attorney_addr2: string;
+  attorney_addr3: string;
 }

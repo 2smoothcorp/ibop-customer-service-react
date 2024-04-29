@@ -7,15 +7,23 @@
 import {
   type ReactElement,
   Fragment,
-  useEffect
+  useEffect,
+  useState
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
 import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/customer-service';
 
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
+  const [ isEditing, setIsEditing ] = useState(false);
+  const { register, handleSubmit } = useForm<FormFields>({
+    mode: 'onSubmit',
+    resolver: undefined
+  });
+
   useEffect(() => {}, []);
 
   const { data: spouseInfo, isLoading } = useQuery({
@@ -32,8 +40,8 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     return data;
   }
 
-  const formAction = (data: FormData) => {
-    //
+  const onSubmitForm = (fieldsData: FormFields) => {
+    console.log('onSubmitForm', fieldsData)
   }
 
   const renderFormSpouse = () => {
@@ -44,36 +52,34 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     const _lastname = spouseInfo?.spouseLastName || '-';
     return (
       <Form
-        action={ formAction }
+        isEditing={ isEditing }
+        baseColSpan={4}
+        register={ register }
+        onSubmit={ handleSubmit(onSubmitForm) }
         fields={[
           {
             type: 'text',
             label: 'สถานสภาพสมรส', viewText: _maritalStatus,
-            colSpan: 4,
             name: 'maritalStatus'
           },
           {
             type: 'text',
             label: 'ประเภทหลักฐาน', viewText: _refType,
-            colSpan: 4,
             name: 'refType'
           },
           {
             type: 'text',
             label: 'เลขทีบัตร', viewText: _refId,
-            colSpan: 4,
             name: 'refId'
           },
           {
             type: 'text',
             label: 'ชื่อ', viewText: _firstname,
-            colSpan: 4,
             name: 'firstname'
           },
           {
             type: 'text',
             label: 'นามสกุล', viewText: _lastname,
-            colSpan: 4,
             name: 'lastname'
           }
         ]}
@@ -98,4 +104,12 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
 
 interface SpouseInfoProps {
   corporateId: string;
+}
+
+interface FormFields {
+  maritalStatus: string;
+  refType: string;
+  refId: string;
+  firstname: string;
+  lastname: string;
 }
