@@ -1,5 +1,6 @@
 "use client"
 
+import ContentLabel from "@/components/content/content-label";
 import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
 import { PoliticRelationInfoModel, PoliticRelationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
@@ -76,10 +77,12 @@ export default function PoliticRelationInfo() {
                 error={error && error.message || undefined}
                 hight={120}
             >
-                <div className="flex flex-col">
-                    <span className="mx-4 font-bold">ท่านเป็นผู้มีสถานภาพทางการเมืองหรือเป็นสมาชิกในครอบครัว หรือเป็นผู้ใกล้ชิดกับบุคคลผู้มีสถานภาพทางการเมืองหรือไม่ <span className="text-red-500">*</span></span>
+
+                <ContentLabel
+                    label="ท่านเป็นผู้มีสถานภาพทางการเมืองหรือเป็นสมาชิกในครอบครัว หรือเป็นผู้ใกล้ชิดกับบุคคลผู้มีสถานภาพทางการเมืองหรือไม่"
+                >
                     <span className="mx-4">{data && data.politicianRelation ? `ใช่ - ${data && data.politicianPosition}` : "ไม่ใช่"}</span>
-                </div>
+                </ContentLabel>
             </ContentLoading>
 
         </>

@@ -212,13 +212,20 @@ export default function PersonalInfo() {
                                     : null
                             )
                             || undefined}
-                        textShow={data && normalizationData('identityNeverExpire', data) || '-'}
+                        textShow={data &&
+                            (
+                                normalizationData('identityExpireDate', data) !== '-'
+                                    ? dayjs(normalizationData('identityExpireDate', data)).format('DD/MM/YYYY')
+                                    : normalizationData('identityNeverExpire', data) || null
+                            )
+                            || '-'}
                         isEditable={isEditable}
                         register={register}
                         type="date"
                         minDate={dayjs().format('YYYY-MM-DD')}
                         name="identityExpireDate"
                         isRequired={false}
+                        disabled={watch("identityNeverExpire") || false}
                         rightInputComponent={
                             isEditable ?
                                 <div className="w-[120px] flex justify-center">
@@ -297,7 +304,20 @@ export default function PersonalInfo() {
                     />
                     <InputHorizontal
                         label="วัน/เดือน/ปีเกิด (ค.ศ.)"
-                        defaultValue={data && normalizationData('birthDate', data) || '-'}
+                        defaultValue={data &&
+                            (
+                                normalizationData('birthDate', data) !== '-'
+                                    ? normalizationData('birthDate', data)
+                                    : null
+                            )
+                            || undefined}
+                        textShow={
+                            data && (
+                                normalizationData('birthDate', data) !== '-'
+                                    ? dayjs(normalizationData('birthDate', data)).format('DD/MM/YYYY')
+                                    : null
+                            ) || '-'
+                        }
                         isEditable={isEditable}
                         register={register}
                         name="birthDate"
@@ -333,4 +353,5 @@ interface SubmitInput {
     firstNameEn: string;
     lastNameEn: string;
     birthDate: string;
+    identityNeverExpire: boolean;
 }
