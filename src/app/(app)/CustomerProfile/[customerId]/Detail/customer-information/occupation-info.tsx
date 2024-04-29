@@ -166,18 +166,20 @@ export default function OccupationInfo() {
                 error={error && error.message || undefined}
                 hight={200}
             >
-                <InputHorizontal
-                    isLableCols1
-                    allGridCols="grid-cols-6"
-                    inputCol="col-span-5"
-                    label="อาชีพ"
-                    defaultValue={data && normalizationData('occupation', data) || "-"}
-                    isEditable={isEditable}
-                    register={register}
-                    name="occupation"
-                />
+                <div className="grid grid-cols-3">
+                    <InputHorizontal
+                        // isLableCols1
+                        // allGridCols="grid-cols-6"
+                        // inputCol="col-span-5"
+                        label="อาชีพ"
+                        defaultValue={data && normalizationData('occupation', data) || "-"}
+                        isEditable={isEditable}
+                        register={register}
+                        name="occupation"
+                    />
+                </div>
                 {
-                    !["01", "02", "03", "04", "05", "06"].includes(watch('occupationCode')) && (
+                    !["01", "02", "03", "04", "05", "06"].includes(watch('occupationCode')) && watch('occupationCode') !== '-' && (
                         <div className="grid grid-cols-3">
                             <InputHorizontal
                                 label="ชื่อสถานที่ทำงาน / สถานศึกษา"
