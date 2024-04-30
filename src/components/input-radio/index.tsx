@@ -11,14 +11,19 @@ import {
   Radio,
   FormControlLabel
 } from '@mui/material';
-import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form';
+import type {
+  UseFormRegister,
+  UseFormRegisterReturn,
+  RegisterOptions
+} from 'react-hook-form';
 
 export const InputRadio = (props: InputRadioProps): ReactElement => {
   useEffect(() => {}, []);
 
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
-    const { name, register } = props;
+    const { name, register, registerOption } = props;
     if(!register) { return; }
+    if(registerOption) { return register(name, registerOption); }
     return register(name);
   }
 
@@ -47,4 +52,5 @@ type InputRadioProps = RadioGroupProps & {
   name: string;
   options: Array<{ label: string; value: string; disabled?: boolean; }>;
   register?: UseFormRegister<any>;
+  registerOption?: RegisterOptions;
 }

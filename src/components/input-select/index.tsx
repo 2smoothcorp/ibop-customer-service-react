@@ -10,15 +10,20 @@ import {
   Select,
   MenuItem
 } from '@mui/material';
-import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form';
+import type {
+  UseFormRegister, 
+  UseFormRegisterReturn,
+  RegisterOptions
+} from 'react-hook-form';
 import styles from './styles.module.css';
 
 export const InputSelect = (props: InputSelectProps): ReactElement => {
   useEffect(() => {}, []);
 
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
-    const { name, register } = props;
+    const { name, register, registerOption } = props;
     if(!register) { return; }
+    if(registerOption) { return register(name, registerOption); }
     return register(name);
   }
 
@@ -50,6 +55,14 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
 
 type InputSelectProps = SelectProps<any> & {
   name: string;
-  options: Array<{ label: string; value: string; disabled?: boolean; }>;
+  options: Array<SelectOption>;
   register?: UseFormRegister<any>;
+  registerOption?: RegisterOptions;
+}
+
+interface SelectOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+  [key: string]: any;
 }

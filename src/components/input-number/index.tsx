@@ -9,7 +9,11 @@ import {
   useEffect
 } from 'react';
 import { type NumericFormatProps, NumericFormat } from 'react-number-format';
-import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form';
+import type {
+  UseFormRegister,
+  UseFormRegisterReturn,
+  RegisterOptions
+} from 'react-hook-form';
 
 import styles from './styles.module.css';
 
@@ -17,9 +21,10 @@ export const InputNumber = (props: InputNumberProps): ReactElement => {
   useEffect(() => { console.log(props) }, []);
 
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
-    const { name, register } = props;
+    const { name, register, registerOption } = props;
     if(!register) { return; }
     return register(name, {
+      ...(registerOption || {}),
       setValueAs: (val?: string): number => {
         if(!val) { return 0; }
         console.log('[InputNumber] SetValueAs -> val', val)
@@ -51,4 +56,5 @@ export const InputNumber = (props: InputNumberProps): ReactElement => {
 type InputNumberProps = NumericFormatProps & {
   name: string;
   register?: UseFormRegister<any>;
+  registerOption?: RegisterOptions;
 }
