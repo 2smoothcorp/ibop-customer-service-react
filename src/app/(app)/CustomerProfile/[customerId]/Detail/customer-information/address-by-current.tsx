@@ -7,15 +7,13 @@ import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-export default function AddressByCurrent({
-    isEditable = false,
-}: {
-    isEditable?: boolean;
-}) {
+export default function AddressByCurrent() {
     const params = useParams()
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
     const {
         register,
         handleSubmit,

@@ -5,15 +5,14 @@ import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
 import { PoliticRelationInfoModel, PoliticRelationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-export default function PoliticRelationInfo({
-    isEditable
-}: {
-    isEditable: boolean
-}) {
+export default function PoliticRelationInfo() {
     const params = useParams()
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
+
     const {
         register,
         handleSubmit,

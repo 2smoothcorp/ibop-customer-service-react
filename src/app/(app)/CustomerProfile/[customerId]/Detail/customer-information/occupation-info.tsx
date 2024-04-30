@@ -7,15 +7,14 @@ import { useMasterDataOccupationCustom } from "@/hooks/master-data-occupation";
 import { AddressInfoModel, AddressInfoResponseDataResponse, ComboBox, ComboBoxListDataResponse, OccupationInfoModel, OccupationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-export default function OccupationInfo({
-    isEditable
-}: {
-    isEditable: boolean
-}) {
+export default function OccupationInfo() {
     const params = useParams()
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
+
     const {
         register,
         handleSubmit,
