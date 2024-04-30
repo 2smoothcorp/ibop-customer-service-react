@@ -1,7 +1,9 @@
 "use client";
 
+import { AddressBySearchProps } from "@/utils/function";
 import { Property } from "csstype";
 import { UseFormRegister } from "react-hook-form";
+import InputAddressThailand from "./input-address-thailand";
 import InputAutoComplete from "./input-auto-complete";
 import InputDate from "./input-date";
 import InputNumber from "./input-number";
@@ -31,6 +33,8 @@ export default function InputHorizontal({
     minDate,
     rightInputComponent,
     placeholder,
+    addressList,
+    addressOptionType,
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -92,6 +96,17 @@ export default function InputHorizontal({
                     onChange={onChange}
                     required={isRequired}
                 />
+            case "addressThailand":
+                return <InputAddressThailand
+                    placeholder={placeholder}
+                    name={name}
+                    defaultValue={defaultValue}
+                    list={addressList}
+                    disabled={disabled}
+                    onChange={onChange}
+                    required={isRequired}
+                    optionType={addressOptionType}
+                />
             default:
                 return <InputTextHook
                     register={register}
@@ -148,7 +163,7 @@ export default function InputHorizontal({
 
 
 interface InputHorizontalProps {
-    type?: "text" | "number" | "select" | "date" | "radio" | "autocomplete";
+    type?: "text" | "number" | "select" | "date" | "radio" | "autocomplete" | "addressThailand";
     name: string;
     label: string;
     isEditable?: boolean;
@@ -171,4 +186,6 @@ interface InputHorizontalProps {
     minDate?: string;
     rightInputComponent?: React.ReactNode;
     disabled?: boolean;
+    addressList?: AddressBySearchProps[];
+    addressOptionType?: 'postCode' | 'province' | 'district' | 'subDistrict';
 }

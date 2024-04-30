@@ -150,9 +150,7 @@ export default function ContractInformation() {
                         {data && normalizationData('docReceiveChannel', data) || "-"}
                     </ContentLabel>
                 </div>
-
-
-                <div className="px-2">
+                <div className="px-2 pt-2">
                     <ContentLabel
                         label="ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย์ (กรุณาระบุข้อความให้ครบถ้วนแม้ว่าท่านจะได้ระบุวิธีการรับเอกสารทางอีเมล)"
                     >

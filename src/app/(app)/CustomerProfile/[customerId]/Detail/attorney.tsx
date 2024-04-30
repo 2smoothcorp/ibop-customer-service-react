@@ -1,3 +1,4 @@
+import ContentLabel from "@/components/content/content-label";
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
@@ -193,11 +194,11 @@ const AttorneySection = () => {
                 className="gap-0"
                 title="ผู้รับมอบอำนาจ Attorney"
             />
-
-            <div className="flex flex-col">
-                <span className="mx-4 font-bold">ท่านเป็นผู้มีสถานภาพทางการเมืองหรือเป็นสมาชิกในครอบครัว หรือเป็นผู้ใกล้ชิดกับบุคคลผู้มีสถานภาพทางการเมืองหรือไม่ * </span>
-                <span className="mx-4">{(data?.data?.attorneyInfo || []).length === 0 ? 'ไม่มี' : 'มี'}</span>
-            </div>
+            <ContentLabel
+                label="ข้าพเจ้ามีความประสงค์ที่จะมอบอำนาจให้บุคคลอื่นทำธุรกรรมในตลาดทุนแทนข้าพเจ้า"
+            >
+                {(data?.data?.attorneyInfo || []).length === 0 ? 'ไม่มี' : 'มี'}
+            </ContentLabel>
             {
                 data?.data?.attorneyInfo?.map((attorneyInfo, index) => {
                     return <React.Fragment key={`attorney${index}`}>
@@ -269,8 +270,6 @@ const AttorneySection = () => {
                     </React.Fragment>
                 })
             }
-
-
         </ContentLoading>
     )
 }

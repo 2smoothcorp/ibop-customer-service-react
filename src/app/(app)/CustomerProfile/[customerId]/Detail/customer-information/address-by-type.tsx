@@ -1,19 +1,22 @@
 "use client"
 
+
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { AddressBySearchProps, handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function AddressByType({
-    isEditable = false
-}: { isEditable?: boolean }) {
+export default function AddressByType() {
+    const [thailandAddress, setThailandAddress] = useState<AddressBySearchProps[]>([]);
     const params = useParams()
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
     const {
         register,
         handleSubmit,
@@ -24,6 +27,13 @@ export default function AddressByType({
     } = useForm<SubmitInput>()
 
     const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
+
+    // const getAddress = async (search: string) => {
+    //     console.log('search', search)
+    //     const list = getAddressBySearch(search, 'postCode');
+    //     setThailandAddress([...list]);
+    //     console.log(list)
+    // }
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['addressByType', params.customerId],
@@ -114,6 +124,12 @@ export default function AddressByType({
         return null
     }
 
+    // const postCode = watch('zipCode')
+
+    // useEffect(() => {
+    //     getAddress(postCode)
+    // }, [postCode])
+
     return (
         <>
             <HeaderTitle
@@ -194,6 +210,10 @@ export default function AddressByType({
                         register={register}
                         name="zipCode"
                         isRequired
+                    // type="addressThailand"
+                    // addressList={thailandAddress}
+                    // placeholder="โปรดเลือกประเทศ"
+                    // addressOptionType="postCode"
                     />
                     {
                         watch("countryCode") !== '000'
@@ -233,6 +253,10 @@ export default function AddressByType({
                                     register={register}
                                     name="provinceCode"
                                     isRequired
+                                // type="addressThailand"
+                                // addressList={thailandAddress}
+                                // placeholder="โปรดเลือกจังหวัด"
+                                // addressOptionType="province"
                                 />
                                 <InputHorizontal
                                     label="อำเภอ / เขต"
@@ -242,6 +266,10 @@ export default function AddressByType({
                                     register={register}
                                     name="districtCode"
                                     isRequired
+                                // type="addressThailand"
+                                // addressList={thailandAddress}
+                                // placeholder="โปรดเลือกอำเภอ / เขต"
+                                // addressOptionType="district"
                                 />
                                 <InputHorizontal
                                     label="ตำบล / แขวง"
@@ -251,6 +279,10 @@ export default function AddressByType({
                                     register={register}
                                     name="subDistrictCode"
                                     isRequired
+                                // type="addressThailand"
+                                // addressList={thailandAddress}
+                                // placeholder="โปรดเลือกตำบล / แขวง"
+                                // addressOptionType="subDistrict"
                                 />
                             </>
                     }

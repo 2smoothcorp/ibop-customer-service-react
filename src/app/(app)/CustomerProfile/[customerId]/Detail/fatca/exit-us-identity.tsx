@@ -34,6 +34,7 @@ export default function ExitUSIndentity() {
       try {
         const request = await fetch(`/api/customer-profile/fatca/tins/${customerId}`, { method: 'GET' });
         const response: TinInfoOutput = await request.json();
+        console.log('response', response)
         const { isFatcaIndividualSelfCert } = response;
         if (response) {
           setValue('isFatcaIndividualSelfCert', isFatcaIndividualSelfCert || false)
@@ -60,7 +61,7 @@ export default function ExitUSIndentity() {
         <div className="block px-10">
           <div className="flex justify-around items-center pb-4">
             {
-              data?.isFatcaIndividualSelfCert !== undefined && (
+              data && (
                 <InputSwitch
                   label="สถานะ FATCA"
                   name="isFatcaIndividualSelfCert"
