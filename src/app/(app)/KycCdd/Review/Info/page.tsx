@@ -105,7 +105,11 @@ const Page = (): ReactElement => {
   const renderStepperControlButtons = (): ReactElement => {
     return (
       <div className={'flex items-center justify-end gap-x-4 mt-4 p-4'}>
-        <Button variant={'contained'} color={'secondary'} onClick={ onClickPrevStep }>
+        <Button
+          variant={'contained'}
+          className={'bg-neutral-200 hover:bg-neutral-200 hover:brightness-95 text-xl text-black py-0 w-25 h-10'}
+          onClick={ onClickPrevStep }
+        >
           ย้อนกลับ
         </Button>
         <Button variant={'contained'} onClick={ onClickNextStep }>
