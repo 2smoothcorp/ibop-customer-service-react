@@ -7,6 +7,7 @@
 import { type ReactElement, useEffect } from 'react';
 import {
   type SelectProps,
+  type SelectChangeEvent,
   Select,
   MenuItem
 } from '@mui/material';
@@ -19,6 +20,14 @@ import styles from './styles.module.css';
 
 export const InputSelect = (props: InputSelectProps): ReactElement => {
   useEffect(() => {}, []);
+
+  const onChangeSelection = (evt: SelectChangeEvent) => {
+    const { onSelect } = props;
+    if(!onSelect) { return; }
+
+    const selected = evt.target.value;
+    onSelect(selected);
+  }
 
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
     const { name, register, registerOption } = props;
@@ -43,7 +52,7 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
       { ...props }
       className={ styles['select-input'] }
       inputProps={{ 'aria-label': 'Without label' }}
-      { ...(registerHookForm() || {}) }
+      { ...(registerHookForm() || { onChange: onChangeSelection }) }
     >
       <MenuItem value={''}>
         -- กรุณาเลือก --
@@ -56,6 +65,7 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
 type InputSelectProps = SelectProps<any> & {
   name: string;
   options: Array<SelectOption>;
+  onSelect?: (selected: string) => void;
   register?: UseFormRegister<any>;
   registerOption?: RegisterOptions;
 }

@@ -20,6 +20,13 @@ import type {
 export const InputRadio = (props: InputRadioProps): ReactElement => {
   useEffect(() => {}, []);
 
+  const onChangeSelection = (_: any, selected: string) => {
+    const { onSelect } = props;
+    if(!onSelect) { return; }
+    
+    onSelect(selected);
+  }
+
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
     const { name, register, registerOption } = props;
     if(!register) { return; }
@@ -42,7 +49,7 @@ export const InputRadio = (props: InputRadioProps): ReactElement => {
   }
 
   return (
-    <RadioGroup { ...props } { ...(registerHookForm() || {}) }>
+    <RadioGroup { ...props } { ...(registerHookForm() || { onChange: onChangeSelection }) }>
       { generateRadio() }
     </RadioGroup>
   );
@@ -51,6 +58,7 @@ export const InputRadio = (props: InputRadioProps): ReactElement => {
 type InputRadioProps = RadioGroupProps & {
   name: string;
   options: Array<{ label: string; value: string; disabled?: boolean; }>;
+  onSelect?: (selected: string) => void;
   register?: UseFormRegister<any>;
   registerOption?: RegisterOptions;
 }

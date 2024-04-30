@@ -6,8 +6,8 @@
 
 import {
   type ReactElement,
-  useEffect,
-  useState
+  type ChangeEvent,
+  useEffect
 } from 'react';
 import type {
   UseFormRegister,
@@ -20,6 +20,14 @@ import styles from './styles.module.css';
 export const InputText = (props: InputTextProps): ReactElement => {
   useEffect(() => {}, []);
 
+  const onChangeText = (evt: ChangeEvent<HTMLInputElement>) => {
+    const { onChange } = props;
+    if(!onChange) { return; }
+    
+    const inputValue = evt.target.value || '';
+    onChange(inputValue);
+  }
+
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
     const { name, register, registerOption } = props;
     if(!register) { return; }
@@ -31,8 +39,9 @@ export const InputText = (props: InputTextProps): ReactElement => {
     <input
       type={'text'}
       className={ styles['text-input'] }
+      defaultValue={ props.defaultValue }
       disabled={ props.disabled }
-      { ...(registerHookForm() || {}) }
+      { ...(registerHookForm() || { onChange: onChangeText }) }
     />
   );
 }
@@ -40,7 +49,9 @@ export const InputText = (props: InputTextProps): ReactElement => {
 interface InputTextProps {
   name: string;
   value?: string;
+  defaultValue?: string;
   disabled?: boolean;
+  onChange?: (text: string) => void;
   register?: UseFormRegister<any>;
   registerOption?: RegisterOptions;
 }
