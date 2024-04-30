@@ -13,15 +13,13 @@ import { PersonalInfoModel, PersonalInfoResponseDataResponse } from "@/services/
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-export default function PersonalInfo({
-    isEditable,
-}: {
-    isEditable: boolean;
-}) {
+export default function PersonalInfo() {
     const params = useParams()
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['personalInfo', params.customerId],
