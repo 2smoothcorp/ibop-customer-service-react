@@ -46,18 +46,18 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
   }
 
   const renderFormPersonal = () => {
-    const _titleTh = ''; // `${ personalData?.titleCodeTh || '' } - ${ personalData?.titleNameTh || '' }`.trim();
-    const _firstNameTh = ''; // personalData?.firstNameTh || '-';
-    const _lastNameTh = ''; // personalData?.lastNameTh || '-';
-    const _firstNameEn = ''; // personalData?.firstNameEn || '-';
-    const _lastNameEn = ''; // personalData?.lastNameEn || '-';
-    const _nationality = ''; // `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
-    const _occupation = ''; // `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
-    const _monthlyIncome = ''; // personalData?.monthlyIncome || 0;
-    const _incomeSource = ''; // `${ personalData?.incomeSourceCode || '' } - ${ personalData?.incomeSourceDesc || '' }`.trim();
-    const _incomeCountry = ''; // personalData?.incomeCountry || '-';
-    const _investmentYear = ''; // personalData?.investmentYear || 0;
-    const _investmentPurpose = ''; // (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '' : `${ personalData?.investmentPurposeCode || '' } - ${ personalData?.investmentPurposeDesc }`;
+    const _titleTh = `${ personalData?.titleCodeTh || '' } - ${ personalData?.titleNameTh || '' }`.trim();
+    const _firstNameTh = personalData?.firstNameTh || '-';
+    const _lastNameTh = personalData?.lastNameTh || '-';
+    const _firstNameEn = personalData?.firstNameEn || '-';
+    const _lastNameEn = personalData?.lastNameEn || '-';
+    const _nationality = `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
+    const _occupation = `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
+    const _monthlyIncome = personalData?.monthlyIncome || 0;
+    const _incomeSource = personalData?.incomeSourceDesc || '-';
+    const _incomeCountry = personalData?.incomeCountry || '-';
+    const _investmentYear = personalData?.investmentYear || 0;
+    const _investmentPurpose = (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '-' : personalData?.investmentPurposeDesc || '-';
 
     return (
       <Form<FormFields>

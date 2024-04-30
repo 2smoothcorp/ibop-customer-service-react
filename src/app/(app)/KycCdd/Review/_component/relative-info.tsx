@@ -6,6 +6,7 @@
 
 import {
   type ReactElement,
+  type ChangeEvent,
   Fragment,
   useEffect,
   useState
@@ -25,6 +26,7 @@ import type {
 export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactElement => {
   const [ isEditingBeneficiary, _setIsEditingBeneficiary ] = useState(true);
   const [ isEditingAttorney, _setIsEditingAttorney ] = useState(true);
+  const [ isTruthConfirm, setIsTruthConfirm ] = useState(false);
 
   const beneficiaryHookForm = useForm<BeneficiaryFormFields>({
     mode: 'onSubmit',
@@ -72,6 +74,10 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
   const onSubmitAttorneyForm = (fieldsData: AttorneyFormFields) => {
     //
+  }
+
+  const onCheckTruthConfirm = (_evt: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    console.log('onCheckTruthConfirm', checked);
   }
 
   const renderFormBeneficiary = () => {
@@ -423,6 +429,7 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
               label: 'ลูกค้าขอรับรองและยืนยันว่าข้อมูลที่ให้ไว้ข้างต้นเป็นข้อมูลถูกต้องครบถ้วนตามความเป็นจริงและเป็นปัจจุบัน',
               value: 'confirmed'
             }]}
+            onChange={ onCheckTruthConfirm }
           />
         )
       }
