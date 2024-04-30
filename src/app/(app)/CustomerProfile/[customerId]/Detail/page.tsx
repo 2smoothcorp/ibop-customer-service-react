@@ -35,11 +35,11 @@ export default function DetailPage() {
             component: <Beneficiary />
         },
         {
-            title: "บัญชี ATS ",
+            title: "ข้อมูล ATS ",
             component: <ATS />
         },
         {
-            title: "e-Dividend",
+            title: "ข้อมูล e-Dividend",
             component: <EDividend />
         },
         {
