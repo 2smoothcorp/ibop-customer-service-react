@@ -3,14 +3,19 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
+import { useMasterDataReferenceCustom } from "@/hooks/master-data-reference";
+import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
 import { SpouseInfoModel, SpouseInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import React from "react";
 import { useForm } from "react-hook-form";
 
-export default function SpouseInfo() {
+export default function SpouseInfo({
+    isEditable
+}: {
+    isEditable: boolean
+}) {
     const params = useParams()
     const {
         register,
@@ -20,7 +25,9 @@ export default function SpouseInfo() {
         setValue,
         getValues,
     } = useForm<SubmitInput>()
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
+
+    const { data: titles, isLoading: isLoadingTitles } = useMasterDataTitlesCustom();
+    const { data: reference, isLoading: isLoadingReference } = useMasterDataReferenceCustom();
 
 
     const { data, isLoading, error } = useQuery({
@@ -48,12 +55,12 @@ export default function SpouseInfo() {
     }
 
     const setDefaultData = (spouseInfo: SpouseInfoModel) => {
-        setValue('familyStatus', normalizationData('familyStatus', spouseInfo));
-        setValue('spouseReferenceType', normalizationData('spouseReferenceType', spouseInfo));
-        setValue('spouseIdentityId', normalizationData('spouseIdentityId', spouseInfo));
-        setValue('spouseTitle', normalizationData('spouseTitle', spouseInfo));
-        setValue('spouseFirstName', normalizationData('spouseFirstName', spouseInfo));
-        setValue('spouseLastName', normalizationData('spouseLastName', spouseInfo));
+        setValue('familyStatus', isEmptyStringFormApi(spouseInfo.familyStatus) ? spouseInfo.familyStatus || '' : '');
+        setValue('spouseReferenceType', isEmptyStringFormApi(spouseInfo.spouseReferenceType) ? spouseInfo.spouseReferenceType || '' : '');
+        setValue('spouseIdentityId', isEmptyStringFormApi(spouseInfo.spouseIdentityId) ? spouseInfo.spouseIdentityId || '' : '');
+        setValue('spouseTitleCode', isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? spouseInfo.spouseTitleCode || '' : '');
+        setValue('spouseFirstName', isEmptyStringFormApi(spouseInfo.spouseFirstName) ? spouseInfo.spouseFirstName || '' : '');
+        setValue('spouseLastName', isEmptyStringFormApi(spouseInfo.spouseLastName) ? spouseInfo.spouseLastName || '' : '');
     }
 
     const getData = async () => {
@@ -86,7 +93,7 @@ export default function SpouseInfo() {
                 title="สถานภาพการสมรส"
             />
             <ContentLoading
-                isLoading={isLoading}
+                isLoading={isLoading || isLoadingTitles || isLoadingReference}
                 error={error && error.message || undefined}
                 hight={92}
             >
@@ -95,24 +102,36 @@ export default function SpouseInfo() {
                         label="สถานภาพ"
                         defaultValue={data && normalizationData('familyStatus', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
+                        onChange={(value) => setValue('familyStatus', value)}
                         name="familyStatus"
                         isRequired
+                        type="radio"
+                        list={[
+                            { value: "โสด", label: "โสด" },
+                            { value: "สมรส", label: "สมรส" },
+                        ]}
                     />
                     {
                         watch('familyStatus') === 'สมรส' && (
                             <>
                                 <InputHorizontal
                                     label="ประเภทหลักฐานลูกค้า"
-                                    defaultValue={data && normalizationData('spouseReferenceType', data) || "-"}
+                                    defaultValue={data && (isEmptyStringFormApi(data.spouseReferenceType) ? data.spouseReferenceType : undefined) || undefined}
+                                    textShow={data && normalizationData('spouseReferenceType', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
                                     name="spouseReferenceType"
                                     isRequired
+                                    type="autocomplete"
+                                    list={reference}
+                                    onChange={(value) => setValue('spouseTitleCode', value)}
+                                    placeholder="โปรดเลือกประเภทหลักฐานลูกค้า"
                                 />
                                 <InputHorizontal
                                     label="เลขที่บัตร"
-                                    defaultValue={data && normalizationData('spouseIdentityId', data) || "-"}
+                                    defaultValue={data && (isEmptyStringFormApi(data.spouseIdentityId) ? data.spouseIdentityId : undefined) || undefined}
+                                    textShow={data && normalizationData('spouseIdentityId', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
                                     name="spouseIdentityId"
@@ -120,15 +139,21 @@ export default function SpouseInfo() {
                                 />
                                 <InputHorizontal
                                     label="คำนำหน้า"
-                                    defaultValue={data && normalizationData('spouseTitle', data) || "-"}
+                                    defaultValue={data && (isEmptyStringFormApi(data.spouseTitleCode) ? data.spouseTitleCode : undefined) || undefined}
+                                    textShow={data && normalizationData('spouseTitle', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
-                                    name="spouseTitle"
+                                    name="spouseTitleCode"
                                     isRequired
+                                    type="autocomplete"
+                                    list={titles}
+                                    onChange={(value) => setValue('spouseTitleCode', value)}
+                                    placeholder="โปรดเลือกคำนำหน้า"
                                 />
                                 <InputHorizontal
                                     label="ชื่อคู่สมรส"
-                                    defaultValue={data && normalizationData('spouseFirstName', data) || "-"}
+                                    defaultValue={data && (isEmptyStringFormApi(data.spouseFirstName) ? data.spouseFirstName : undefined) || undefined}
+                                    textShow={data && normalizationData('spouseFirstName', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
                                     name="spouseFirstName"
@@ -136,7 +161,8 @@ export default function SpouseInfo() {
                                 />
                                 <InputHorizontal
                                     label="นามสกุลคู่สมรส"
-                                    defaultValue={data && normalizationData('spouseLastName', data) || "-"}
+                                    defaultValue={data && (isEmptyStringFormApi(data.spouseLastName) ? data.spouseLastName : undefined) || undefined}
+                                    textShow={data && normalizationData('spouseLastName', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
                                     name="spouseLastName"
@@ -157,7 +183,7 @@ interface SubmitInput {
     familyStatus: string;
     spouseReferenceType: string;
     spouseIdentityId: string;
-    spouseTitle: string;
+    spouseTitleCode: string;
     spouseFirstName: string;
     spouseLastName: string;
 }

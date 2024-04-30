@@ -205,7 +205,7 @@ const AttorneySection = () => {
                         <div>
                             <HeaderTitle
                                 className="gap-0"
-                                title={`ผู้รับมอบอำนาญคนที่ ${index + 1}`}
+                                title={`ผู้รับมอบอำนาจคนที่ ${index + 1}`}
                             />
                             <div className="grid grid-cols-3">
                                 {
