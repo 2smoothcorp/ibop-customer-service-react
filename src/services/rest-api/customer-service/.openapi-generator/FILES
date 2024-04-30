@@ -160,8 +160,8 @@ models/RequestCustomerInput.ts
 models/ReserveAccountNoInput.ts
 models/ReserveAccountNoOutput.ts
 models/RiskLevelResponse.ts
-models/RiskLevelResultResponse.ts
-models/RiskLevelResultResponseDataResponse.ts
+models/RiskLevelResultCallback.ts
+models/RiskLevelResultCallbackDataResponse.ts
 models/SaveTinInput.ts
 models/SelectProductGetAllOutputPagination.ts
 models/SelectProductRequest.ts

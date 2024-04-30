@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { MenuResponse } from './MenuResponse';
+import type { RiskLevelResultCallback } from './RiskLevelResultCallback';
 import {
-    MenuResponseFromJSON,
-    MenuResponseFromJSONTyped,
-    MenuResponseToJSON,
-} from './MenuResponse';
+    RiskLevelResultCallbackFromJSON,
+    RiskLevelResultCallbackFromJSONTyped,
+    RiskLevelResultCallbackToJSON,
+} from './RiskLevelResultCallback';
 
 /**
  * 
  * @export
- * @interface MenuResponseListDataResponse
+ * @interface RiskLevelResultCallbackDataResponse
  */
-export interface MenuResponseListDataResponse {
+export interface RiskLevelResultCallbackDataResponse {
     /**
      * 
      * @type {number}
-     * @memberof MenuResponseListDataResponse
+     * @memberof RiskLevelResultCallbackDataResponse
      */
     status?: number;
     /**
      * 
      * @type {{ [key: string]: Array<string>; }}
-     * @memberof MenuResponseListDataResponse
+     * @memberof RiskLevelResultCallbackDataResponse
      */
     errors?: { [key: string]: Array<string>; } | null;
     /**
      * 
      * @type {string}
-     * @memberof MenuResponseListDataResponse
+     * @memberof RiskLevelResultCallbackDataResponse
      */
     message?: string | null;
     /**
      * 
-     * @type {Array<MenuResponse>}
-     * @memberof MenuResponseListDataResponse
+     * @type {RiskLevelResultCallback}
+     * @memberof RiskLevelResultCallbackDataResponse
      */
-    data?: Array<MenuResponse> | null;
+    data?: RiskLevelResultCallback | null;
 }
 
 /**
- * Check if a given object implements the MenuResponseListDataResponse interface.
+ * Check if a given object implements the RiskLevelResultCallbackDataResponse interface.
  */
-export function instanceOfMenuResponseListDataResponse(value: object): boolean {
+export function instanceOfRiskLevelResultCallbackDataResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function MenuResponseListDataResponseFromJSON(json: any): MenuResponseListDataResponse {
-    return MenuResponseListDataResponseFromJSONTyped(json, false);
+export function RiskLevelResultCallbackDataResponseFromJSON(json: any): RiskLevelResultCallbackDataResponse {
+    return RiskLevelResultCallbackDataResponseFromJSONTyped(json, false);
 }
 
-export function MenuResponseListDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): MenuResponseListDataResponse {
+export function RiskLevelResultCallbackDataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): RiskLevelResultCallbackDataResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -74,11 +74,11 @@ export function MenuResponseListDataResponseFromJSONTyped(json: any, ignoreDiscr
         'status': !exists(json, 'status') ? undefined : json['status'],
         'errors': !exists(json, 'errors') ? undefined : json['errors'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'data': !exists(json, 'data') ? undefined : (json['data'] === null ? null : (json['data'] as Array<any>).map(MenuResponseFromJSON)),
+        'data': !exists(json, 'data') ? undefined : RiskLevelResultCallbackFromJSON(json['data']),
     };
 }
 
-export function MenuResponseListDataResponseToJSON(value?: MenuResponseListDataResponse | null): any {
+export function RiskLevelResultCallbackDataResponseToJSON(value?: RiskLevelResultCallbackDataResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -90,7 +90,7 @@ export function MenuResponseListDataResponseToJSON(value?: MenuResponseListDataR
         'status': value.status,
         'errors': value.errors,
         'message': value.message,
-        'data': value.data === undefined ? undefined : (value.data === null ? null : (value.data as Array<any>).map(MenuResponseToJSON)),
+        'data': RiskLevelResultCallbackToJSON(value.data),
     };
 }
 
