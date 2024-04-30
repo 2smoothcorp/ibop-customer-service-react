@@ -10,6 +10,7 @@ export interface SearchCustomerProfileListTableProps {
     paginationModel: GridPaginationModel
     setPaginationModel: (model: GridPaginationModel) => void
     isLoading?: boolean
+    onClickWithEditEvent?: (coperateId: number) => void
 }
 
 const SearchCustomerProfileListTable = (props: SearchCustomerProfileListTableProps) => {
@@ -35,7 +36,7 @@ const SearchCustomerProfileListTable = (props: SearchCustomerProfileListTablePro
                         className="bg-[#1F346B] hover:bg-[#1F346B] hover:brightness-95 text-[18px] py-0  h-10 font-db-helvethaica"
                         // style={{ marginLeft: 16 }}
                         tabIndex={params.hasFocus ? 0 : -1}
-                        onClick={() => router.push(`/CustomerProfile/${params.id}/Detail`)}
+                        onClick={() => props.onClickWithEditEvent ? props.onClickWithEditEvent(Number.parseInt(params.id)) : router.push(`/CustomerProfile/${params.id}/Detail`)}
                     >
                         <strong>
                             ดูรายละเอียด

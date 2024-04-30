@@ -1,5 +1,6 @@
 "use client"
 
+import ContentLabel from "@/components/content/content-label";
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
@@ -32,6 +33,8 @@ export default function ContractInformation() {
             case 'docReceiveChannel':
                 if (addressInfo.docReceiveChannel === 'POST') {
                     return 'ไปรษณีย์';
+                } else if (addressInfo.docReceiveChannel === 'EMAIL') {
+                    return 'อีเมล';
                 }
                 return handleEmptyStringFormApi(addressInfo.docReceiveChannel);
             case 'addressNo':
@@ -141,16 +144,13 @@ export default function ContractInformation() {
                 hight={184}
             >
                 <div className="px-2">
-                    <InputHorizontal
-                        labelAlign="left"
+                    <ContentLabel
                         label="วิธีการรับเอกสาร Mailing Method (กรุณาเลือกเพียง 1 ช่องทาง)"
-                        labelWidth={485}
-                        defaultValue={data && normalizationData('docReceiveChannel', data) || "-"}
-                        isEditable={isEditable}
-                        register={register}
-                        name="docReceiveChannel"
-                    />
+                    >
+                        {data && normalizationData('docReceiveChannel', data) || "-"}
+                    </ContentLabel>
                 </div>
+
 
                 <div className="text-lg font-bold px-6 py-2">
                     ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย์ (กรุณาระบุข้อความให้ครบถ้วนแม้ว่าท่านจะได้ระบุวิธีการรับเอกสารทางอีเมล)  <span className="text-red-500">*</span>

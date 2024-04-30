@@ -95,9 +95,12 @@ export const mainTheme = createTheme({
           },
           '& .MuiDataGrid-columnHeader': {
             backgroundColor: 'rgba(185,185,185, 0.15)',
+
+          },
+          '& .MuiDataGrid-columnHeaderTitle': {
             color: '#000',
             fontSize: '18px',
-            fontWeight: 700,
+            fontWeight: 'bold',
           },
           '& .MuiDataGrid-cell': {
             fontSize: '18px',
