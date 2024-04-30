@@ -58,7 +58,7 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
       getOptionKey={ props.getOptionKey }
       getOptionLabel={ props.getOptionLabel }
       onInputChange={(_, text) => { onChangeSearchText(text); }}
-      renderOption={ (props.mode) ? (liProps, item) => (<li {...liProps}>{ item.label }</li>) : undefined }
+      renderOption={ (props.isAddress) ? (liProps, item) => (<li {...liProps}>{ item.label }</li>) : undefined }
       
       { ...(registerHookForm() || { onChange: (_, selected: any) => { onSelectOption(selected); } }) }
     />
@@ -66,13 +66,15 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
 }
 
 interface InputAutocompleteProps {
-  mode?: 'address';
+  isAddress?: boolean;
   name: string;
   options: Array<AutoCompleteOption>;
   selectedOption?: any;
   disabled?: boolean;
 
+  /** @default 'label' */
   optionSearchKey?: string;
+
   getOptionKey?: (item: any) => string;
   getOptionLabel?: (item: any) => string;
   onSearch?: (searchText: string) => void;
