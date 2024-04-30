@@ -64,6 +64,20 @@ export const mainTheme = createTheme({
 
   /** Custom Component Specific Theme here */
   components: {
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          '& .MuiAutocomplete-inputRoot': {
+            backgroundColor: '#fff',
+            height: '40px',
+            '& .MuiAutocomplete-input': {
+              padding: '0 10px',
+              fontSize: '18px'
+            },
+          }
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {

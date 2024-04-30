@@ -220,7 +220,7 @@ export default function Beneficiary() {
                                         name="buildingOrVillage"
                                     />
                                     <InputHorizontal
-                                        label="ห้อง"
+                                        label="เลขที่ห้อง"
                                         defaultValue={data && normalizationData('roomNo', data) || "-"}
                                         isEditable={isEditable}
                                         register={register}

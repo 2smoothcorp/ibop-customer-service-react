@@ -3,14 +3,16 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
+import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import React from "react";
 import { useForm } from "react-hook-form";
 
-export default function AddressByType() {
+export default function AddressByType({
+    isEditable = false
+}: { isEditable?: boolean }) {
     const params = useParams()
     const {
         register,
@@ -20,7 +22,8 @@ export default function AddressByType() {
         setValue,
         getValues,
     } = useForm<SubmitInput>()
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
+
+    const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['addressByType', params.customerId],
@@ -43,6 +46,8 @@ export default function AddressByType() {
                 return handleEmptyStringFormApi(addressInfo.soi);
             case 'street':
                 return handleEmptyStringFormApi(addressInfo.street);
+            case 'countryCode':
+                return handleEmptyStringFormApi(addressInfo.countryCode);
             case 'country':
                 return isEmptyStringFormApi(addressInfo.countryCode) ? '-' : `${addressInfo.countryCode} - ${addressInfo.countryDesc}`;
             case 'zipCode':
@@ -66,21 +71,21 @@ export default function AddressByType() {
     }
 
     const setDefaultData = (addressInfo: AddressInfoModel) => {
-        setValue('addressNo', normalizationData('addressNo', addressInfo));
-        setValue('moo', normalizationData('moo', addressInfo));
-        setValue('buildingOrVillage', normalizationData('buildingOrVillage', addressInfo));
-        setValue('roomNo', normalizationData('roomNo', addressInfo));
-        setValue('floor', normalizationData('floor', addressInfo));
-        setValue('soi', normalizationData('soi', addressInfo));
-        setValue('street', normalizationData('street', addressInfo));
-        setValue('country', normalizationData('country', addressInfo));
-        setValue('zipCode', normalizationData('zipCode', addressInfo));
-        setValue('province', normalizationData('province', addressInfo));
-        setValue('district', normalizationData('district', addressInfo));
-        setValue('subDistrict', normalizationData('subDistrict', addressInfo));
-        setValue('customAddress1', normalizationData('customAddress1', addressInfo));
-        setValue('customAddress2', normalizationData('customAddress2', addressInfo));
-        setValue('customAddress3', normalizationData('customAddress3', addressInfo));
+        setValue('addressNo', isEmptyStringFormApi(addressInfo.addressNo) ? '' : addressInfo.addressNo || '');
+        setValue('moo', isEmptyStringFormApi(addressInfo.moo) ? '' : addressInfo.moo || '');
+        setValue('buildingOrVillage', isEmptyStringFormApi(addressInfo.buildingOrVillage) ? '' : addressInfo.buildingOrVillage || '');
+        setValue('roomNo', isEmptyStringFormApi(addressInfo.roomNo) ? '' : addressInfo.roomNo || '');
+        setValue('floor', isEmptyStringFormApi(addressInfo.floor) ? '' : addressInfo.floor || '');
+        setValue('soi', isEmptyStringFormApi(addressInfo.soi) ? '' : addressInfo.soi || '');
+        setValue('street', isEmptyStringFormApi(addressInfo.street) ? '' : addressInfo.street || '');
+        setValue('countryCode', isEmptyStringFormApi(addressInfo.countryCode) ? '' : addressInfo.countryCode || '');
+        setValue('zipCode', isEmptyStringFormApi(addressInfo.zipCode) ? '' : addressInfo.zipCode || '');
+        setValue('provinceCode', isEmptyStringFormApi(addressInfo.provinceCode) ? '' : addressInfo.provinceCode || '');
+        setValue('districtCode', isEmptyStringFormApi(addressInfo.districtCode) ? '' : addressInfo.districtCode || '');
+        setValue('subDistrictCode', isEmptyStringFormApi(addressInfo.subDistrictCode) ? '' : addressInfo.subDistrictCode || '');
+        setValue('customAddress1', isEmptyStringFormApi(addressInfo.customAddress1) ? '' : addressInfo.customAddress1 || '');
+        setValue('customAddress2', isEmptyStringFormApi(addressInfo.customAddress2) ? '' : addressInfo.customAddress2 || '');
+        setValue('customAddress3', isEmptyStringFormApi(addressInfo.customAddress3) ? '' : addressInfo.customAddress3 || '');
     }
 
     const getData = async () => {
@@ -116,7 +121,7 @@ export default function AddressByType() {
                 title="ที่อยู่ตามประเภทหลักฐาน"
             />
             <ContentLoading
-                isLoading={isLoading}
+                isLoading={isLoading || isLoadingCountries}
                 error={error && error.message || undefined}
                 hight={184}
             >
@@ -143,7 +148,7 @@ export default function AddressByType() {
                         name="buildingOrVillage"
                     />
                     <InputHorizontal
-                        label="ห้อง"
+                        label="เลขที่ห้อง"
                         defaultValue={data && normalizationData('roomNo', data) || "-"}
                         isEditable={isEditable}
                         register={register}
@@ -172,11 +177,15 @@ export default function AddressByType() {
                     />
                     <InputHorizontal
                         label="ประเทศ"
-                        defaultValue={data && normalizationData('country', data) || "-"}
+                        defaultValue={data && normalizationData('countryCode', data) || undefined}
+                        textShow={data && normalizationData('country', data) || "-"}
                         isEditable={isEditable}
                         register={register}
-                        name="country"
+                        name="countryCode"
                         isRequired
+                        type="autocomplete"
+                        list={countries}
+                        placeholder="โปรดเลือกประเทศ"
                     />
                     <InputHorizontal
                         label="รหัสไปรษณีย์"
@@ -187,7 +196,7 @@ export default function AddressByType() {
                         isRequired
                     />
                     {
-                        data?.countryCode !== '000'
+                        watch("countryCode") !== '000'
                             ?
                             <>
                                 <InputHorizontal
@@ -218,26 +227,29 @@ export default function AddressByType() {
                             : <>
                                 <InputHorizontal
                                     label="จังหวัด"
-                                    defaultValue={data && normalizationData('province', data) || "-"}
+                                    defaultValue={data && normalizationData('provinceCode', data) || "-"}
+                                    textShow={data && normalizationData('province', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
-                                    name="province"
+                                    name="provinceCode"
                                     isRequired
                                 />
                                 <InputHorizontal
                                     label="อำเภอ / เขต"
-                                    defaultValue={data && normalizationData('district', data) || "-"}
+                                    defaultValue={data && normalizationData('districtCode', data) || "-"}
+                                    textShow={data && normalizationData('district', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
-                                    name="district"
+                                    name="districtCode"
                                     isRequired
                                 />
                                 <InputHorizontal
                                     label="ตำบล / แขวง"
-                                    defaultValue={data && normalizationData('subDistrict', data) || "-"}
+                                    defaultValue={data && normalizationData('subDistrictCode', data) || "-"}
+                                    textShow={data && normalizationData('subDistrict', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
-                                    name="subDistrict"
+                                    name="subDistrictCode"
                                     isRequired
                                 />
                             </>
@@ -257,10 +269,11 @@ interface SubmitInput {
     soi: string;
     street: string;
     country: string;
+    countryCode: string;
     zipCode: string;
-    province: string;
-    district: string;
-    subDistrict: string;
+    provinceCode: string;
+    districtCode: string;
+    subDistrictCode: string;
     customAddress1: string;
     customAddress2: string;
     customAddress3: string;

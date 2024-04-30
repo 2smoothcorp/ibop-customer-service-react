@@ -3,14 +3,18 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
+import { useMasterDataOccupationCustom } from "@/hooks/master-data-occupation";
 import { AddressInfoModel, AddressInfoResponseDataResponse, ComboBox, ComboBoxListDataResponse, OccupationInfoModel, OccupationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import React from "react";
 import { useForm } from "react-hook-form";
 
-export default function OccupationInfo() {
+export default function OccupationInfo({
+    isEditable
+}: {
+    isEditable: boolean
+}) {
     const params = useParams()
     const {
         register,
@@ -20,18 +24,8 @@ export default function OccupationInfo() {
         setValue,
         getValues,
     } = useForm<SubmitInput>()
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
 
-    const { data: occupations, } = useQuery({
-        queryKey: ['masterDataOccupation'], queryFn: async () => {
-            const request = await fetch(`/api/master-data/occupation`, { method: 'GET' });
-            const response: ComboBoxListDataResponse = await request.json();
-            if (response.status === 200) {
-                return response.data;
-            }
-            return []
-        }
-    })
+    const { data: occupation, isLoading: isLoadingOccupation } = useMasterDataOccupationCustom();
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['occupationInfo', params.customerId], queryFn: async () => {
@@ -155,6 +149,8 @@ export default function OccupationInfo() {
         }
     }
 
+    // console.log(occupation)
+
     return (
         <>
             <HeaderTitle
@@ -168,14 +164,17 @@ export default function OccupationInfo() {
             >
                 <div className="grid grid-cols-3">
                     <InputHorizontal
-                        // isLableCols1
-                        // allGridCols="grid-cols-6"
-                        // inputCol="col-span-5"
                         label="อาชีพ"
-                        defaultValue={data && normalizationData('occupation', data) || "-"}
+                        defaultValue={data && normalizationData('occupationCode', data) || "-"}
+                        textShow={data && normalizationData('occupation', data) || "-"}
                         isEditable={isEditable}
                         register={register}
-                        name="occupation"
+                        name="occupationCode"
+                    // type="autocomplete"
+                    // list={occupation}
+                    // onChange={(value) => setValue('occupationCode', value)}
+                    // placeholder="โปรดเลือกอาชีพ"
+                    // isRequired
                     />
                 </div>
                 {
@@ -187,6 +186,7 @@ export default function OccupationInfo() {
                                 isEditable={isEditable}
                                 register={register}
                                 name="jobWorkPlace"
+
                             />
                             <InputHorizontal
                                 label="ตำแหน่งงาน"
@@ -224,7 +224,7 @@ export default function OccupationInfo() {
                                 name="buildingOrVillage"
                             />
                             <InputHorizontal
-                                label="ห้อง"
+                                label="เลขที่ห้อง"
                                 defaultValue={data && normalizationData('roomNo', data) || "-"}
                                 isEditable={isEditable}
                                 register={register}
