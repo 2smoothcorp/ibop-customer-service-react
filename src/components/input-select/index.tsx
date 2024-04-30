@@ -10,15 +10,15 @@ import {
   Select,
   MenuItem
 } from '@mui/material';
-import type { UseFormRegister, FieldValues } from 'react-hook-form';
+import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form';
 import styles from './styles.module.css';
 
 export const InputSelect = (props: InputSelectProps): ReactElement => {
   useEffect(() => {}, []);
 
-  const registerHookForm = () => {
+  const registerHookForm = (): UseFormRegisterReturn | undefined => {
     const { name, register } = props;
-    if(!register) { return ({}); }
+    if(!register) { return; }
     return register(name);
   }
 
@@ -38,7 +38,7 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
       { ...props }
       className={ styles['select-input'] }
       inputProps={{ 'aria-label': 'Without label' }}
-      { ...registerHookForm() }
+      { ...(registerHookForm() || {}) }
     >
       <MenuItem value={''}>
         -- กรุณาเลือก --
@@ -51,5 +51,5 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
 type InputSelectProps = SelectProps<any> & {
   name: string;
   options: Array<{ label: string; value: string; disabled?: boolean; }>;
-  register?: UseFormRegister<FieldValues>;
+  register?: UseFormRegister<any>;
 }

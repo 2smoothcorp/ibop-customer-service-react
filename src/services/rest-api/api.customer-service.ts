@@ -8,7 +8,8 @@ import {
   CustomerProfileV2Api,
   FATCAApi,
   MasterDataApi,
-  KycApi
+  KycApi,
+  SuitabilityApi
 } from "./customer-service/apis";
 
 
@@ -19,6 +20,7 @@ export class ApiCustomerService {
   private apiMasterData?: MasterDataApi;
   private apiFATCA?: FATCAApi;
   private apiKyc?: KycApi;
+  private apiSuitTest?: SuitabilityApi;
 
   constructor(config: Configuration) { this.apiConfig = config; }
 
@@ -45,6 +47,11 @@ export class ApiCustomerService {
   public getKycApi() {
     if (!this.apiKyc) { this.apiKyc = new KycApi(this.apiConfig); }
     return this.apiKyc;
+  }
+
+  public getSuitabilityTestApi() {
+    if (!this.apiSuitTest) { this.apiSuitTest = new SuitabilityApi(this.apiConfig); }
+    return this.apiSuitTest;
   }
 }
 
