@@ -13,13 +13,13 @@ import { PersonalInfoModel, PersonalInfoResponseDataResponse } from "@/services/
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useParams } from "next/navigation";
-import React from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export default function PersonalInfo() {
     const params = useParams()
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['personalInfo', params.customerId],
@@ -150,7 +150,7 @@ export default function PersonalInfo() {
                 isLoading={isLoading || isLoadingPersonType || isLoadingReference || isLoadingCountries || isLoadingTitles || isLoadingNation}
                 error={error ? error.message : undefined}
             >
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     <InputHorizontal
                         label="ประเภทลูกค้า"
                         defaultValue={data && normalizationData('personTypeCode', data) || '-'}
@@ -158,7 +158,7 @@ export default function PersonalInfo() {
                         isEditable={isEditable}
                         register={register}
                         name="personTypeCode"
-                        type="select"
+                        type="autocomplete"
                         list={personType}
                         isRequired
                     />
@@ -169,7 +169,7 @@ export default function PersonalInfo() {
                         isEditable={isEditable}
                         register={register}
                         name="referenceType"
-                        type="select"
+                        type="autocomplete"
                         list={reference}
                         isRequired
                     />
@@ -187,7 +187,7 @@ export default function PersonalInfo() {
                         textShow={data && normalizationData('country', data) || '-'}
                         isEditable={isEditable}
                         register={register}
-                        type="select"
+                        type="autocomplete"
                         list={countries}
                         name="countryCode"
                         isRequired
@@ -199,7 +199,7 @@ export default function PersonalInfo() {
                         isEditable={isEditable}
                         register={register}
                         name="nationalityCode"
-                        type="select"
+                        type="autocomplete"
                         list={nation}
                         isRequired
                     />
@@ -244,7 +244,7 @@ export default function PersonalInfo() {
                         isEditable={isEditable}
                         register={register}
                         name="titleCode"
-                        type="select"
+                        type="autocomplete"
                         list={titles}
                         isRequired
                     />
@@ -293,12 +293,12 @@ export default function PersonalInfo() {
                         isEditable={isEditable}
                         register={register}
                         name="genderCode"
-                        type="select"
+                        type="autocomplete"
                         list={[
-                            { value: '0', label: 'ชาย' },
-                            { value: '1', label: 'หญิง' },
-                            { value: '2', label: 'นิติบุคคล' },
-                            { value: '3', label: 'ไม่ระบุ' },
+                            { value: '0', label: '0-ชาย' },
+                            { value: '1', label: '1-หญิง' },
+                            { value: '2', label: '2-นิติบุคคล' },
+                            { value: '3', label: '3-ไม่ระบุ' },
                         ]}
                         isRequired
                     />

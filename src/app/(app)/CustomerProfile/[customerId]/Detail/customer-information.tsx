@@ -6,7 +6,6 @@ import PoliticRelationInfo from "./customer-information/politic-relation-info";
 import SpouseInfo from "./customer-information/spouse-info";
 
 export default function CustomerInformation() {
-
     return (
         <>
             <PersonalInfo />

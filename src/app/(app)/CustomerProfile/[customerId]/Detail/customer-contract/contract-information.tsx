@@ -150,13 +150,12 @@ export default function ContractInformation() {
                         {data && normalizationData('docReceiveChannel', data) || "-"}
                     </ContentLabel>
                 </div>
-
-
-                <div className="text-lg font-bold px-6 py-2">
-                    ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย์ (กรุณาระบุข้อความให้ครบถ้วนแม้ว่าท่านจะได้ระบุวิธีการรับเอกสารทางอีเมล)  <span className="text-red-500">*</span>
-                </div>
-                <div className="text-lg px-6 pt-2 py-4">
-                    ที่อยู่ปัจจุบันที่ติดต่อได้
+                <div className="px-2 pt-2">
+                    <ContentLabel
+                        label="ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย์ (กรุณาระบุข้อความให้ครบถ้วนแม้ว่าท่านจะได้ระบุวิธีการรับเอกสารทางอีเมล)"
+                    >
+                        ที่อยู่ปัจจุบันที่ติดต่อได้
+                    </ContentLabel>
                 </div>
 
                 <div className="grid grid-cols-3">
@@ -182,7 +181,7 @@ export default function ContractInformation() {
                         name="buildingOrVillage"
                     />
                     <InputHorizontal
-                        label="ห้อง"
+                        label="เลขที่ห้อง"
                         defaultValue={data && normalizationData('roomNo', data) || "-"}
                         isEditable={isEditable}
                         register={register}

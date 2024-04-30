@@ -3,15 +3,17 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
+import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import React from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export default function AddressByCurrent() {
     const params = useParams()
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
     const {
         register,
         handleSubmit,
@@ -20,7 +22,8 @@ export default function AddressByCurrent() {
         setValue,
         getValues,
     } = useForm<SubmitInput>()
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
+
+    const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['addressByCurrent', params.customerId],
@@ -43,16 +46,24 @@ export default function AddressByCurrent() {
                 return handleEmptyStringFormApi(addressInfo.soi);
             case 'street':
                 return handleEmptyStringFormApi(addressInfo.street);
+            case 'countryCode':
+                return handleEmptyStringFormApi(addressInfo.countryCode);
             case 'country':
                 return isEmptyStringFormApi(addressInfo.countryCode) ? '-' : `${addressInfo.countryCode} - ${addressInfo.countryDesc}`;
             case 'zipCode':
                 return handleEmptyStringFormApi(addressInfo.zipCode);
+            case 'provinceCode':
+                return handleEmptyStringFormApi(addressInfo.provinceCode);
             case 'province':
-                return handleEmptyStringFormApi(addressInfo.provinceNameTh);
+                return isEmptyStringFormApi(addressInfo.provinceCode) ? '-' : addressInfo.provinceNameTh;
+            case 'districtCode':
+                return handleEmptyStringFormApi(addressInfo.districtCode);
             case 'district':
-                return handleEmptyStringFormApi(addressInfo.districtNameTh);
+                return isEmptyStringFormApi(addressInfo.districtCode) ? '-' : addressInfo.districtNameTh;
+            case 'subDistrictCode':
+                return handleEmptyStringFormApi(addressInfo.subDistrictCode);
             case 'subDistrict':
-                return handleEmptyStringFormApi(addressInfo.subDistrictNameTh);
+                return isEmptyStringFormApi(addressInfo.subDistrictCode) ? '-' : addressInfo.subDistrictNameTh;
             case 'customAddress1':
                 return handleEmptyStringFormApi(addressInfo.customAddress1);
             case 'customAddress2':
@@ -66,21 +77,21 @@ export default function AddressByCurrent() {
     }
 
     const setDefaultData = (addressInfo: AddressInfoModel) => {
-        setValue('addressNo', normalizationData('addressNo', addressInfo));
-        setValue('moo', normalizationData('moo', addressInfo));
-        setValue('buildingOrVillage', normalizationData('buildingOrVillage', addressInfo));
-        setValue('roomNo', normalizationData('roomNo', addressInfo));
-        setValue('floor', normalizationData('floor', addressInfo));
-        setValue('soi', normalizationData('soi', addressInfo));
-        setValue('street', normalizationData('street', addressInfo));
-        setValue('country', normalizationData('country', addressInfo));
-        setValue('zipCode', normalizationData('zipCode', addressInfo));
-        setValue('province', normalizationData('province', addressInfo));
-        setValue('district', normalizationData('district', addressInfo));
-        setValue('subDistrict', normalizationData('subDistrict', addressInfo));
-        setValue('customAddress1', normalizationData('customAddress1', addressInfo));
-        setValue('customAddress2', normalizationData('customAddress2', addressInfo));
-        setValue('customAddress3', normalizationData('customAddress3', addressInfo));
+        setValue('addressNo', isEmptyStringFormApi(addressInfo.addressNo) ? '' : addressInfo.addressNo || '');
+        setValue('moo', isEmptyStringFormApi(addressInfo.moo) ? '' : addressInfo.moo || '');
+        setValue('buildingOrVillage', isEmptyStringFormApi(addressInfo.buildingOrVillage) ? '' : addressInfo.buildingOrVillage || '');
+        setValue('roomNo', isEmptyStringFormApi(addressInfo.roomNo) ? '' : addressInfo.roomNo || '');
+        setValue('floor', isEmptyStringFormApi(addressInfo.floor) ? '' : addressInfo.floor || '');
+        setValue('soi', isEmptyStringFormApi(addressInfo.soi) ? '' : addressInfo.soi || '');
+        setValue('street', isEmptyStringFormApi(addressInfo.street) ? '' : addressInfo.street || '');
+        setValue('countryCode', isEmptyStringFormApi(addressInfo.countryCode) ? '' : addressInfo.countryCode || '');
+        setValue('zipCode', isEmptyStringFormApi(addressInfo.zipCode) ? '' : addressInfo.zipCode || '');
+        setValue('provinceCode', isEmptyStringFormApi(addressInfo.provinceCode) ? '' : addressInfo.provinceCode || '');
+        setValue('districtCode', isEmptyStringFormApi(addressInfo.districtCode) ? '' : addressInfo.districtCode || '');
+        setValue('subDistrictCode', isEmptyStringFormApi(addressInfo.subDistrictCode) ? '' : addressInfo.subDistrictCode || '');
+        setValue('customAddress1', isEmptyStringFormApi(addressInfo.customAddress1) ? '' : addressInfo.customAddress1 || '');
+        setValue('customAddress2', isEmptyStringFormApi(addressInfo.customAddress2) ? '' : addressInfo.customAddress2 || '');
+        setValue('customAddress3', isEmptyStringFormApi(addressInfo.customAddress3) ? '' : addressInfo.customAddress3 || '');
     }
 
     const getData = async () => {
@@ -115,7 +126,7 @@ export default function AddressByCurrent() {
                 title="ที่อยู่ปัจจุบันที่ติดต่อได้"
             />
             <ContentLoading
-                isLoading={isLoading}
+                isLoading={isLoading || isLoadingCountries}
                 error={error && error.message || undefined}
                 hight={184}
             >
@@ -142,7 +153,7 @@ export default function AddressByCurrent() {
                         name="buildingOrVillage"
                     />
                     <InputHorizontal
-                        label="ห้อง"
+                        label="เลขที่ห้อง"
                         defaultValue={data && normalizationData('roomNo', data) || "-"}
                         isEditable={isEditable}
                         register={register}
@@ -171,11 +182,16 @@ export default function AddressByCurrent() {
                     />
                     <InputHorizontal
                         label="ประเทศ"
-                        defaultValue={data && normalizationData('country', data) || "-"}
+                        defaultValue={data && normalizationData('countryCode', data) || "-"}
+                        textShow={data && normalizationData('country', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="country"
                         isRequired
+                        type="autocomplete"
+                        list={countries}
+                        onChange={(value) => setValue('countryCode', value)}
+                        placeholder="โปรดเลือกประเทศ"
                     />
                     <InputHorizontal
                         label="รหัสไปรษณีย์"
@@ -217,7 +233,8 @@ export default function AddressByCurrent() {
                             : <>
                                 <InputHorizontal
                                     label="จังหวัด"
-                                    defaultValue={data && normalizationData('province', data) || "-"}
+                                    defaultValue={data && normalizationData('provinceCode', data) || "-"}
+                                    textShow={data && normalizationData('province', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
                                     name="province"
@@ -225,7 +242,8 @@ export default function AddressByCurrent() {
                                 />
                                 <InputHorizontal
                                     label="อำเภอ / เขต"
-                                    defaultValue={data && normalizationData('district', data) || "-"}
+                                    defaultValue={data && normalizationData('districtCode', data) || "-"}
+                                    textShow={data && normalizationData('district', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
                                     name="district"
@@ -233,7 +251,8 @@ export default function AddressByCurrent() {
                                 />
                                 <InputHorizontal
                                     label="ตำบล / แขวง"
-                                    defaultValue={data && normalizationData('subDistrict', data) || "-"}
+                                    defaultValue={data && normalizationData('subDistrictCode', data) || "-"}
+                                    textShow={data && normalizationData('subDistrict', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
                                     name="subDistrict"
@@ -257,11 +276,11 @@ interface SubmitInput {
     floor: string;
     soi: string;
     street: string;
-    country: string;
+    countryCode: string;
     zipCode: string;
-    province: string;
-    district: string;
-    subDistrict: string;
+    provinceCode: string;
+    districtCode: string;
+    subDistrictCode: string;
     customAddress1: string;
     customAddress2: string;
     customAddress3: string;

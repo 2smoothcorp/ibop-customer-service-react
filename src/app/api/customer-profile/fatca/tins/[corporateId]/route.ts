@@ -10,7 +10,7 @@ export async function GET(_: NextRequest, { params: { corporateId } }: ParamSegm
     }
     try {
         const apiService = await services.getCustomerServiceApi();
-        const result = await apiService.getFATCAApi().fATCAGetTinsCorparateIdGet({ corparateId: corporateId });
+        const result = await apiService.getFATCAApi().fATCAAnswersCorporateIdGet({ corporateId: corporateId });
         return NextResponse.json(result);
     }
     catch (err: any) {

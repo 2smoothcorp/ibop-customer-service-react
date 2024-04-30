@@ -1,9 +1,13 @@
 "use client";
 
+import { AddressBySearchProps } from "@/utils/function";
 import { Property } from "csstype";
 import { UseFormRegister } from "react-hook-form";
+import InputAddressThailand from "./input-address-thailand";
+import InputAutoComplete from "./input-auto-complete";
 import InputDate from "./input-date";
 import InputNumber from "./input-number";
+import InputRadio from "./input-radio";
 import InputSelectHook, { InputSelectHookValue } from "./input-select-hook";
 import InputTextHook from "./input-text-hook";
 
@@ -28,6 +32,9 @@ export default function InputHorizontal({
     maxDate,
     minDate,
     rightInputComponent,
+    placeholder,
+    addressList,
+    addressOptionType,
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -35,6 +42,81 @@ export default function InputHorizontal({
             return <span className="text-red-500">*</span>
         }
         return null
+    }
+
+    function renderInput() {
+        switch (type) {
+            case "date":
+                // console.log("date", name, defaultValue)
+                return <InputDate
+                    name={name}
+                    defaultValue={defaultValue}
+                    className={isLableCols1 ? inputCol : ""}
+                    onChange={onChange}
+                    maxDate={maxDate}
+                    minDate={minDate}
+                    required={isRequired}
+                    disabled={disabled}
+                />
+            case "number":
+                return <InputNumber
+                    name={name}
+                    defaultValue={defaultValue}
+                    onChange={onChangeNumber}
+                    disabled={disabled}
+                    required={isRequired}
+                />
+            case "select":
+                return <InputSelectHook
+                    register={register}
+                    name={name}
+                    defaultValue={defaultValue}
+                    list={list}
+                    disabled={disabled}
+                    required={isRequired}
+                />
+            case "radio":
+                return <InputRadio
+                    isFlex
+                    onChange={onChange}
+                    name={name}
+                    defaultValue={defaultValue}
+                    list={list}
+                    disabled={disabled}
+                    required={isRequired}
+                />
+
+            case "autocomplete":
+                return <InputAutoComplete
+                    placeholder={placeholder}
+                    name={name}
+                    defaultValue={defaultValue}
+                    list={list}
+                    disabled={disabled}
+                    onChange={onChange}
+                    required={isRequired}
+                />
+            case "addressThailand":
+                return <InputAddressThailand
+                    placeholder={placeholder}
+                    name={name}
+                    defaultValue={defaultValue}
+                    list={addressList}
+                    disabled={disabled}
+                    onChange={onChange}
+                    required={isRequired}
+                    optionType={addressOptionType}
+                />
+            default:
+                return <InputTextHook
+                    register={register}
+                    name={name}
+                    defaultValue={defaultValue}
+                    disabled={disabled}
+                    required={isRequired}
+                />
+
+        }
     }
 
     return (
@@ -61,44 +143,7 @@ export default function InputHorizontal({
                         ? (
                             label === ""
                                 ? <></>
-                                : (
-                                    type === "select"
-                                        ? <InputSelectHook
-                                            register={register}
-                                            name={name}
-                                            defaultValue={defaultValue}
-                                            // className={isLableCols1 ? inputCol : ""}
-                                            list={list}
-                                            disabled={disabled}
-                                        />
-                                        : type === "number"
-                                            ? <InputNumber
-                                                name={name}
-                                                defaultValue={defaultValue}
-                                                // className={isLableCols1 ? inputCol : ""}
-                                                onChange={onChangeNumber}
-                                                disabled={disabled}
-                                            />
-                                            : type === "date"
-                                                ?
-                                                <InputDate
-                                                    name={name}
-                                                    defaultValue={defaultValue}
-                                                    className={isLableCols1 ? inputCol : ""}
-                                                    onChange={onChange}
-                                                    maxDate={maxDate}
-                                                    minDate={minDate}
-                                                    required={isRequired}
-                                                    disabled={disabled}
-                                                />
-                                                : <InputTextHook
-                                                    register={register}
-                                                    name={name}
-                                                    defaultValue={defaultValue}
-                                                    disabled={disabled}
-                                                // className={isLableCols1 ? inputCol : ""}
-                                                />
-                                )
+                                : renderInput()
                         )
                         : (
                             <div className={`w-full text-lg font-medium ${inputCol}`}>
@@ -118,7 +163,7 @@ export default function InputHorizontal({
 
 
 interface InputHorizontalProps {
-    type?: "text" | "number" | "select" | "date";
+    type?: "text" | "number" | "select" | "date" | "radio" | "autocomplete" | "addressThailand";
     name: string;
     label: string;
     isEditable?: boolean;
@@ -141,4 +186,6 @@ interface InputHorizontalProps {
     minDate?: string;
     rightInputComponent?: React.ReactNode;
     disabled?: boolean;
+    addressList?: AddressBySearchProps[];
+    addressOptionType?: 'postCode' | 'province' | 'district' | 'subDistrict';
 }
