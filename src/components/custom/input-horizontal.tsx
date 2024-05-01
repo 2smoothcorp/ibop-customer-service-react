@@ -35,6 +35,8 @@ export default function InputHorizontal({
     placeholder,
     addressList,
     addressOptionType,
+    onChangeAddress,
+    defaultValueAddress,
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -100,10 +102,11 @@ export default function InputHorizontal({
                 return <InputAddressThailand
                     placeholder={placeholder}
                     name={name}
-                    defaultValue={defaultValue}
+                    defaultValue={defaultValueAddress}
                     list={addressList}
                     disabled={disabled}
-                    onChange={onChange}
+                    onChange={onChangeAddress}
+                    onChangeText={onChange}
                     required={isRequired}
                     optionType={addressOptionType}
                 />
@@ -188,4 +191,6 @@ interface InputHorizontalProps {
     disabled?: boolean;
     addressList?: AddressBySearchProps[];
     addressOptionType?: 'postCode' | 'province' | 'district' | 'subDistrict';
+    onChangeAddress?: (value: AddressBySearchProps) => void;
+    defaultValueAddress?: AddressBySearchProps;
 }
