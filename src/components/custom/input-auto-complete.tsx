@@ -1,38 +1,44 @@
 import { Autocomplete, TextField } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
-import { UseFormRegister } from "react-hook-form";
+import React, { useMemo } from "react";
 
 export default function InputAutoComplete({
     name,
     defaultValue,
     placeholder,
-    className,
-    register,
     required = false,
     list = [],
     disabled = false,
     onChange,
 }: InputAutoCompleteProps) {
+
     const [data, setData] = React.useState<InputAutoCompleteValue | null>(null);
 
     useMemo(() => {
-        if (defaultValue && list.length > 0) {
-            setData(list.find(item => item.value === defaultValue) || null)
+        if (defaultValue && list.length > 0 && data === null) {
+            const result = list.find(item => item.value === defaultValue)
+            if (result) {
+                setData(result);
+            }
         }
-    }, [defaultValue, list]);
+    }, [defaultValue, list, data]);
 
-    useEffect(() => {
+
+    useMemo(() => {
         if (data && onChange) {
             onChange(data.value)
         }
     }, [data, onChange])
 
+    if (!data) return <></>
+
     return (
         <Autocomplete
+            // id={name}
             fullWidth
             value={data}
             onChange={(_, item) => setData(item)}
-            defaultValue={list.find(item => item.value === defaultValue) || null}
+            isOptionEqualToValue={(option, value) => option.value === value.value}
+            // defaultValue={dValue()}
             disabled={disabled}
             options={list}
             renderInput={(params) => <TextField {...params} placeholder={placeholder} required={required} />}
@@ -50,8 +56,6 @@ interface InputAutoCompleteProps {
     name: string;
     defaultValue?: string;
     placeholder?: string;
-    className?: string;
-    register?: UseFormRegister<any>;
     list?: InputAutoCompleteValue[];
     disabled?: boolean;
     onChange?: (value: string) => void;

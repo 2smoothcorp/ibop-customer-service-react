@@ -206,6 +206,11 @@ export default function AddressByType() {
                         isRequired
                         type="autocomplete"
                         list={countries}
+                        onChange={(value) => {
+                            if (value !== watch("countryCode")) {
+                                setValue('countryCode', value);
+                            }
+                        }}
                         placeholder="โปรดเลือกประเทศ"
                     />
                     <InputHorizontal

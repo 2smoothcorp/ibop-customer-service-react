@@ -5,12 +5,15 @@ import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { AddressBySearchModeProps, AddressBySearchProps, getAddressBySearch, handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function AddressByCurrent() {
+    const [thailandAddress, setThailandAddress] = useState<AddressBySearchProps[]>([]);
+    const [address, setAddress] = useState<AddressBySearchProps | undefined>();
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
@@ -24,6 +27,12 @@ export default function AddressByCurrent() {
     } = useForm<SubmitInput>()
 
     const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
+
+
+    const getAddress = async (search: string, mode: AddressBySearchModeProps) => {
+        const list = getAddressBySearch(search, mode);
+        setThailandAddress(list);
+    }
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['addressByCurrent', params.customerId],
@@ -92,6 +101,18 @@ export default function AddressByCurrent() {
         setValue('customAddress1', isEmptyStringFormApi(addressInfo.customAddress1) ? '' : addressInfo.customAddress1 || '');
         setValue('customAddress2', isEmptyStringFormApi(addressInfo.customAddress2) ? '' : addressInfo.customAddress2 || '');
         setValue('customAddress3', isEmptyStringFormApi(addressInfo.customAddress3) ? '' : addressInfo.customAddress3 || '');
+        setAddress({
+            value: {
+                postCode: addressInfo.zipCode || '',
+                province: addressInfo.provinceNameTh || '',
+                provinceCode: addressInfo.provinceCode || '',
+                district: addressInfo.districtNameTh || '',
+                districtCode: addressInfo.districtCode || '',
+                subDistrict: addressInfo.subDistrictNameTh || '',
+                subDistrictCode: addressInfo.subDistrictCode || '',
+            },
+            label: `${addressInfo.subDistrictNameTh} > ${addressInfo.districtNameTh} > ${addressInfo.provinceNameTh} > ${addressInfo.zipCode}`
+        })
     }
 
     const getData = async () => {
@@ -185,24 +206,37 @@ export default function AddressByCurrent() {
                         defaultValue={data && normalizationData('countryCode', data) || "-"}
                         textShow={data && normalizationData('country', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="country"
                         isRequired
                         type="autocomplete"
                         list={countries}
-                        onChange={(value) => setValue('countryCode', value)}
+                        onChange={(value) => {
+                            if (value !== watch("countryCode")) {
+                                setValue('countryCode', value);
+                            }
+                        }}
                         placeholder="โปรดเลือกประเทศ"
                     />
                     <InputHorizontal
                         label="รหัสไปรษณีย์"
-                        defaultValue={data && normalizationData('zipCode', data) || "-"}
+                        defaultValueAddress={address}
+                        textShow={data && normalizationData('zipCode', data) || "-"}
                         isEditable={isEditable}
                         register={register}
                         name="zipCode"
                         isRequired
+                        type="addressThailand"
+                        addressList={thailandAddress}
+                        placeholder="โปรดเลือกประเทศ"
+                        addressOptionType="postCode"
+                        onChangeAddress={(item) => { setAddress(item) }}
+                        onChange={(text) => {
+                            getAddress(text, 'postCode')
+                        }}
                     />
                     {
-                        data?.countryCode !== '000'
+                        watch("countryCode") !== '000'
                             ?
                             <>
                                 <InputHorizontal
@@ -233,30 +267,54 @@ export default function AddressByCurrent() {
                             : <>
                                 <InputHorizontal
                                     label="จังหวัด"
-                                    defaultValue={data && normalizationData('provinceCode', data) || "-"}
+                                    defaultValueAddress={address}
                                     textShow={data && normalizationData('province', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
-                                    name="province"
+                                    name="provinceCode"
                                     isRequired
+                                    type="addressThailand"
+                                    addressList={thailandAddress}
+                                    placeholder="โปรดเลือกจังหวัด"
+                                    addressOptionType="province"
+                                    onChangeAddress={(item) => { setAddress(item) }}
+                                    onChange={(text) => {
+                                        getAddress(text, 'province')
+                                    }}
                                 />
                                 <InputHorizontal
                                     label="อำเภอ / เขต"
-                                    defaultValue={data && normalizationData('districtCode', data) || "-"}
+                                    defaultValueAddress={address}
                                     textShow={data && normalizationData('district', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
-                                    name="district"
+                                    name="districtCode"
                                     isRequired
+                                    type="addressThailand"
+                                    addressList={thailandAddress}
+                                    placeholder="โปรดเลือกอำเภอ / เขต"
+                                    addressOptionType="district"
+                                    onChangeAddress={(item) => { setAddress(item) }}
+                                    onChange={(text) => {
+                                        getAddress(text, 'district')
+                                    }}
                                 />
                                 <InputHorizontal
                                     label="ตำบล / แขวง"
-                                    defaultValue={data && normalizationData('subDistrictCode', data) || "-"}
+                                    defaultValueAddress={address}
                                     textShow={data && normalizationData('subDistrict', data) || "-"}
                                     isEditable={isEditable}
                                     register={register}
-                                    name="subDistrict"
+                                    name="subDistrictCode"
                                     isRequired
+                                    type="addressThailand"
+                                    addressList={thailandAddress}
+                                    placeholder="โปรดเลือกตำบล / แขวง"
+                                    addressOptionType="subDistrict"
+                                    onChangeAddress={(item) => { setAddress(item) }}
+                                    onChange={(text) => {
+                                        getAddress(text, 'subDistrict')
+                                    }}
                                 />
 
                             </>
