@@ -7,18 +7,32 @@
 import { type ReactElement, useEffect } from 'react';
 import {
   type SelectProps,
+  type SelectChangeEvent,
   Select,
   MenuItem
 } from '@mui/material';
-import type { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form';
+import type {
+  UseFormRegister, 
+  UseFormRegisterReturn,
+  RegisterOptions
+} from 'react-hook-form';
 import styles from './styles.module.css';
 
 export const InputSelect = (props: InputSelectProps): ReactElement => {
   useEffect(() => {}, []);
 
+  const onChangeSelection = (evt: SelectChangeEvent) => {
+    const { onSelect } = props;
+    if(!onSelect) { return; }
+
+    const selected = evt.target.value;
+    onSelect(selected);
+  }
+
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
-    const { name, register } = props;
+    const { name, register, registerOption } = props;
     if(!register) { return; }
+    if(registerOption) { return register(name, registerOption); }
     return register(name);
   }
 
@@ -38,7 +52,7 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
       { ...props }
       className={ styles['select-input'] }
       inputProps={{ 'aria-label': 'Without label' }}
-      { ...(registerHookForm() || {}) }
+      { ...(registerHookForm() || { onChange: onChangeSelection }) }
     >
       <MenuItem value={''}>
         -- กรุณาเลือก --
@@ -50,6 +64,15 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
 
 type InputSelectProps = SelectProps<any> & {
   name: string;
-  options: Array<{ label: string; value: string; disabled?: boolean; }>;
+  options: Array<SelectOption>;
+  onSelect?: (selected: string) => void;
   register?: UseFormRegister<any>;
+  registerOption?: RegisterOptions;
+}
+
+interface SelectOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+  [key: string]: any;
 }

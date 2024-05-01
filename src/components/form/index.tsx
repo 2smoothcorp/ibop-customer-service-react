@@ -7,16 +7,18 @@
 import {
   type ReactElement,
   type FormEventHandler,
+  Fragment,
   useEffect
 } from 'react';
 import { Button, Grid } from '@mui/material';
-import type { UseFormRegister, FieldValues } from 'react-hook-form';
+import type { UseFormRegister } from 'react-hook-form';
 
 import { InputText } from '@/components/input-text';
 import { InputNumber } from '@/components/input-number';
 import { InputSelect } from '@/components/input-select';
 import { InputRadio } from '@/components/input-radio';
 import { InputCheckbox } from '@/components/input-checkbox';
+import { InputAutoComplete } from '@/components/input-autocomplete';
 
 export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): ReactElement => {
   //
@@ -28,10 +30,28 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
 
     return fields.map((item, idx) => {
       const {
+        type, disabled,
         label,
         viewText,
-        colSpan = baseColSpan || 6, labelCol = 6, viewCol = 6
+        colSpan = baseColSpan || 6, labelCol = 6, viewCol = 6, // inputCol = 6
       } = item;
+
+      // if(type === 'address') {
+      //   const { addrInfo, prefixName } = item;
+      //   return (
+      //     <InputAddress
+      //       isEditing={ isEditing }
+      //       colSpan={ colSpan }
+      //       labelCol={ labelCol }
+      //       viewCol={ viewCol }
+      //       inputCol={ inputCol }
+      //       addrInfo={ addrInfo }
+      //       prefixName={ prefixName }
+      //       disabled={ disabled }
+      //     />
+      //   );
+      // }
+
       return (
         <Grid container item spacing={2}
           key={idx} xs={ colSpan }
@@ -56,13 +76,13 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
 
   const renderInput = (info: InputField): ReactElement => {
     const { register } = props;
-    const { inputCol, type, name, value, disabled } = info;
+    const { inputCol = 6, type, name, value, disabled } = info;
     switch(type) {
       case 'text': {
         const {} = info;
         return (
           <Grid item xs={ inputCol }>
-            <InputText name={ name } value={ value } disabled={ disabled } register={ register } />
+            <InputText name={ name } defaultValue={ value } disabled={ disabled } register={ register } />
           </Grid>
         );
       }
@@ -70,7 +90,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
         const {} = info;
         return (
           <Grid item xs={ inputCol }>
-            <InputNumber name={ name } value={ value } readOnly={ disabled } register={ register } />
+            <InputNumber name={ name } defaultValue={ value } readOnly={ disabled } register={ register } />
           </Grid>
         );
       }
@@ -78,7 +98,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
         const { options } = info;
         return (
           <Grid item xs={ inputCol }>
-            <InputSelect name={ name } options={ options } value={ value } disabled={ disabled } register={ register } />
+            <InputSelect name={ name } options={ options } defaultValue={ value } disabled={ disabled } register={ register } />
           </Grid>
         );
       }
@@ -86,7 +106,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
         const { options } = info;
         return (
           <Grid item xs={ inputCol }>
-            <InputRadio row name={ name } options={ options } value={ value } register={ register } />
+            <InputRadio row name={ name } options={ options } defaultValue={ value } register={ register } />
           </Grid>
         );
       }
@@ -94,7 +114,27 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
         const { options } = info;
         return (
           <Grid item xs={ inputCol }>
-            <InputCheckbox name={ name } options={ options } value={ value } disabled={ disabled } register={ register } />
+            <InputCheckbox name={ name } options={ options } defaultValue={ value } disabled={ disabled } register={ register } />
+          </Grid>
+        );
+      }
+      case 'autocomplete': {
+        const { options, value, optionSearchKey, asAddress, getOptionKey, getOptionLabel, onSearch, onSelect } = info;
+        return (
+          <Grid item xs={ inputCol }>
+            <InputAutoComplete
+              { ...((asAddress) ? { mode: 'address' } : {}) }
+              name={ name }
+              options={ options }
+              selectedOption={ value }
+              optionSearchKey={ optionSearchKey }
+              disabled={ disabled }
+              getOptionKey={ getOptionKey }
+              getOptionLabel={ getOptionLabel }
+              onSearch={ onSearch }
+              onSelect={ onSelect }
+              // register={ register }
+            />
           </Grid>
         );
       }
@@ -117,7 +157,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
                 <div className={'flex items-center justify-center gap-x-4'}>
                   <Button type={'reset'}
                     variant={'contained'}
-                    className={'bg-neutral-200 hover:bg-neutral-200 hover:brightness-95 text-xl py-0 w-25 h-10'}
+                    className={'bg-neutral-200 hover:bg-neutral-200 hover:brightness-95 text-xl text-black py-0 w-25 h-10'}
                   >
                     ย้อนกลับ
                   </Button>
@@ -152,6 +192,7 @@ interface FormProps<DynamicField extends {}> {
 type InputField = EmptySpaceField
   | TextInputField
   | NumberInputField
+  | AutoCompleteInputField
   | SelectInputField
   | CheckboxInputField
   | RadioInputField;
@@ -184,17 +225,36 @@ interface BaseInputField {
    */
   inputCol?: ColumnSize;
 
-  type?: 'text' | 'number' | 'select' | 'checkbox' | 'radio' | 'space';
+  type?: 'text' | 'number' | 'select' | 'checkbox' | 'radio' | 'autocomplete' | 'space';
   name?: string;
-  value?: string;
+  value?: any;
   disabled?: boolean;
 }
 
-interface WithInputOption { options: Array<{ label: string; value: string; disabled?: boolean; }>; }
+interface WithInputOption {
+  options: Array<{
+    label: string;
+    value: string;
+    disabled?: boolean;
+    [key: string]: any;
+  }>;
+}
+
 interface EmptySpaceField extends BaseInputField { type: 'space'; }
-interface TextInputField extends BaseInputField { type: 'text'; name: string; }
-interface NumberInputField extends BaseInputField { type: 'number'; name: string; }
-interface SelectInputField extends BaseInputField, WithInputOption { type: 'select'; name: string; }
-interface CheckboxInputField extends BaseInputField, WithInputOption { type: 'checkbox'; name: string; }
-interface RadioInputField extends BaseInputField, WithInputOption { type: 'radio'; name: string; }
+interface TextInputField extends BaseInputField { type: 'text'; name: string; value?: string; }
+interface NumberInputField extends BaseInputField { type: 'number'; name: string; value?: number; }
+interface SelectInputField extends BaseInputField, WithInputOption { type: 'select'; name: string; value?: string; }
+interface CheckboxInputField extends BaseInputField, WithInputOption { type: 'checkbox'; name: string; value?: Array<string>; }
+interface RadioInputField extends BaseInputField, WithInputOption { type: 'radio'; name: string; value?: string; }
+interface AutoCompleteInputField extends BaseInputField, WithInputOption {
+  type: 'autocomplete';
+  name: string;
+  optionSearchKey?: string;
+  asAddress?: boolean;
+  getOptionKey?: (item: any) => string;
+  getOptionLabel?: (item: any) => string;
+  onSearch?: (searchText: string) => void;
+  onSelect?: (selected: any) => void;
+}
+
 type ColumnSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
