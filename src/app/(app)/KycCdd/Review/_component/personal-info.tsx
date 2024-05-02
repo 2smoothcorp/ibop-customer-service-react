@@ -14,24 +14,40 @@ import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
-import { getSessionStorage } from '@/utils/web-storage';
+import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
+import { useMasterDataTitlesCustom } from '@/hooks/master-data-titles';
+import { useMasterDataIncomeRate } from '@/hooks/master-data-income-rate';
+import { useMasterDataIncomeSource } from '@/hooks/master-data-income-source';
+import { useMasterDataInvestmentPurpose } from '@/hooks/master-data-investment-purpose';
+import { useAppDispatch } from '@/libs/redux/hook';
+import {
+  type StoreTypeKycCdd,
+  savePersonalInfo
+} from '@/libs/redux/store/kyc-cdd';
 import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
 
 import { Form } from '@/components/form';
 
 export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactElement => {
-  const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit } = useForm<PersonalInfoFormFields>({
+  const [ isEditing, setIsEditing ] = useState(true);
+  const { register, handleSubmit } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
 
-  useEffect(() => {}, []);
+  const reduxDispatcher = useAppDispatch();
+  const masterDataTitleList = useMasterDataTitlesCustom();
+  const masterCountryList = useMasterDataCountriesCustom();
+  const masterIncomeRateList = useMasterDataIncomeRate();
+  const masterIncomeSourceList = useMasterDataIncomeSource();
+  const masterInvestmentPurposeList = useMasterDataInvestmentPurpose();
 
   const { data: personalData, isLoading } = useQuery({
     queryFn: () => fetchGetPersonalInfo(),
     queryKey: ['kyccdd-personal-info', corporateId]
   });
+
+  useEffect(() => {}, []);
 
   const fetchGetPersonalInfo = async () => {
     const request = await fetch(`/api/kyc/get-personal/${ corporateId }`, { method: 'GET' });
@@ -42,15 +58,8 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     return data;
   }
 
-  const onSubmitForm = (fieldsData: PersonalInfoFormFields) => {
-    console.log('onSubmitForm', fieldsData);
-
-    const _storage = getSessionStorage();
-    if(!_storage) { return; }
-
-    const _storageKey = `kyccdd-personal-info-${ corporateId }`;
-    const _stingifyData = JSON.stringify(fieldsData);
-    _storage.setItem(_storageKey, _stingifyData);
+  const onSubmitForm = (fieldsData: StoreTypeKycCdd.PersonalInfoFormFields) => {
+    reduxDispatcher(savePersonalInfo(fieldsData));
     setIsEditing(false);
   }
 
@@ -62,14 +71,14 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     const _lastNameEn = personalData?.lastNameEn || '-';
     const _nationality = `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
     const _occupation = `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
-    const _monthlyIncome = personalData?.monthlyIncome || 0;
+    const _incomeRate = `${ personalData?.incomeRateCode || '' } - ${ personalData?.incomeRateDesc || '' }`.trim();
     const _incomeSource = personalData?.incomeSourceDesc || '-';
     const _incomeCountry = personalData?.incomeCountry || '-';
     const _investmentYear = personalData?.investmentYear || 0;
     const _investmentPurpose = (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '-' : personalData?.investmentPurposeDesc || '-';
 
     return (
-      <Form<PersonalInfoFormFields>
+      <Form<StoreTypeKycCdd.PersonalInfoFormFields>
         isEditing={ isEditing }
         baseColSpan={4}
         register={ register }
@@ -79,11 +88,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             type: 'select',
             label: 'คำนำหน้า', viewText: _titleTh,
             name: 'titleTh',
-            options: [
-              { label: 'aaa', value: 'aaa' },
-              { label: 'bbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' }
-            ]
+            options: masterDataTitleList.data || []
           },
           {
             type: 'text',
@@ -116,36 +121,23 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             name: 'occupation'
           },
           {
-            type: 'number',
-            label: 'รายได้รวมต่อเดือน', viewText: `${ _monthlyIncome }`,
-            name: 'monthlyIncome'
+            type: 'select',
+            label: 'รายได้รวมต่อเดือน', viewText: `${ _incomeRate }`,
+            name: 'incomeRate',
+            options: masterIncomeRateList.data || []
           },
           {
             type: 'checkbox',
             label: 'แหล่งที่มาของรายได้', viewText: _incomeSource,
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {}),
             name: 'incomeSource',
-            options: [
-              { label: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', value: 'aaa' },
-              { label: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' },
-              { label: 'ddd', value: 'ddd' },
-              { label: 'eee', value: 'eee' },
-              { label: 'fff', value: 'fff' },
-              { label: 'ggg', value: 'ggg' },
-              { label: 'hhh', value: 'hhh' },
-              { label: 'iii', value: 'iii' }
-            ]
+            options: masterIncomeSourceList.data || []
           },
           {
             type: 'select',
             label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: _incomeCountry,
             name: 'incomeCountry',
-            options: [
-              { label: 'aaa', value: 'aaa' },
-              { label: 'bbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' }
-            ]
+            options: masterCountryList.data || []
           },
           {
             type: 'number',
@@ -157,11 +149,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             label: 'วัตถุประสงค์การลงทุน', viewText: _investmentPurpose,
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {}),
             name: 'investmentPurpose',
-            options: [
-              { label: 'aaa', value: 'aaa' },
-              { label: 'bbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' }
-            ]
+            options: masterInvestmentPurposeList.data || []
           }
         ]}
       />
@@ -185,18 +173,4 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
 interface PersonalInfoProps {
   corporateId: string;
-}
-
-export interface PersonalInfoFormFields {
-  firstnameTh: string;
-  lastnameTh: string;
-  firstnameEn: string;
-  lastnameEn: string;
-  nationality: string;
-  occupation: string;
-  monthlyIncome: number;
-  incomeSource: Array<string>;
-  incomeCountry: string;
-  exp: number;
-  investmentPurpose: Array<string>;
 }

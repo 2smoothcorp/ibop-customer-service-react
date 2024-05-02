@@ -15,22 +15,25 @@ import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
+import { useAppDispatch } from '@/libs/redux/hook';
+import { type StoreTypeKycCdd, saveSpouseInfo } from '@/libs/redux/store/kyc-cdd';
 import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/customer-service';
-import { getSessionStorage } from '@/utils/web-storage';
 
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
-  const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit } = useForm<SpouseFormFields>({
+  const [ isEditing, setIsEditing ] = useState(true);
+  const { register, handleSubmit } = useForm<StoreTypeKycCdd.SpouseFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
 
-  useEffect(() => {}, []);
+  const reduxDispatcher = useAppDispatch();
 
   const { data: spouseInfo, isLoading } = useQuery({
     queryFn: () => fetchGetSpouse(),
     queryKey: ['kyccdd-spouse-info', corporateId]
   });
+
+  useEffect(() => {}, []);
 
   const fetchGetSpouse = async () => {
     const request = await fetch(`/api/kyc/get-spouse/${ corporateId }`, { method: 'GET' });
@@ -41,24 +44,22 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     return data;
   }
 
-  const onSubmitForm = (fieldsData: SpouseFormFields) => {
-    console.log('onSubmitForm', fieldsData);
-
-    const _storage = getSessionStorage();
-    if(!_storage) { return; }
-
-    const _storageKey = `kyccdd-spouse-info-${ corporateId }`;
-    const _stingifyData = JSON.stringify(fieldsData);
-    _storage.setItem(_storageKey, _stingifyData);
+  const onSubmitForm = (fieldsData: StoreTypeKycCdd.SpouseFormFields) => {
+    reduxDispatcher(saveSpouseInfo(fieldsData));
     setIsEditing(false);
   }
 
   const renderFormSpouse = () => {
-    const _maritalStatus = spouseInfo?.familyStatus || '-';
-    const _refType = spouseInfo?.spouseReferenceType || '-';
-    const _refId = spouseInfo?.spouseIdentityId || '-';
-    const _firstname = spouseInfo?.spouseFirstName || '-';
-    const _lastname = spouseInfo?.spouseLastName || '-';
+    const _maritalStatusText = spouseInfo?.familyStatus || '-';
+    const _maritalStatusInitValue = spouseInfo?.familyStatus || undefined;
+    const _refTypeText = spouseInfo?.spouseReferenceType || '-';
+    const _refTypeInitValue = spouseInfo?.spouseReferenceType || undefined;
+    const _refIdText = spouseInfo?.spouseIdentityId || '-';
+    const _refIdInitValue = spouseInfo?.spouseIdentityId || undefined;
+    const _firstnameText = spouseInfo?.spouseFirstName || '-';
+    const _firstnameInitValue = spouseInfo?.spouseFirstName || undefined;
+    const _lastnameText = spouseInfo?.spouseLastName || '-';
+    const _lastnameInitValue = spouseInfo?.spouseLastName || undefined;
     return (
       <Form
         isEditing={ isEditing }
@@ -68,28 +69,28 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
         fields={[
           {
             type: 'text',
-            label: 'สถานสภาพสมรส', viewText: _maritalStatus,
-            name: 'maritalStatus'
+            label: 'สถานสภาพสมรส', viewText: _maritalStatusText,
+            name: 'maritalStatus', value: _maritalStatusInitValue
           },
           {
             type: 'text',
-            label: 'ประเภทหลักฐาน', viewText: _refType,
-            name: 'refType'
+            label: 'ประเภทหลักฐาน', viewText: _refTypeText,
+            name: 'refType', value: _refTypeInitValue
           },
           {
             type: 'text',
-            label: 'เลขทีบัตร', viewText: _refId,
-            name: 'refId'
+            label: 'เลขทีบัตร', viewText: _refIdText,
+            name: 'refId', value: _refIdInitValue
           },
           {
             type: 'text',
-            label: 'ชื่อ', viewText: _firstname,
-            name: 'firstname'
+            label: 'ชื่อ', viewText: _firstnameText,
+            name: 'firstname', value: _firstnameInitValue
           },
           {
             type: 'text',
-            label: 'นามสกุล', viewText: _lastname,
-            name: 'lastname'
+            label: 'นามสกุล', viewText: _lastnameText,
+            name: 'lastname', value: _lastnameInitValue
           }
         ]}
       />
@@ -113,12 +114,4 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
 
 interface SpouseInfoProps {
   corporateId: string;
-}
-
-export interface SpouseFormFields {
-  maritalStatus: string;
-  refType: string;
-  refId: string;
-  firstname: string;
-  lastname: string;
 }
