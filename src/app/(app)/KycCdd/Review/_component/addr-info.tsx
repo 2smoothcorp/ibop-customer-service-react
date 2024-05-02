@@ -4,13 +4,13 @@
 
 'use client'
 
+import { useQuery } from '@tanstack/react-query';
 import {
-  type ReactElement,
   Fragment,
   useEffect,
-  useState
+  useState,
+  type ReactElement
 } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
@@ -41,7 +41,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     resolver: undefined
   });
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const { data: addressList, isLoading } = useQuery({
     queryFn: () => fetchGetAddress(),
@@ -130,10 +130,10 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _isForeign = selectedCurrentThAddr?.po === '99999';
     return (
       <Form<CurrentAddrFormFields>
-        isEditing={ isEditingCurrentAddr }
+        isEditing={isEditingCurrentAddr}
         baseColSpan={4}
-        register={ register }
-        onSubmit={ handleSubmit(onSubmitCurrentAddrForm) }
+        register={register}
+        onSubmit={handleSubmit(onSubmitCurrentAddrForm)}
         fields={[
           {
             type: 'text',
@@ -251,21 +251,21 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _floor = _info?.floor || '-';
     const _soi = _info?.soi || '-';
     const _street = _info?.street || '-';
-    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName || '' }`.trim();
+    const _country = `${_info?.countryCode || ''} - ${_info?.countryName || ''}`.trim();
     const _zipCode = _info?.zipCode || '-';
-    const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
-    const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
-    const _subDistrict = `${ _info?.subDistrictCode || '' } - ${ _info?.subDistrictCode || '' }`.trim();
+    const _province = `${_info?.provinceCode || ''} - ${_info?.provinceName || ''}`.trim();
+    const _district = `${_info?.districtCode || ''} - ${_info?.districtName || ''}`.trim();
+    const _subDistrict = `${_info?.subDistrictCode || ''} - ${_info?.subDistrictCode || ''}`.trim();
     const _customAddress1 = _info?.customAddress1 || '-';
     const _customAddress2 = _info?.customAddress2 || '-';
     const _customAddress3 = _info?.customAddress3 || '-';
     const _isForeign = selectedWorkThAddr?.po === '99999' || false;
     return (
       <Form<WorkAddrFormFields>
-        isEditing={ isEditingWorkAddr }
+        isEditing={isEditingWorkAddr}
         baseColSpan={4}
-        register={ register }
-        onSubmit={ handleSubmit(onSubmitWorkAddrForm) }
+        register={register}
+        onSubmit={handleSubmit(onSubmitWorkAddrForm)}
         fields={[
           {
             type: 'text',
@@ -378,7 +378,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       <div className={'my-4 border-b-2 border-b-slate-500'}>
         <strong className={'text-xl text-success-500'}>ข้อมูลที่อยู่ปัจจุบัน</strong>
       </div>
-      { renderFormCurrentAddress() }
+      {renderFormCurrentAddress()}
       {/* {
         (isLoading)
           ? (<AppLoader asContentLoader />)
