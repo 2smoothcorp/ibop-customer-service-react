@@ -67,9 +67,9 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
             case 'gender':
                 return !isEmptyStringFormApi(personalInfo.genderCode) ? `${personalInfo.genderCode} - ${personalInfo.gender}` : '-';
             case 'titleCode':
-                return handleEmptyStringFormApi(personalInfo.titleCodeTh);
+                return handleEmptyStringFormApi(personalInfo.titleCode);
             case 'title':
-                return !isEmptyStringFormApi(personalInfo.titleCodeTh) ? `${personalInfo.titleCodeTh} - ${personalInfo.titleNameTh || personalInfo.titleNameEn}` : '-';
+                return !isEmptyStringFormApi(personalInfo.titleCode) ? `${personalInfo.titleCode} - ${personalInfo.titleNameTh || personalInfo.titleNameEn}` : '-';
             case 'firstNameTh':
                 return handleEmptyStringFormApi(personalInfo.firstNameTh);
             case 'lastNameTh':
@@ -247,7 +247,18 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         type="autocomplete"
                         list={titles}
                         isRequired
-                        onChange={(value) => setValue('personalInfo.titleCode', value)}
+                        onChange={(value) => {
+                            console.log(`value`, value)
+                            if (value === '103' || value === '301' || value === '302') {
+                                console.log('change man')
+                                setValue('personalInfo.genderCode', '0')
+                            }
+                            if (value === '104' || value === '105' || value === '304' || value === '306') {
+                                console.log('change girl')
+                                setValue('personalInfo.genderCode', '1')
+                            }
+                            setValue('personalInfo.titleCode', value)
+                        }}
                     />
                     <InputHorizontal
                         label="ชื่อ (ภาษาไทย)"
@@ -293,7 +304,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                     />
                     <InputHorizontal
                         label="เพศ"
-                        defaultValue={data && normalizationData('genderCode', data) || '-'}
+                        defaultValue={watch('personalInfo.genderCode')}
                         textShow={data && normalizationData('gender', data) || '-'}
                         isEditable={isEditable}
                         // register={register}

@@ -25,6 +25,9 @@ export default function InputRadio({
     isRow = true,
     isFlex = false,
 }: InputRadioProps) {
+    // useEffect(() => {
+    //     console.log("defaultValue", defaultValue)
+    // }, [defaultValue])
 
     return (
         <RadioGroup
@@ -32,7 +35,8 @@ export default function InputRadio({
             aria-required={required}
             row={isRow}
             name={name}
-            defaultValue={defaultValue}
+            value={defaultValue}
+            // defaultValue={defaultValue}
             onChange={(e) => onChange && onChange((e.target as HTMLInputElement).value)}
         >
             {
