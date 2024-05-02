@@ -13,7 +13,10 @@ import {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Grid } from '@mui/material';
+
+import { InputCheckbox } from '@/components/input-checkbox';
 import TabNavbar from '@/components/navbar/tab-navbar';
+import { useAppSelector } from '@/libs/redux/hook';
 
 import {
   ReviewPersonalInfo,
@@ -21,17 +24,24 @@ import {
   ReviewSpouseInfo,
   ReviewRelativeInfo
 } from '../_component';
+import { actionRevaluation } from './actions';
 
 const Page = (): ReactElement => {
   const [ inputCorp, setInputCorp ] = useState('');
   const [ corporateId, setCorporateId ] = useState('');
   const [ stepIndex, setStepIndex ] = useState(0);
+  const [ isTruthConfirm, setIsTruthConfirm ] = useState(false);
   const router = useRouter();
   const stepData = ['ข้อมูลส่วนตัว', 'ข้อมูลที่อยู่', 'ข้อมูลคู่สมรส', 'ข้อมูลบุคคลที่เกี่ยวข้อง'];
 
+  const storeKycCdd = useAppSelector((selector) => selector.kyccdd);
+
   useEffect(() => {}, []);
 
-  const onChangeStep = (index: number) => { setStepIndex(index % stepData.length); }
+  const onChangeStep = (index: number) => {
+    setIsTruthConfirm(false);
+    setStepIndex(index % stepData.length);
+  }
 
   const onChangeCorporateId = (evt: ChangeEvent<HTMLInputElement>) => {
     const inputValue = evt.target.value;
@@ -41,6 +51,11 @@ const Page = (): ReactElement => {
   const onClickSearch = () => { setCorporateId(inputCorp || ''); }
   const onClickClear = () => { setInputCorp(''); setCorporateId(''); }
 
+  const onCheckTruthConfirm = (checked: boolean) => {
+    console.log('onCheckTruthConfirm', checked)
+    setIsTruthConfirm(checked);
+  }
+
   const onClickPrevStep = () => {
     const { back } = router;
     if(stepIndex === 0) { return back(); }
@@ -49,8 +64,32 @@ const Page = (): ReactElement => {
 
   const onClickNextStep = () => {
     const {} = router;
-    if(stepIndex === stepData.length - 1) { return; }
-    setStepIndex((current) => current + 1);
+    const isLastStep = stepIndex === 3;
+    if(!isLastStep) {
+      setStepIndex((current) => current + 1);
+      return;
+    }
+
+    const {
+      personalInfo,
+      currentAddrInfo,
+      workAddrInfo,
+      spouseInfo
+    } = storeKycCdd;
+    
+    actionRevaluation({
+      corporateId: corporateId,
+      personalInfo: personalInfo,
+      currentAddressInfo: currentAddrInfo,
+      workAddressInfo: workAddrInfo,
+      spouseInfo: {
+        familyStatus: spouseInfo.maritalStatus,
+        spouseFirstName: spouseInfo.firstname,
+        spouseLastName: spouseInfo.lastname,
+        spouseReferenceType: spouseInfo.refType,
+        spouseIdentityId: spouseInfo.refId
+      }
+    });
   }
 
   const renderSearchCorporateId = (): ReactElement => {
@@ -102,6 +141,22 @@ const Page = (): ReactElement => {
     }
   }
 
+  const renderTruthConfirmCheckbox = (): ReactElement => {
+    const isLastStep = stepIndex === 3;
+    if(!isLastStep) { return (<div></div>); }
+
+    return (
+      <InputCheckbox
+        name={'truthConfirm'}
+        options={[{
+          label: 'ลูกค้าขอรับรองและยืนยันว่าข้อมูลที่ให้ไว้ข้างต้นเป็นข้อมูลถูกต้องครบถ้วนตามความเป็นจริงและเป็นปัจจุบัน',
+          value: 'confirmed'
+        }]}
+        onTick={ onCheckTruthConfirm }
+      />
+    );
+  }
+
   const renderStepperControlButtons = (): ReactElement => {
     return (
       <div className={'flex items-center justify-end gap-x-4 mt-4 p-4'}>
@@ -112,7 +167,7 @@ const Page = (): ReactElement => {
         >
           ย้อนกลับ
         </Button>
-        <Button variant={'contained'} onClick={ onClickNextStep }>
+        <Button variant={'contained'} onClick={ onClickNextStep } disabled={ stepIndex === 3 && !isTruthConfirm }>
           ถัดไป
         </Button>
       </div>
@@ -125,6 +180,7 @@ const Page = (): ReactElement => {
       <div className={'p-4'}>
         { renderSearchCorporateId() }
         { renderStepperView() }
+        { renderTruthConfirmCheckbox() }
         { renderStepperControlButtons() }
       </div>
     </Fragment>

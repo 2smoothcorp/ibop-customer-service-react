@@ -58,6 +58,7 @@ export const InputRadio = (props: InputRadioProps): ReactElement => {
 type InputRadioProps = RadioGroupProps & {
   name: string;
   options: Array<{ label: string; value: string; disabled?: boolean; }>;
+  loading?: boolean;
   onSelect?: (selected: string) => void;
   register?: UseFormRegister<any>;
   registerOption?: RegisterOptions;

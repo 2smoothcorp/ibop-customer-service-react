@@ -44,4 +44,13 @@ export const useMasterDataCountriesCustom = () => {
     return { ...MasterDataCountries }
 }
 
+export interface MasterDataCountryItem {
+    label: string;
+    rSort: string;
+    rText: string;
+    rValue: string;
+    value: string;
+
+}
+
 export default useMasterDataCountries

@@ -133,10 +133,8 @@ models/KycAddressOutput.ts
 models/KycAddressOutputListDataResponse.ts
 models/KycAttornetOutput.ts
 models/KycAttornetOutputDataResponse.ts
-models/KycAttroneyInput.ts
 models/KycBeneficiaryInfoOutput.ts
 models/KycBeneficiaryInfoOutputDataResponse.ts
-models/KycBeneficiaryInput.ts
 models/KycGetAllOutput.ts
 models/KycGetAllOutputListDataResponse.ts
 models/KycInput.ts

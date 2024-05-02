@@ -1,6 +1,7 @@
 
 
 import ReactQueryProviders from '@/libs/react-query';
+import StoreProvider from '@/libs/redux/store-provider';
 import { mainTheme } from '@/libs/theme';
 import { ThemeProvider } from '@mui/material/styles';
 import type { Metadata } from 'next';
@@ -21,9 +22,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang={'en'}>
       <body>
         <ReactQueryProviders>
-          <ThemeProvider theme={mainTheme}>
-            {children}
-          </ThemeProvider>
+          <StoreProvider>
+            <ThemeProvider theme={mainTheme}>
+              {children}
+            </ThemeProvider>
+          </StoreProvider>
         </ReactQueryProviders>
       </body>
     </html>
