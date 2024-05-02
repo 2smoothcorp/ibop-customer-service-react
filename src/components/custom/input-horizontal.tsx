@@ -8,8 +8,9 @@ import InputAutoComplete from "./input-auto-complete";
 import InputDate from "./input-date";
 import InputNumber from "./input-number";
 import InputRadio from "./input-radio";
-import InputSelectHook, { InputSelectHookValue } from "./input-select-hook";
-import InputTextHook from "./input-text-hook";
+import InputSelect from "./input-select";
+import { InputSelectHookValue } from "./input-select-hook";
+import InputText from "./input-text";
 
 export default function InputHorizontal({
     type = "text",
@@ -35,6 +36,8 @@ export default function InputHorizontal({
     placeholder,
     addressList,
     addressOptionType,
+    onChangeAddress,
+    defaultValueAddress,
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -67,8 +70,8 @@ export default function InputHorizontal({
                     required={isRequired}
                 />
             case "select":
-                return <InputSelectHook
-                    register={register}
+                return <InputSelect
+                    onChange={onChange}
                     name={name}
                     defaultValue={defaultValue}
                     list={list}
@@ -100,16 +103,18 @@ export default function InputHorizontal({
                 return <InputAddressThailand
                     placeholder={placeholder}
                     name={name}
-                    defaultValue={defaultValue}
+                    defaultValue={defaultValueAddress}
                     list={addressList}
                     disabled={disabled}
-                    onChange={onChange}
+                    onChange={onChangeAddress}
+                    onChangeText={onChange}
                     required={isRequired}
                     optionType={addressOptionType}
                 />
             default:
-                return <InputTextHook
-                    register={register}
+                return <InputText
+                    // register={register}
+                    onChange={onChange}
                     name={name}
                     defaultValue={defaultValue}
                     disabled={disabled}
@@ -188,4 +193,6 @@ interface InputHorizontalProps {
     disabled?: boolean;
     addressList?: AddressBySearchProps[];
     addressOptionType?: 'postCode' | 'province' | 'district' | 'subDistrict';
+    onChangeAddress?: (value: AddressBySearchProps) => void;
+    defaultValueAddress?: AddressBySearchProps;
 }

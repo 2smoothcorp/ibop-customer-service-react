@@ -6,6 +6,7 @@ import React from "react";
 export default function TabNavbar({
     list,
     onChange,
+    value,
 }: TabNavbarProps) {
     const [activeStep, setActiveStep] = React.useState(0);
 
@@ -16,7 +17,7 @@ export default function TabNavbar({
 
     return (
         <Box sx={{ width: '100%', paddingY: '20px' }}>
-            <Stepper nonLinear alternativeLabel activeStep={activeStep}>
+            <Stepper nonLinear alternativeLabel activeStep={value || activeStep}>
                 {list.map((label, index) => (
                     <Step key={label}
                         sx={{
@@ -74,4 +75,5 @@ export default function TabNavbar({
 type TabNavbarProps = {
     list: string[];
     onChange?: (index: number) => void;
+    value?: number;
 }
