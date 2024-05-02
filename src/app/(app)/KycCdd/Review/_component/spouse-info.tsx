@@ -16,10 +16,11 @@ import { useForm } from 'react-hook-form';
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
 import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/customer-service';
+import { getSessionStorage } from '@/utils/web-storage';
 
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit } = useForm<FormFields>({
+  const { register, handleSubmit } = useForm<SpouseFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
@@ -40,8 +41,16 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     return data;
   }
 
-  const onSubmitForm = (fieldsData: FormFields) => {
-    console.log('onSubmitForm', fieldsData)
+  const onSubmitForm = (fieldsData: SpouseFormFields) => {
+    console.log('onSubmitForm', fieldsData);
+
+    const _storage = getSessionStorage();
+    if(!_storage) { return; }
+
+    const _storageKey = `kyccdd-spouse-info-${ corporateId }`;
+    const _stingifyData = JSON.stringify(fieldsData);
+    _storage.setItem(_storageKey, _stingifyData);
+    setIsEditing(false);
   }
 
   const renderFormSpouse = () => {
@@ -106,7 +115,7 @@ interface SpouseInfoProps {
   corporateId: string;
 }
 
-interface FormFields {
+export interface SpouseFormFields {
   maritalStatus: string;
   refType: string;
   refId: string;

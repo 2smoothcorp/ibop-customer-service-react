@@ -22,10 +22,11 @@ import type {
   KycAttornetOutputDataResponse,
   KycBeneficiaryInfoOutputDataResponse
 } from '@/services/rest-api/customer-service';
+import { getSessionStorage } from '@/utils/web-storage';
 
 export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactElement => {
-  const [ isEditingBeneficiary, _setIsEditingBeneficiary ] = useState(true);
-  const [ isEditingAttorney, _setIsEditingAttorney ] = useState(true);
+  const [ isEditingBeneficiary, setIsEditingBeneficiary ] = useState(true);
+  const [ isEditingAttorney, setIsEditingAttorney ] = useState(true);
   const [ isTruthConfirm, setIsTruthConfirm ] = useState(false);
 
   const beneficiaryHookForm = useForm<BeneficiaryFormFields>({
@@ -69,11 +70,23 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
   }
 
   const onSubmitBeneficiaryForm = (fieldsData: BeneficiaryFormFields) => {
-    //
+    const _storage = getSessionStorage();
+    if(!_storage) { return; }
+
+    const _storageKey = `kyccdd-beneficiary-info-${ corporateId }`;
+    const _stingifyData = JSON.stringify(fieldsData);
+    _storage.setItem(_storageKey, _stingifyData);
+    setIsEditingBeneficiary(false);
   }
 
   const onSubmitAttorneyForm = (fieldsData: AttorneyFormFields) => {
-    //
+    const _storage = getSessionStorage();
+    if(!_storage) { return; }
+
+    const _storageKey = `kyccdd-attorney-info-${ corporateId }`;
+    const _stingifyData = JSON.stringify(fieldsData);
+    _storage.setItem(_storageKey, _stingifyData);
+    setIsEditingAttorney(false);
   }
 
   const onCheckTruthConfirm = (_evt: ChangeEvent<HTMLInputElement>, checked: boolean) => {
@@ -441,7 +454,7 @@ interface RelativeInfoProps {
   corporateId: string;
 }
 
-interface BeneficiaryFormFields {
+export interface BeneficiaryFormFields {
   beneficiaryType: string;
   beneficiary_relationship: string;
   beneficiary_firstname: string;
@@ -466,7 +479,7 @@ interface BeneficiaryFormFields {
   beneficiary_addr3: string;
 }
 
-interface AttorneyFormFields {
+export interface AttorneyFormFields {
   attorney_refType: string;
   attorney_refId: string;
   attorney_nationality: string;

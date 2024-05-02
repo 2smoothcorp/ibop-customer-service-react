@@ -14,13 +14,14 @@ import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
+import { getSessionStorage } from '@/utils/web-storage';
 import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
 
 import { Form } from '@/components/form';
 
 export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactElement => {
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit } = useForm<FormFields>({
+  const { register, handleSubmit } = useForm<PersonalInfoFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
@@ -41,12 +42,20 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     return data;
   }
 
-  const onSubmitForm = (fieldsData: FormFields) => {
-    console.log('onSubmitForm', fieldsData)
+  const onSubmitForm = (fieldsData: PersonalInfoFormFields) => {
+    console.log('onSubmitForm', fieldsData);
+
+    const _storage = getSessionStorage();
+    if(!_storage) { return; }
+
+    const _storageKey = `kyccdd-personal-info-${ corporateId }`;
+    const _stingifyData = JSON.stringify(fieldsData);
+    _storage.setItem(_storageKey, _stingifyData);
+    setIsEditing(false);
   }
 
   const renderFormPersonal = () => {
-    const _titleTh = `${ personalData?.titleCodeTh || '' } - ${ personalData?.titleNameTh || '' }`.trim();
+    const _titleTh = `${ personalData?.titleCode || '' } - ${ personalData?.titleNameTh || '' }`.trim();
     const _firstNameTh = personalData?.firstNameTh || '-';
     const _lastNameTh = personalData?.lastNameTh || '-';
     const _firstNameEn = personalData?.firstNameEn || '-';
@@ -60,7 +69,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     const _investmentPurpose = (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '-' : personalData?.investmentPurposeDesc || '-';
 
     return (
-      <Form<FormFields>
+      <Form<PersonalInfoFormFields>
         isEditing={ isEditing }
         baseColSpan={4}
         register={ register }
@@ -178,7 +187,7 @@ interface PersonalInfoProps {
   corporateId: string;
 }
 
-interface FormFields {
+export interface PersonalInfoFormFields {
   firstnameTh: string;
   lastnameTh: string;
   firstnameEn: string;
