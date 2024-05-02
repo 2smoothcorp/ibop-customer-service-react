@@ -4,27 +4,22 @@ import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
+import { CusomterInformationState } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { AddressBySearchModeProps, AddressBySearchProps, getAddressBySearch, handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 
-export default function AddressByCurrent() {
+export default function AddressByCurrent({ useForm }: { useForm: UseFormReturn<CusomterInformationState, any, undefined> }) {
+    const { register, setValue, watch } = useForm;
     const [thailandAddress, setThailandAddress] = useState<AddressBySearchProps[]>([]);
     const [address, setAddress] = useState<AddressBySearchProps | undefined>();
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors },
-        setValue,
-        getValues,
-    } = useForm<SubmitInput>()
+
 
     const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
 
@@ -86,21 +81,21 @@ export default function AddressByCurrent() {
     }
 
     const setDefaultData = (addressInfo: AddressInfoModel) => {
-        setValue('addressNo', isEmptyStringFormApi(addressInfo.addressNo) ? '' : addressInfo.addressNo || '');
-        setValue('moo', isEmptyStringFormApi(addressInfo.moo) ? '' : addressInfo.moo || '');
-        setValue('buildingOrVillage', isEmptyStringFormApi(addressInfo.buildingOrVillage) ? '' : addressInfo.buildingOrVillage || '');
-        setValue('roomNo', isEmptyStringFormApi(addressInfo.roomNo) ? '' : addressInfo.roomNo || '');
-        setValue('floor', isEmptyStringFormApi(addressInfo.floor) ? '' : addressInfo.floor || '');
-        setValue('soi', isEmptyStringFormApi(addressInfo.soi) ? '' : addressInfo.soi || '');
-        setValue('street', isEmptyStringFormApi(addressInfo.street) ? '' : addressInfo.street || '');
-        setValue('countryCode', isEmptyStringFormApi(addressInfo.countryCode) ? '' : addressInfo.countryCode || '');
-        setValue('zipCode', isEmptyStringFormApi(addressInfo.zipCode) ? '' : addressInfo.zipCode || '');
-        setValue('provinceCode', isEmptyStringFormApi(addressInfo.provinceCode) ? '' : addressInfo.provinceCode || '');
-        setValue('districtCode', isEmptyStringFormApi(addressInfo.districtCode) ? '' : addressInfo.districtCode || '');
-        setValue('subDistrictCode', isEmptyStringFormApi(addressInfo.subDistrictCode) ? '' : addressInfo.subDistrictCode || '');
-        setValue('customAddress1', isEmptyStringFormApi(addressInfo.customAddress1) ? '' : addressInfo.customAddress1 || '');
-        setValue('customAddress2', isEmptyStringFormApi(addressInfo.customAddress2) ? '' : addressInfo.customAddress2 || '');
-        setValue('customAddress3', isEmptyStringFormApi(addressInfo.customAddress3) ? '' : addressInfo.customAddress3 || '');
+        setValue('addressBycurrent.addressNo', isEmptyStringFormApi(addressInfo.addressNo) ? '' : addressInfo.addressNo || '');
+        setValue('addressBycurrent.moo', isEmptyStringFormApi(addressInfo.moo) ? '' : addressInfo.moo || '');
+        setValue('addressBycurrent.buildingOrVillage', isEmptyStringFormApi(addressInfo.buildingOrVillage) ? '' : addressInfo.buildingOrVillage || '');
+        setValue('addressBycurrent.roomNo', isEmptyStringFormApi(addressInfo.roomNo) ? '' : addressInfo.roomNo || '');
+        setValue('addressBycurrent.floor', isEmptyStringFormApi(addressInfo.floor) ? '' : addressInfo.floor || '');
+        setValue('addressBycurrent.soi', isEmptyStringFormApi(addressInfo.soi) ? '' : addressInfo.soi || '');
+        setValue('addressBycurrent.street', isEmptyStringFormApi(addressInfo.street) ? '' : addressInfo.street || '');
+        setValue('addressBycurrent.countryCode', isEmptyStringFormApi(addressInfo.countryCode) ? '' : addressInfo.countryCode || '');
+        setValue('addressBycurrent.zipCode', isEmptyStringFormApi(addressInfo.zipCode) ? '' : addressInfo.zipCode || '');
+        setValue('addressBycurrent.provinceCode', isEmptyStringFormApi(addressInfo.provinceCode) ? '' : addressInfo.provinceCode || '');
+        setValue('addressBycurrent.districtCode', isEmptyStringFormApi(addressInfo.districtCode) ? '' : addressInfo.districtCode || '');
+        setValue('addressBycurrent.subDistrictCode', isEmptyStringFormApi(addressInfo.subDistrictCode) ? '' : addressInfo.subDistrictCode || '');
+        setValue('addressBycurrent.customAddress1', isEmptyStringFormApi(addressInfo.customAddress1) ? '' : addressInfo.customAddress1 || '');
+        setValue('addressBycurrent.customAddress2', isEmptyStringFormApi(addressInfo.customAddress2) ? '' : addressInfo.customAddress2 || '');
+        setValue('addressBycurrent.customAddress3', isEmptyStringFormApi(addressInfo.customAddress3) ? '' : addressInfo.customAddress3 || '');
         setAddress({
             value: {
                 postCode: addressInfo.zipCode || '',
@@ -158,6 +153,7 @@ export default function AddressByCurrent() {
                         isEditable={isEditable}
                         register={register}
                         name="addressNo"
+                        onChange={(value) => setValue('addressBycurrent.addressNo', value)}
                     />
                     <InputHorizontal
                         label="หมู่ที่"
@@ -165,6 +161,7 @@ export default function AddressByCurrent() {
                         isEditable={isEditable}
                         register={register}
                         name="moo"
+                        onChange={(value) => setValue('addressBycurrent.moo', value)}
                     />
                     <InputHorizontal
                         label="หมู่บ้าน / อาคาร"
@@ -172,6 +169,7 @@ export default function AddressByCurrent() {
                         isEditable={isEditable}
                         register={register}
                         name="buildingOrVillage"
+                        onChange={(value) => setValue('addressBycurrent.buildingOrVillage', value)}
                     />
                     <InputHorizontal
                         label="เลขที่ห้อง"
@@ -179,6 +177,7 @@ export default function AddressByCurrent() {
                         isEditable={isEditable}
                         register={register}
                         name="roomNo"
+                        onChange={(value) => setValue('addressBycurrent.roomNo', value)}
                     />
                     <InputHorizontal
                         label="ชั้น"
@@ -186,6 +185,7 @@ export default function AddressByCurrent() {
                         isEditable={isEditable}
                         register={register}
                         name="floor"
+                        onChange={(value) => setValue('addressBycurrent.floor', value)}
                     />
                     <InputHorizontal
                         label="ตรอก / ซอย"
@@ -193,6 +193,7 @@ export default function AddressByCurrent() {
                         isEditable={isEditable}
                         register={register}
                         name="soi"
+                        onChange={(value) => setValue('addressBycurrent.soi', value)}
                     />
                     <InputHorizontal
                         label="ถนน"
@@ -200,6 +201,7 @@ export default function AddressByCurrent() {
                         isEditable={isEditable}
                         register={register}
                         name="street"
+                        onChange={(value) => setValue('addressBycurrent.street', value)}
                     />
                     <InputHorizontal
                         label="ประเทศ"
@@ -212,8 +214,8 @@ export default function AddressByCurrent() {
                         type="autocomplete"
                         list={countries}
                         onChange={(value) => {
-                            if (value !== watch("countryCode")) {
-                                setValue('countryCode', value);
+                            if (value !== watch("addressBycurrent.countryCode")) {
+                                setValue('addressBycurrent.countryCode', value);
                             }
                         }}
                         placeholder="โปรดเลือกประเทศ"
@@ -236,7 +238,7 @@ export default function AddressByCurrent() {
                         }}
                     />
                     {
-                        watch("countryCode") !== '000'
+                        watch("addressBycurrent.countryCode") !== '000'
                             ?
                             <>
                                 <InputHorizontal

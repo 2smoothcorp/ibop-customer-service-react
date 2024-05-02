@@ -28,6 +28,12 @@ export default function ContractInformation() {
         queryFn: () => getData(),
     })
 
+    // const personalInfo = useAppSelector(state => state.customerInformation.personalInfo)
+
+    // useEffect(() => {
+    //     console.log(`cusomterContract`, personalInfo)
+    // }, [personalInfo])
+
     const normalizationData = (name: string, addressInfo: DocReceiveAddressInfoModel): any => {
         switch (name) {
             case 'docReceiveChannel':
@@ -163,56 +169,48 @@ export default function ContractInformation() {
                         label="เลขที่"
                         defaultValue={data && normalizationData('addressNo', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="addressNo"
                     />
                     <InputHorizontal
                         label="หมู่ที่"
                         defaultValue={data && normalizationData('moo', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="moo"
                     />
                     <InputHorizontal
                         label="หมู่บ้าน / อาคาร"
                         defaultValue={data && normalizationData('buildingOrVillage', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="buildingOrVillage"
                     />
                     <InputHorizontal
                         label="เลขที่ห้อง"
                         defaultValue={data && normalizationData('roomNo', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="roomNo"
                     />
                     <InputHorizontal
                         label="ชั้น"
                         defaultValue={data && normalizationData('floor', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="floor"
                     />
                     <InputHorizontal
                         label="ตรอก / ซอย"
                         defaultValue={data && normalizationData('soi', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="soi"
                     />
                     <InputHorizontal
                         label="ถนน"
                         defaultValue={data && normalizationData('street', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="street"
                     />
                     <InputHorizontal
                         label="ประเทศ"
                         defaultValue={data && normalizationData('country', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="country"
                         isRequired
                     />
@@ -220,7 +218,6 @@ export default function ContractInformation() {
                         label="รหัสไปรษณีย์"
                         defaultValue={data && normalizationData('zipCode', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="zipCode"
                         isRequired
                     />
@@ -231,7 +228,6 @@ export default function ContractInformation() {
                                     label="ที่อยู่ 1"
                                     defaultValue={data && normalizationData('customAddress1', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
                                     name="customAddress1"
                                     isRequired
                                 />
@@ -239,7 +235,6 @@ export default function ContractInformation() {
                                     label="ที่อยู่ 2"
                                     defaultValue={data && normalizationData('customAddress2', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
                                     name="customAddress2"
                                     isRequired
                                 />
@@ -247,7 +242,6 @@ export default function ContractInformation() {
                                     label="ที่อยู่ 3"
                                     defaultValue={data && normalizationData('customAddress3', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
                                     name="customAddress3"
                                     isRequired
                                 />
@@ -257,7 +251,6 @@ export default function ContractInformation() {
                                     label="จังหวัด"
                                     defaultValue={data && normalizationData('province', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
                                     name="province"
                                     isRequired
                                 />
@@ -265,7 +258,6 @@ export default function ContractInformation() {
                                     label="อำเภอ / เขต"
                                     defaultValue={data && normalizationData('district', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
                                     name="district"
                                     isRequired
                                 />
@@ -273,7 +265,6 @@ export default function ContractInformation() {
                                     label="ตำบล / แขวง"
                                     defaultValue={data && normalizationData('subDistrict', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
                                     name="subDistrict"
                                     isRequired
                                 />
@@ -284,7 +275,6 @@ export default function ContractInformation() {
                         label="โทรศัพท์มือถือ"
                         defaultValue={data && normalizationData('mobileNo', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="mobileNo"
                         isRequired
                     />
@@ -292,7 +282,6 @@ export default function ContractInformation() {
                         label="โทรศัพท์พื้นฐาน"
                         defaultValue={data && normalizationData('officeNo', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="officeNo"
                         isRequired
                     />
@@ -300,7 +289,6 @@ export default function ContractInformation() {
                         label="อีเมล"
                         defaultValue={data && normalizationData('email', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="email"
                         isRequired
                     />

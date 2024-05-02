@@ -1,5 +1,3 @@
-import { FormControl, MenuItem, Select } from "@mui/material";
-import { UseFormRegister } from "react-hook-form";
 
 export default function InputText({
     name,
@@ -8,7 +6,8 @@ export default function InputText({
     className,
     readonly = false,
     required = false,
-    disabled = false
+    disabled = false,
+    onChange,
 }: InputTextProps) {
     return (
         <input
@@ -20,6 +19,7 @@ export default function InputText({
             required={required}
             readOnly={readonly}
             disabled={disabled}
+            onChange={(event) => onChange && onChange(event.target.value)}
         />
     )
 }
@@ -32,4 +32,5 @@ interface InputTextProps {
     className?: string;
     readonly?: boolean;
     disabled?: boolean;
+    onChange?: (value: string) => void;
 }
