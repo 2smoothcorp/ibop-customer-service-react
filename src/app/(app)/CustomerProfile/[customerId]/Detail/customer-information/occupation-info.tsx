@@ -196,10 +196,8 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                             setValue('occupationInfo.address.country', '000 - ไทย')
                             setValue('occupationInfo.address.countryCode', '000')
                             const zipCode = watch('occupationInfo.address.zipCode') === undefined;
-                            console.log(zipCode)
                             if (zipCode) {
                                 const defaultAddress = thailandAddress[0];
-                                console.log(defaultAddress)
                                 if (defaultAddress) {
                                     setAddress(defaultAddress)
                                 }
