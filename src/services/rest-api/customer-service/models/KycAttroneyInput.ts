@@ -16,229 +16,212 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface AttorneyRequest
+ * @interface KycAttroneyInput
  */
-export interface AttorneyRequest {
+export interface KycAttroneyInput {
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     titleCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
+     */
+    titleName?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof KycAttroneyInput
      */
     titleOther?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     name?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     referenceTypeCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     referenceNo?: string | null;
     /**
      * 
      * @type {Date}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     referenceExpireDate?: Date | null;
     /**
      * 
      * @type {boolean}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     referenceNeverExpire?: boolean | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     relationCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     relationOther?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     nationCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     tel?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     mobile?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     email?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     addressNo?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     moo?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     buildingOrVillage?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     roomNo?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     floor?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     soi?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     street?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     tambonCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     amphurCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     provinceCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     postCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     customAddress1?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     customAddress2?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     customAddress3?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     countryCode?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof AttorneyRequest
+     * @memberof KycAttroneyInput
      */
     productCode?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof AttorneyRequest
-     */
-    createdBy?: string | null;
-    /**
-     * 
-     * @type {Date}
-     * @memberof AttorneyRequest
-     */
-    createdDateTime?: Date | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof AttorneyRequest
-     */
-    modifiedBy?: string | null;
-    /**
-     * 
-     * @type {Date}
-     * @memberof AttorneyRequest
-     */
-    modifiedDateTime?: Date | null;
 }
 
 /**
- * Check if a given object implements the AttorneyRequest interface.
+ * Check if a given object implements the KycAttroneyInput interface.
  */
-export function instanceOfAttorneyRequest(value: object): boolean {
+export function instanceOfKycAttroneyInput(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function AttorneyRequestFromJSON(json: any): AttorneyRequest {
-    return AttorneyRequestFromJSONTyped(json, false);
+export function KycAttroneyInputFromJSON(json: any): KycAttroneyInput {
+    return KycAttroneyInputFromJSONTyped(json, false);
 }
 
-export function AttorneyRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): AttorneyRequest {
+export function KycAttroneyInputFromJSONTyped(json: any, ignoreDiscriminator: boolean): KycAttroneyInput {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'titleCode': !exists(json, 'titleCode') ? undefined : json['titleCode'],
+        'titleName': !exists(json, 'titleName') ? undefined : json['titleName'],
         'titleOther': !exists(json, 'titleOther') ? undefined : json['titleOther'],
         'name': !exists(json, 'name') ? undefined : json['name'],
         'referenceTypeCode': !exists(json, 'referenceTypeCode') ? undefined : json['referenceTypeCode'],
@@ -267,14 +250,10 @@ export function AttorneyRequestFromJSONTyped(json: any, ignoreDiscriminator: boo
         'customAddress3': !exists(json, 'customAddress3') ? undefined : json['customAddress3'],
         'countryCode': !exists(json, 'countryCode') ? undefined : json['countryCode'],
         'productCode': !exists(json, 'productCode') ? undefined : json['productCode'],
-        'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
-        'createdDateTime': !exists(json, 'createdDateTime') ? undefined : (json['createdDateTime'] === null ? null : new Date(json['createdDateTime'])),
-        'modifiedBy': !exists(json, 'modifiedBy') ? undefined : json['modifiedBy'],
-        'modifiedDateTime': !exists(json, 'modifiedDateTime') ? undefined : (json['modifiedDateTime'] === null ? null : new Date(json['modifiedDateTime'])),
     };
 }
 
-export function AttorneyRequestToJSON(value?: AttorneyRequest | null): any {
+export function KycAttroneyInputToJSON(value?: KycAttroneyInput | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -284,6 +263,7 @@ export function AttorneyRequestToJSON(value?: AttorneyRequest | null): any {
     return {
         
         'titleCode': value.titleCode,
+        'titleName': value.titleName,
         'titleOther': value.titleOther,
         'name': value.name,
         'referenceTypeCode': value.referenceTypeCode,
@@ -312,10 +292,6 @@ export function AttorneyRequestToJSON(value?: AttorneyRequest | null): any {
         'customAddress3': value.customAddress3,
         'countryCode': value.countryCode,
         'productCode': value.productCode,
-        'createdBy': value.createdBy,
-        'createdDateTime': value.createdDateTime === undefined ? undefined : (value.createdDateTime === null ? null : value.createdDateTime.toISOString()),
-        'modifiedBy': value.modifiedBy,
-        'modifiedDateTime': value.modifiedDateTime === undefined ? undefined : (value.modifiedDateTime === null ? null : value.modifiedDateTime.toISOString()),
     };
 }
 
