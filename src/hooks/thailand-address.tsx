@@ -16,6 +16,15 @@ export const addressForeignOption: ThaiAddrInfo = {
   value: _codeForeign
 }
 
+export const addressEmptyOption: ThaiAddrInfo = {
+  p: '', pName: '', pCode: '',
+  d: '', dName: '', dCode: '',
+  s: '', sName: '', sCode: '',
+  po: '',
+  label: '',
+  value: ''
+}
+
 export const useThailandAddress = () => {
   useEffect(() => {}, []);
 
