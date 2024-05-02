@@ -1,4 +1,5 @@
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { useEffect } from "react";
 
 // Example
 {/* <InputRadio
@@ -25,9 +26,9 @@ export default function InputRadio({
     isRow = true,
     isFlex = false,
 }: InputRadioProps) {
-    // useEffect(() => {
-    //     console.log("defaultValue", defaultValue)
-    // }, [defaultValue])
+    useEffect(() => {
+        console.log(name, defaultValue)
+    }, [defaultValue])
 
     return (
         <RadioGroup
@@ -36,7 +37,7 @@ export default function InputRadio({
             row={isRow}
             name={name}
             value={defaultValue}
-            // defaultValue={defaultValue}
+            defaultValue={defaultValue}
             onChange={(e) => onChange && onChange((e.target as HTMLInputElement).value)}
         >
             {

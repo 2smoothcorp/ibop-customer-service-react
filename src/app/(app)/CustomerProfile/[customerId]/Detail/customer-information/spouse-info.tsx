@@ -47,12 +47,12 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
     }
 
     const setDefaultData = (spouseInfo: SpouseInfoModel) => {
-        setValue('spouseInfo.familyStatus', isEmptyStringFormApi(spouseInfo.familyStatus) ? spouseInfo.familyStatus || '' : '');
-        setValue('spouseInfo.spouseReferenceType', isEmptyStringFormApi(spouseInfo.spouseReferenceType) ? spouseInfo.spouseReferenceType || '' : '');
-        setValue('spouseInfo.spouseIdentityId', isEmptyStringFormApi(spouseInfo.spouseIdentityId) ? spouseInfo.spouseIdentityId || '' : '');
-        setValue('spouseInfo.spouseTitleCode', isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? spouseInfo.spouseTitleCode || '' : '');
-        setValue('spouseInfo.spouseFirstName', isEmptyStringFormApi(spouseInfo.spouseFirstName) ? spouseInfo.spouseFirstName || '' : '');
-        setValue('spouseInfo.spouseLastName', isEmptyStringFormApi(spouseInfo.spouseLastName) ? spouseInfo.spouseLastName || '' : '');
+        setValue('spouseInfo.familyStatus', !isEmptyStringFormApi(spouseInfo.familyStatus) ? spouseInfo.familyStatus || '' : '');
+        setValue('spouseInfo.spouseReferenceType', !isEmptyStringFormApi(spouseInfo.spouseReferenceType) ? spouseInfo.spouseReferenceType || '' : '');
+        setValue('spouseInfo.spouseIdentityId', !isEmptyStringFormApi(spouseInfo.spouseIdentityId) ? spouseInfo.spouseIdentityId || '' : '');
+        setValue('spouseInfo.spouseTitleCode', !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? spouseInfo.spouseTitleCode || '' : '');
+        setValue('spouseInfo.spouseFirstName', !isEmptyStringFormApi(spouseInfo.spouseFirstName) ? spouseInfo.spouseFirstName || '' : '');
+        setValue('spouseInfo.spouseLastName', !isEmptyStringFormApi(spouseInfo.spouseLastName) ? spouseInfo.spouseLastName || '' : '');
     }
 
     const getData = async () => {
@@ -92,7 +92,8 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                 <div className="grid grid-cols-3">
                     <InputHorizontal
                         label="สถานภาพ"
-                        defaultValue={data && normalizationData('familyStatus', data) || "-"}
+                        defaultValue={watch('spouseInfo.familyStatus')}
+                        textShow={data && normalizationData('familyStatus', data) || "-"}
                         isEditable={isEditable}
                         // register={register}
                         onChange={(value) => setValue('spouseInfo.familyStatus', value)}

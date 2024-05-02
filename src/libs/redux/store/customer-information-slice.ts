@@ -75,6 +75,7 @@ interface OccupationInfo {
 }
 
 interface PoliticRelationInfo {
+    politicianRelationString: string;
     politicianRelation: boolean;
     politicianPosition: string;
 }
@@ -177,6 +178,7 @@ const initialState: CusomterInformationState = {
         }
     },
     politicRelationInfo: {
+        politicianRelationString: "false",
         politicianRelation: false,
         politicianPosition: '',
     },

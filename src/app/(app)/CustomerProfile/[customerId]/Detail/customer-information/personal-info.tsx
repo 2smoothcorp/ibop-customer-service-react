@@ -248,7 +248,6 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         list={titles}
                         isRequired
                         onChange={(value) => {
-                            console.log(`value`, value)
                             if (value === '103' || value === '301' || value === '302') {
                                 console.log('change man')
                                 setValue('personalInfo.genderCode', '0')
