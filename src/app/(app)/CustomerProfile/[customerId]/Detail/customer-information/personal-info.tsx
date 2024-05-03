@@ -145,7 +145,8 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     <InputHorizontal
                         label="ประเภทลูกค้า"
-                        defaultValue={data && normalizationData('personTypeCode', data) || '-'}
+                        placeholder="โปรดเลือกประเภทลูกค้า"
+                        defaultValue={watch('personalInfo.personTypeCode')}
                         textShow={data && normalizationData('personType', data) || '-'}
                         isEditable={isEditable}
                         // register={register}
@@ -153,11 +154,12 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         type="autocomplete"
                         list={personType}
                         isRequired
-                        onChange={(value) => setValue('personalInfo.personType', value)}
+                        onChange={(value) => setValue('personalInfo.personTypeCode', value)}
                     />
                     <InputHorizontal
                         label="ประเภทหลักฐานลูกค้า"
-                        defaultValue={data && normalizationData('referenceType', data) || '-'}
+                        placeholder="โปรดเลือกประเภทหลักฐานลูกค้า"
+                        defaultValue={watch('personalInfo.referenceType')}
                         textShow={data && normalizationData('referenceTypeDesc', data) || '-'}
                         isEditable={isEditable}
                         // register={register}
@@ -169,7 +171,9 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                     />
                     <InputHorizontal
                         label="เลขที่บัตร"
-                        defaultValue={data && normalizationData('referenceID', data) || '-'}
+                        placeholder="โปรดระบุเลขที่บัตร"
+                        defaultValue={watch('personalInfo.referenceID')}
+                        textShow={data && normalizationData('referenceID', data) || '-'}
                         isEditable={isEditable}
                         // register={register}
                         name="referenceID"
@@ -178,7 +182,8 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                     />
                     <InputHorizontal
                         label="ประเทศที่ออกบัตร"
-                        defaultValue={data && normalizationData('countryCode', data) || '-'}
+                        placeholder="โปรดเลือกประเทศที่ออกบัตร"
+                        defaultValue={watch('personalInfo.countryCode')}
                         textShow={data && normalizationData('country', data) || '-'}
                         isEditable={isEditable}
                         // register={register}
@@ -190,7 +195,8 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                     />
                     <InputHorizontal
                         label="ประเทศเจ้าของสัญชาติ"
-                        defaultValue={data && normalizationData('nationalityCode', data) || '-'}
+                        placeholder="โปรดเลือกประเทศเจ้าของสัญชาติ"
+                        defaultValue={watch('personalInfo.nationalityCode')}
                         textShow={data && normalizationData('nation', data) || '-'}
                         isEditable={isEditable}
                         // register={register}
@@ -202,6 +208,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                     />
                     <InputHorizontal
                         label="วันที่หมดอายุบัตร (ค.ศ.)"
+                        placeholder="โปรดระบุวันที่หมดอายุบัตร"
                         defaultValue={data &&
                             (
                                 normalizationData('identityExpireDate', data) !== '-'
@@ -231,7 +238,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                                         width={100}
                                         label="ตลอดชีพ"
                                         name="identityNeverExpire"
-                                        defaultValue={data && data.identityNeverExpire || false}
+                                        defaultValue={watch('personalInfo.identityNeverExpire')}
                                         onChange={(value) => { setValue('personalInfo.identityNeverExpire', value) }}
                                     />
                                 </div> : <></>
@@ -239,7 +246,8 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                     />
                     <InputHorizontal
                         label="คำนำหน้า"
-                        defaultValue={data && normalizationData('titleCode', data) || '-'}
+                        placeholder="โปรดเลือกคำนำหน้า"
+                        defaultValue={watch('personalInfo.titleCode')}
                         textShow={data && normalizationData('title', data) || '-'}
                         isEditable={isEditable}
                         // register={register}
@@ -261,7 +269,9 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                     />
                     <InputHorizontal
                         label="ชื่อ (ภาษาไทย)"
-                        defaultValue={data && normalizationData('firstNameTh', data) || '-'}
+                        placeholder="โปรดระบุชื่อ (ภาษาไทย)"
+                        defaultValue={watch('personalInfo.firstNameTh')}
+                        textShow={data && normalizationData('firstNameTh', data) || '-'}
                         isEditable={isEditable}
                         // register={register}
                         name="firstNameTh"
@@ -270,7 +280,9 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                     />
                     <InputHorizontal
                         label="นามสกุล (ภาษาไทย)"
-                        defaultValue={data && normalizationData('lastNameTh', data) || '-'}
+                        placeholder="โปรดระบุนามสกุล (ภาษาไทย)"
+                        defaultValue={watch('personalInfo.lastNameTh')}
+                        textShow={data && normalizationData('lastNameTh', data) || '-'}
                         isEditable={isEditable}
                         // register={register}
                         name="lastNameTh"
@@ -278,31 +290,8 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         onChange={(value) => setValue('personalInfo.lastNameTh', value)}
                     />
                     <InputHorizontal
-                        label=""
-                        defaultValue=""
-                        // register={register}
-                        name=""
-                    />
-                    <InputHorizontal
-                        label="ชื่อ (ภาษาอังกฤษ)"
-                        defaultValue={data && normalizationData('firstNameEn', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="firstNameEn"
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.firstNameEn', value)}
-                    />
-                    <InputHorizontal
-                        label="นามสกุล (ภาษาอังกฤษ)"
-                        defaultValue={data && normalizationData('lastNameEn', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="lastNameEn"
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.lastNameEn', value)}
-                    />
-                    <InputHorizontal
                         label="เพศ"
+                        placeholder="โปรดเลือกเพศ"
                         defaultValue={watch('personalInfo.genderCode')}
                         textShow={data && normalizationData('gender', data) || '-'}
                         isEditable={isEditable}
@@ -319,7 +308,35 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         onChange={(value) => setValue('personalInfo.genderCode', value)}
                     />
                     <InputHorizontal
+                        label="ชื่อ (ภาษาอังกฤษ)"
+                        placeholder="โปรดระบุชื่อ (ภาษาอังกฤษ)"
+                        defaultValue={data && normalizationData('firstNameEn', data) || '-'}
+                        isEditable={isEditable}
+                        // register={register}
+                        name="firstNameEn"
+                        isRequired
+                        onChange={(value) => setValue('personalInfo.firstNameEn', value)}
+                    />
+                    <InputHorizontal
+                        label="นามสกุล (ภาษาอังกฤษ)"
+                        placeholder="โปรดระบุนามสกุล (ภาษาอังกฤษ)"
+                        defaultValue={data && normalizationData('lastNameEn', data) || '-'}
+                        isEditable={isEditable}
+                        // register={register}
+                        name="lastNameEn"
+                        isRequired
+                        onChange={(value) => setValue('personalInfo.lastNameEn', value)}
+                    />
+                    <InputHorizontal
+                        label=""
+                        defaultValue=""
+                        // register={register}
+                        name=""
+                    />
+
+                    <InputHorizontal
                         label="วัน/เดือน/ปีเกิด (ค.ศ.)"
+                        placeholder="โปรดระบุวัน/เดือน/ปีเกิด"
                         defaultValue={data &&
                             (
                                 normalizationData('birthDate', data) !== '-'
@@ -346,28 +363,4 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
             </ContentLoading>
         </>
     )
-}
-
-interface SubmitInput {
-    personType: string;
-    personTypeCode: string;
-    referenceTypeDesc: string;
-    referenceType: string;
-    referenceID: string;
-    riskGroup: string;
-    country: string;
-    countryCode: string;
-    nation: string;
-    nationalityCode: string;
-    identityExpireDate: string;
-    title: string;
-    titleCode: string;
-    gender: string;
-    genderCode: string;
-    firstNameTh: string;
-    lastNameTh: string;
-    firstNameEn: string;
-    lastNameEn: string;
-    birthDate: string;
-    identityNeverExpire: boolean;
 }

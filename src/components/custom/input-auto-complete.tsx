@@ -1,5 +1,5 @@
 import { Autocomplete, TextField } from "@mui/material";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 
 export default function InputAutoComplete({
     name,
@@ -11,46 +11,26 @@ export default function InputAutoComplete({
     onChange,
 }: InputAutoCompleteProps) {
 
-    const defaultValueItem = useMemo(() => list.find(item => item.value === defaultValue) || null, [defaultValue, list]);
+    const [data, setData] = useState<InputAutoCompleteValue | null>(null);
 
-    // console.log(defaultValueItem)
-
-    // const [data, setData] = React.useState<InputAutoCompleteValue | null>(null);
-
-    // useEffect(() => {
-    //     if (defaultValue && list.length > 0 && data === null) {
-    //         const result = list.find(item => item.value === defaultValue)
-    //         if (result) {
-    //             setData(result);
-    //         }
-    //     }
-    // }, [defaultValue, list, data]);
+    useEffect(() => {
+        if (defaultValue && list.length > 0) {
+            const result = list.find(item => item.value === defaultValue)
+            if (result) {
+                setData(result);
+            }
+        }
+    }, [defaultValue, list]);
 
 
-    // useEffect(() => {
-    //     if (data && onChange) {
-    //         onChange(data.value)
-    //     }
-    // }, [data, onChange])
-
-    if (!defaultValueItem) return <></>
+    // if (!defaultValueItem) return <></>
 
     return (
         <Autocomplete
-            // id={name}
             fullWidth
-            // value={defaultValue}
+            value={data}
             onChange={(_, item) => item && typeof item !== 'string' && onChange && onChange(item.value)}
             isOptionEqualToValue={(option, value) => option.value === value.value}
-            defaultValue={defaultValueItem}
-            // getOptionLabel={(option) => option.value}
-            // renderOption={(props, option) => (
-            //     <Box component="li" {...props}
-            //         key={option.label}
-            //     >
-            //         {option.value} - {option.label}
-            //     </Box>
-            // )}
             disabled={disabled}
             options={list}
             renderInput={(params) => <TextField {...params} placeholder={placeholder} required={required} />}
@@ -71,4 +51,8 @@ interface InputAutoCompleteProps {
     list?: InputAutoCompleteValue[];
     disabled?: boolean;
     onChange?: (value: string) => void;
+}
+
+function setData(result: InputAutoCompleteValue) {
+    throw new Error("Function not implemented.");
 }
