@@ -1,20 +1,20 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 // Define a type for the slice state
-export interface CusomterContractState {
+export interface CustomerProfileState {
     step: number;
     maxStep: number;
     minStep: number;
 }
 
 // Define the initial state using that type
-const initialState: CusomterContractState = {
+const initialState: CustomerProfileState = {
     step: 1,
     maxStep: 10,
     minStep: 1,
 }
 
-export const customerContractSlice = createSlice({
+export const customerProfileSlice = createSlice({
     name: 'customer-profile',
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
@@ -33,6 +33,6 @@ export const customerContractSlice = createSlice({
     }
 })
 
-export const { nextStep, prevStep, jumpToStep } = customerContractSlice.actions
+export const { nextStep, prevStep, jumpToStep } = customerProfileSlice.actions
 
-export default customerContractSlice.reducer
+export default customerProfileSlice.reducer

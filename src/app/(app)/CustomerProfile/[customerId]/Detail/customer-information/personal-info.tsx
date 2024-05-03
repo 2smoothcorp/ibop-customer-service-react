@@ -9,7 +9,7 @@ import { useMasterDataPersonTypeCustom } from "@/hooks/master-data-person-type";
 import { useMasterDataReferenceCustom } from "@/hooks/master-data-reference";
 import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
-import { CusomterInformationState } from "@/libs/redux/store/customer-information-slice";
+import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { PersonalInfoModel, PersonalInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import { useParams, useSearchParams } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
 
-export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<CusomterInformationState, any, undefined> }) {
+export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
     const { setValue, watch } = useForm
     const params = useParams()
     const searchParams = useSearchParams()
@@ -154,7 +154,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         type="autocomplete"
                         list={personType}
                         isRequired
-                        onChange={(value) => setValue('personalInfo.personTypeCode', value)}
+                        onChange={(value) => setValue('personalInfo.personTypeCode', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="ประเภทหลักฐานลูกค้า"
@@ -167,7 +167,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         type="autocomplete"
                         list={reference}
                         isRequired
-                        onChange={(value) => setValue('personalInfo.referenceType', value)}
+                        onChange={(value) => setValue('personalInfo.referenceType', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="เลขที่บัตร"
@@ -178,7 +178,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         // register={register}
                         name="referenceID"
                         isRequired
-                        onChange={(value) => setValue('personalInfo.referenceID', value)}
+                        onChange={(value) => setValue('personalInfo.referenceID', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="ประเทศที่ออกบัตร"
@@ -191,7 +191,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         list={countries}
                         name="countryCode"
                         isRequired
-                        onChange={(value) => setValue('personalInfo.countryCode', value)}
+                        onChange={(value) => setValue('personalInfo.countryCode', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="ประเทศเจ้าของสัญชาติ"
@@ -204,7 +204,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         type="autocomplete"
                         list={nation}
                         isRequired
-                        onChange={(value) => setValue('personalInfo.nationalityCode', value)}
+                        onChange={(value) => setValue('personalInfo.nationalityCode', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="วันที่หมดอายุบัตร (ค.ศ.)"
@@ -230,7 +230,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         name="identityExpireDate"
                         isRequired={false}
                         disabled={watch("personalInfo.identityNeverExpire") || false}
-                        onChange={(value) => setValue("personalInfo.identityExpireDate", value)}
+                        onChange={(value) => setValue("personalInfo.identityExpireDate", value, { shouldDirty: true })}
                         rightInputComponent={
                             isEditable ?
                                 <div className="w-[120px] flex justify-center">
@@ -239,7 +239,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                                         label="ตลอดชีพ"
                                         name="identityNeverExpire"
                                         defaultValue={watch('personalInfo.identityNeverExpire')}
-                                        onChange={(value) => { setValue('personalInfo.identityNeverExpire', value) }}
+                                        onChange={(value) => { setValue('personalInfo.identityNeverExpire', value, { shouldDirty: true }) }}
                                     />
                                 </div> : <></>
                         }
@@ -258,13 +258,13 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         onChange={(value) => {
                             if (value === '103' || value === '301' || value === '302') {
                                 console.log('change man')
-                                setValue('personalInfo.genderCode', '0')
+                                setValue('personalInfo.genderCode', '0', { shouldDirty: true })
                             }
                             if (value === '104' || value === '105' || value === '304' || value === '306') {
                                 console.log('change girl')
-                                setValue('personalInfo.genderCode', '1')
+                                setValue('personalInfo.genderCode', '1', { shouldDirty: true })
                             }
-                            setValue('personalInfo.titleCode', value)
+                            setValue('personalInfo.titleCode', value, { shouldDirty: true })
                         }}
                     />
                     <InputHorizontal
@@ -276,7 +276,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         // register={register}
                         name="firstNameTh"
                         isRequired
-                        onChange={(value) => setValue('personalInfo.firstNameTh', value)}
+                        onChange={(value) => setValue('personalInfo.firstNameTh', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="นามสกุล (ภาษาไทย)"
@@ -287,7 +287,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         // register={register}
                         name="lastNameTh"
                         isRequired
-                        onChange={(value) => setValue('personalInfo.lastNameTh', value)}
+                        onChange={(value) => setValue('personalInfo.lastNameTh', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="เพศ"
@@ -305,7 +305,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                             { value: '3', label: 'ไม่ระบุ' },
                         ]}
                         isRequired
-                        onChange={(value) => setValue('personalInfo.genderCode', value)}
+                        onChange={(value) => setValue('personalInfo.genderCode', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="ชื่อ (ภาษาอังกฤษ)"
@@ -315,7 +315,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         // register={register}
                         name="firstNameEn"
                         isRequired
-                        onChange={(value) => setValue('personalInfo.firstNameEn', value)}
+                        onChange={(value) => setValue('personalInfo.firstNameEn', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="นามสกุล (ภาษาอังกฤษ)"
@@ -325,7 +325,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         // register={register}
                         name="lastNameEn"
                         isRequired
-                        onChange={(value) => setValue('personalInfo.lastNameEn', value)}
+                        onChange={(value) => setValue('personalInfo.lastNameEn', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label=""
@@ -356,7 +356,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Cusom
                         name="birthDate"
                         type="date"
                         maxDate={dayjs().subtract(18, 'year').format('YYYY-MM-DD')}
-                        onChange={(val) => setValue("personalInfo.birthDate", val)}
+                        onChange={(val) => setValue("personalInfo.birthDate", val, { shouldDirty: true })}
                         isRequired
                     />
                 </div>

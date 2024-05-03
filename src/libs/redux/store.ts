@@ -1,7 +1,7 @@
-import { configureStore } from '@reduxjs/toolkit'
-import customerContractSlice from './store/customer-contract-slice'
-import customerInformationReducer from './store/customer-information-slice'
-import customerProfileSlice from './store/customer-profile-slice'
+import { configureStore } from '@reduxjs/toolkit';
+import customerContractSlice from './store/customer-contract-slice';
+import customerInformationSlice from './store/customer-information-slice';
+import customerProfileSlice from './store/customer-profile-slice';
 import { reducerKycCdd } from './store/kyc-cdd';
 
 
@@ -9,8 +9,8 @@ export const makeStore = () => {
     return configureStore({
         reducer: {
             customerProfile: customerProfileSlice,
-            customerInformation: customerInformationReducer,
-            customerContractSlice: customerContractSlice,
+            customerInformation: customerInformationSlice,
+            customerContract: customerContractSlice,
             kyccdd: reducerKycCdd
         }
     })

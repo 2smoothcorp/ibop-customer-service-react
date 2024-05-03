@@ -2,25 +2,23 @@
 
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
+import InputText from "@/components/custom/input-text";
 import HeaderTitle from "@/components/navbar/header-title";
+import { useMasterDataRelationCustom } from "@/hooks/master-data-relation";
+import { CustomerContractState } from "@/libs/redux/store/customer-contract-slice";
 import { EmergencyContactInfoModel, EmergencyContactInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import React from "react";
-import { useForm } from "react-hook-form";
+import { useParams, useSearchParams } from "next/navigation";
+import { UseFormReturn } from "react-hook-form";
 
-export default function ContractEmergency() {
+export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<CustomerContractState, any, undefined> }) {
+    const { setValue, watch } = useForm
     const params = useParams()
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors },
-        setValue,
-        getValues,
-    } = useForm<SubmitInput>()
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
+
+    const { data: relation, isLoading: isLoadingRelation } = useMasterDataRelationCustom();
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['contractEmergency', params.customerId],
@@ -38,6 +36,15 @@ export default function ContractEmergency() {
             case 'relationship':
                 return handleEmptyStringFormApi(emergencyContactInfo.relationship);
 
+            case 'emergencyContactId':
+                return emergencyContactInfo.emergencyContactId;
+
+            case 'relationshipOther':
+                return emergencyContactInfo.relationshipOther;
+
+            case 'relationshipCode':
+                return handleEmptyStringFormApi(emergencyContactInfo.relationshipCode);
+
             default:
                 return '-';
         }
@@ -46,21 +53,12 @@ export default function ContractEmergency() {
     const setDefaultData = (emergencyContactInfo: EmergencyContactInfoModel[]) => {
         for (let i = 0; i < emergencyContactInfo.length; i++) {
             const item = emergencyContactInfo[i]
-            if (i === 0) {
-                setValue('name1', normalizationData('name', item));
-                setValue('mobile1', normalizationData('mobile', item));
-                setValue('relationship1', normalizationData('relationship', item));
-            }
-            if (i === 1) {
-                setValue('name2', normalizationData('name', item));
-                setValue('mobile2', normalizationData('mobile', item));
-                setValue('relationship2', normalizationData('relationship', item));
-            }
-            if (i === 2) {
-                setValue('name3', normalizationData('name', item));
-                setValue('mobile3', normalizationData('mobile', item));
-                setValue('relationship3', normalizationData('relationship', item));
-            }
+            setValue(`contractEmergency.${i}.emergencyContactId`, normalizationData('emergencyContactId', item));
+            setValue(`contractEmergency.${i}.name`, normalizationData('name', item));
+            setValue(`contractEmergency.${i}.mobile`, normalizationData('mobile', item));
+            setValue(`contractEmergency.${i}.relationship`, normalizationData('relationship', item));
+            setValue(`contractEmergency.${i}.relationshipCode`, normalizationData('relationshipCode', item));
+            setValue(`contractEmergency.${i}.relationshipOther`, normalizationData('relationshipOther', item));
         }
     }
 
@@ -77,7 +75,6 @@ export default function ContractEmergency() {
                     const { data } = response;
 
                     if (data && data.emergencyContactInfo) {
-                        // console.log(data.emergencyContactInfo)
                         setDefaultData(data.emergencyContactInfo)
                         return data.emergencyContactInfo
                     }
@@ -103,66 +100,82 @@ export default function ContractEmergency() {
             >
 
                 {
-                    data && data.map((item, index) => {
-                        return (
-                            <div key={index} className="grid grid-cols-3">
-                                <InputHorizontal
-                                    label="ชื่อ-นามสกุล"
-                                    defaultValue={item && normalizationData('name', item) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name={`name${index}`}
-                                />
-                                <InputHorizontal
-                                    label="โทรศัพท์มือถือ"
-                                    defaultValue={item && normalizationData('mobile', item) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name={`mobile${index}`}
-                                />
-                                <InputHorizontal
-                                    label="ความสัมพันธ์"
-                                    defaultValue={item && normalizationData('relationship', item) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name={`relationship${index}`}
-                                />
-                            </div>
-                        )
-                    })
+                    isEditable
+                        ? [0, 1, 2].map((index) => {
+                            return (
+                                <div key={index} className="grid grid-cols-3">
+                                    <InputHorizontal
+                                        label="ชื่อ-นามสกุล"
+                                        defaultValue={watch(`contractEmergency.${index}.name`)}
+                                        isEditable={isEditable}
+                                        // register={register}
+                                        name={`name${index}`}
+                                        onChange={(value) => setValue(`contractEmergency.${index}.name`, value, { shouldDirty: true })}
+                                    />
+                                    <InputHorizontal
+                                        label="โทรศัพท์มือถือ"
+                                        defaultValue={watch(`contractEmergency.${index}.mobile`)}
+                                        isEditable={isEditable}
+                                        // register={register}
+                                        name={`mobile${index}`}
+                                        onChange={(value) => setValue(`contractEmergency.${index}.mobile`, value, { shouldDirty: true })}
+                                    />
+                                    < InputHorizontal
+                                        label="ความสัมพันธ์"
+                                        placeholder="โปรดเลือกความสัมพันธ์"
+                                        defaultValue={watch(`contractEmergency.${index}.relationshipCode`)}
+                                        isEditable={isEditable}
+                                        name={`relationship${index}`}
+                                        type="autocomplete"
+                                        list={relation}
+                                        isRequired
+                                        onChange={(item) => {
+                                            setValue(`contractEmergency.${index}.relationshipCode`, item, { shouldDirty: true })
+                                        }}
+                                        rightInputComponent={
+                                            watch(`contractEmergency.${index}.relationshipCode`) === '4' && (
+                                                <InputText
+                                                    className="ml-2"
+                                                    name={`contractEmergency.${index}.relationshipOther`}
+                                                    defaultValue={watch(`contractEmergency.${index}.relationshipOther`)}
+                                                />
+                                            )
+                                        }
+                                    />
+                                </div>
+                            )
+                        })
+                        : data && data.map((item, index) => {
+                            return (
+                                <div key={index} className="grid grid-cols-3">
+                                    <InputHorizontal
+                                        label="ชื่อ-นามสกุล"
+                                        defaultValue={item && normalizationData('name', item) || "-"}
+                                        isEditable={isEditable}
+                                        // register={register}
+                                        name={`name${index}`}
+                                    />
+                                    <InputHorizontal
+                                        label="โทรศัพท์มือถือ"
+                                        defaultValue={item && normalizationData('mobile', item) || "-"}
+                                        isEditable={isEditable}
+                                        // register={register}
+                                        name={`mobile${index}`}
+                                    />
+                                    <InputHorizontal
+                                        label="ความสัมพันธ์"
+                                        defaultValue={item && normalizationData('relationship', item) || "-"}
+                                        isEditable={isEditable}
+                                        // register={register}
+                                        name={`relationship${index}`}
+                                    />
+                                </div>
+                            )
+                        })
                 }
 
             </ContentLoading>
 
         </>
     )
-}
-
-interface SubmitInput {
-    docReceiveChannel: string;
-    addressNo: string;
-    moo: string;
-    buildingOrVillage: string;
-    roomNo: string;
-    floor: string;
-    soi: string;
-    street: string;
-    countryCode: string;
-    country: string;
-    zipCode: string;
-    province: string;
-    district: string;
-    subDistrict: string;
-    mobileNo: string;
-    officeNo: string;
-    email: string;
-    name1: string;
-    mobile1: string;
-    relationship1: string;
-    name2: string;
-    mobile2: string;
-    relationship2: string;
-    name3: string;
-    mobile3: string;
-    relationship3: string;
 }
