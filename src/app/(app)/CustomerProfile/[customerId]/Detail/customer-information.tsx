@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { CusomterInformationState } from "@/libs/redux/store/customer-information-slice";
+import { CusomterInformationState, setDataCustomerInformation } from "@/libs/redux/store/customer-information-slice";
 import { nextStep } from "@/libs/redux/store/customer-profile-slice";
 import { Button } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -16,9 +16,23 @@ export default function CustomerInformation() {
     const dispatch = useAppDispatch()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
+
     const customerInformation = useAppSelector(state => state.customerInformation)
 
-    const useFormAll = useForm<CusomterInformationState>()
+    // console.log(customerInformation)
+
+    const useFormAll = useForm<CusomterInformationState>({
+        defaultValues: customerInformation
+    })
+
+    const saveData = () => {
+        const { getValues } = useFormAll
+        const result = getValues()
+        console.log(result)
+        dispatch(setDataCustomerInformation(getValues()))
+        dispatch(nextStep())
+
+    }
 
     return (
         <>
@@ -30,11 +44,8 @@ export default function CustomerInformation() {
             <PoliticRelationInfo useForm={useFormAll} />
             {
                 isEditable && <div className="flex justify-end gap-4">
-                    <Button variant="contained" color="error" onClick={() => router.push('/CustomerProfile/Edit')}>ย้อนกลับ</Button>
-                    <Button variant="contained" onClick={() => {
-                        console.log(customerInformation)
-                        dispatch(nextStep())
-                    }}>ถัดไป</Button>
+                    <Button variant="contained" color="error" onClick={() => router.push('/CustomerProfile/Edit/Offline')}>ย้อนกลับ</Button>
+                    <Button variant="contained" onClick={saveData}>ถัดไป</Button>
                 </div>
             }
         </>

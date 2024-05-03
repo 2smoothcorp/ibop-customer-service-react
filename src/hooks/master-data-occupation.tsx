@@ -32,7 +32,11 @@ export const useMasterDataOccupationCustom = () => {
                 const response: ComboBoxListDataResponse = await request.json();
                 if (response && response.data && response.data.length > 0) {
                     const customData = response.data.map((item) => {
-                        return { ...item, value: item.rValue || '', label: `${item.rValue} - ${item.rText}` }
+                        return {
+                            ...item,
+                            value: item.rValue || '',
+                            label: `${item.rValue} - ${item.rText}` + (item.rText2 ? ` ( ${item.rText2} )` : '')
+                        }
                     });
                     return customData
                 }
