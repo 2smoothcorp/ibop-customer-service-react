@@ -4,26 +4,25 @@
 
 'use client'
 
+import { Button, Grid } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import {
-  type ReactElement,
   type ChangeEvent,
   Fragment,
+  type ReactElement,
   useEffect,
   useState
 } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button, Grid } from '@mui/material';
 
 import { InputCheckbox } from '@/components/input-checkbox';
 import { Stepper } from '@/components/stepper';
-import TabNav from '@/components/navbar/tab-navbar';
 import { useAppSelector } from '@/libs/redux/hook';
 
 import {
-  ReviewPersonalInfo,
   ReviewAddrInfo,
-  ReviewSpouseInfo,
-  ReviewRelativeInfo
+  ReviewPersonalInfo,
+  ReviewRelativeInfo,
+  ReviewSpouseInfo
 } from '../_component';
 import { actionRevaluation } from './actions';
 
@@ -85,6 +84,7 @@ const Page = (): ReactElement => {
       workAddressInfo: workAddrInfo,
       spouseInfo: {
         familyStatus: spouseInfo.maritalStatus,
+        spouseTitleCode: spouseInfo.title,
         spouseFirstName: spouseInfo.firstname,
         spouseLastName: spouseInfo.lastname,
         spouseReferenceType: spouseInfo.refType,
