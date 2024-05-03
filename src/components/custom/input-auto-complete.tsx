@@ -1,38 +1,36 @@
 import { Autocomplete, TextField } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
-import { UseFormRegister } from "react-hook-form";
+import { useEffect, useState } from "react";
 
 export default function InputAutoComplete({
     name,
     defaultValue,
     placeholder,
-    className,
-    register,
     required = false,
     list = [],
     disabled = false,
     onChange,
 }: InputAutoCompleteProps) {
-    const [data, setData] = React.useState<InputAutoCompleteValue | null>(null);
 
-    useMemo(() => {
+    const [data, setData] = useState<InputAutoCompleteValue | null>(null);
+
+    useEffect(() => {
         if (defaultValue && list.length > 0) {
-            setData(list.find(item => item.value === defaultValue) || null)
+            const result = list.find(item => item.value === defaultValue)
+            if (result) {
+                setData(result);
+            }
         }
     }, [defaultValue, list]);
 
-    useEffect(() => {
-        if (data && onChange) {
-            onChange(data.value)
-        }
-    }, [data, onChange])
+
+    // if (!defaultValueItem) return <></>
 
     return (
         <Autocomplete
             fullWidth
             value={data}
-            onChange={(_, item) => setData(item)}
-            defaultValue={list.find(item => item.value === defaultValue) || null}
+            onChange={(_, item) => item && typeof item !== 'string' && onChange && onChange(item.value)}
+            isOptionEqualToValue={(option, value) => option.value === value.value}
             disabled={disabled}
             options={list}
             renderInput={(params) => <TextField {...params} placeholder={placeholder} required={required} />}
@@ -50,9 +48,11 @@ interface InputAutoCompleteProps {
     name: string;
     defaultValue?: string;
     placeholder?: string;
-    className?: string;
-    register?: UseFormRegister<any>;
     list?: InputAutoCompleteValue[];
     disabled?: boolean;
     onChange?: (value: string) => void;
+}
+
+function setData(result: InputAutoCompleteValue) {
+    throw new Error("Function not implemented.");
 }

@@ -25,13 +25,13 @@ export default function InputRadio({
     isRow = true,
     isFlex = false,
 }: InputRadioProps) {
-
     return (
         <RadioGroup
             className={isFlex && "w-full flex justify-around" || ""}
             aria-required={required}
             row={isRow}
             name={name}
+            value={defaultValue}
             defaultValue={defaultValue}
             onChange={(e) => onChange && onChange((e.target as HTMLInputElement).value)}
         >

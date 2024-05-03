@@ -15,72 +15,114 @@ import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
+import { SectionSeparator } from '@/components/section-separator';
+import { useMasterDataTitlesCustom } from '@/hooks/master-data-titles';
+import { useAppDispatch } from '@/libs/redux/hook';
+import { type StoreTypeKycCdd, saveSpouseInfo } from '@/libs/redux/store/kyc-cdd';
 import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/customer-service';
+import { Codex } from '@/utils/codex';
 
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit } = useForm<FormFields>({
+  const { register, handleSubmit, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
 
-  useEffect(() => {}, []);
+  const reduxDispatcher = useAppDispatch();
+  const masterTitleList = useMasterDataTitlesCustom();
 
   const { data: spouseInfo, isLoading } = useQuery({
     queryFn: () => fetchGetSpouse(),
     queryKey: ['kyccdd-spouse-info', corporateId]
   });
 
+  useEffect(() => { }, []);
+
   const fetchGetSpouse = async () => {
-    const request = await fetch(`/api/kyc/get-spouse/${ corporateId }`, { method: 'GET' });
+    const request = await fetch(`/api/kyc/get-spouse/${corporateId}`, { method: 'GET' });
     const response: KycSpouseInfoOutputDataResponse = await request.json();
 
     const { data } = response;
-    if(!data) { return ({}); }
+    if (!data) { return ({}); }
+
+    const {
+      familyStatus,
+      spouseTitleCode, spouseFirstName, spouseLastName,
+      spouseReferenceType, spouseIdentityId
+    } = data;
+    setFormValue('maritalStatus', familyStatus || '');
+    setFormValue('title', spouseTitleCode || '');
+    setFormValue('firstname', spouseFirstName || '');
+    setFormValue('lastname', spouseLastName || '');
+    setFormValue('refType', spouseReferenceType || '');
+    setFormValue('refId', spouseIdentityId || '');
     return data;
   }
 
-  const onSubmitForm = (fieldsData: FormFields) => {
-    console.log('onSubmitForm', fieldsData)
+  const toggleFormMode = () => { setIsEditing((current) => !current); }
+
+  const onSubmitForm = (fieldsData: StoreTypeKycCdd.SpouseFormFields) => {
+    reduxDispatcher(saveSpouseInfo(fieldsData));
+    setIsEditing(false);
   }
 
   const renderFormSpouse = () => {
-    const _maritalStatus = spouseInfo?.familyStatus || '-';
-    const _refType = spouseInfo?.spouseReferenceType || '-';
-    const _refId = spouseInfo?.spouseIdentityId || '-';
-    const _firstname = spouseInfo?.spouseFirstName || '-';
-    const _lastname = spouseInfo?.spouseLastName || '-';
+    const _maritalStatusText = spouseInfo?.familyStatus || '-';
+    const _refTypeText = spouseInfo?.spouseReferenceType || '-';
+    const _refTypeInitValue = spouseInfo?.spouseReferenceType || undefined;
+    const _refIdText = spouseInfo?.spouseIdentityId || '-';
+    const _refIdInitValue = spouseInfo?.spouseIdentityId || undefined;
+    const _titleText = (spouseInfo?.spouseTitleOther) ? spouseInfo.spouseTitleOther : spouseInfo?.spouseTitleName || '';
+    const _firstnameText = spouseInfo?.spouseFirstName || '-';
+    const _firstnameInitValue = spouseInfo?.spouseFirstName || undefined;
+    const _lastnameText = spouseInfo?.spouseLastName || '-';
+    const _lastnameInitValue = spouseInfo?.spouseLastName || undefined;
     return (
-      <Form
-        isEditing={ isEditing }
+      <Form<StoreTypeKycCdd.SpouseFormFields>
+        isEditing={isEditing}
         baseColSpan={4}
-        register={ register }
-        onSubmit={ handleSubmit(onSubmitForm) }
+        register={register}
+        onSubmit={handleSubmit(onSubmitForm)}
         fields={[
           {
-            type: 'text',
-            label: 'สถานสภาพสมรส', viewText: _maritalStatus,
-            name: 'maritalStatus'
+            type: 'radio',
+            label: 'สถานสภาพสมรส', viewText: _maritalStatusText,
+            name: 'maritalStatus', value: getFormValue('maritalStatus'),
+            options: [
+              { label: 'โสด', value: Codex.MaritaiStatus.single },
+              { label: 'สมรส', value: Codex.MaritaiStatus.married }
+            ]
           },
           {
             type: 'text',
-            label: 'ประเภทหลักฐาน', viewText: _refType,
-            name: 'refType'
+            label: 'ประเภทหลักฐาน', viewText: _refTypeText,
+            name: 'refType', value: _refTypeInitValue,
+            isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
           },
           {
             type: 'text',
-            label: 'เลขทีบัตร', viewText: _refId,
-            name: 'refId'
+            label: 'เลขทีบัตร', viewText: _refIdText,
+            name: 'refId', value: _refIdInitValue,
+            isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
+          },
+          {
+            type: 'select',
+            label: 'คำนำหน้า', viewText: _titleText,
+            name: 'title', value: getFormValue('title'),
+            options: masterTitleList.data || []
           },
           {
             type: 'text',
-            label: 'ชื่อ', viewText: _firstname,
-            name: 'firstname'
+            label: 'ชื่อ', viewText: _firstnameText,
+            name: 'firstname', value: _firstnameInitValue,
+            isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
           },
           {
             type: 'text',
-            label: 'นามสกุล', viewText: _lastname,
-            name: 'lastname'
+            label: 'นามสกุล', viewText: _lastnameText,
+            name: 'lastname', value: _lastnameInitValue,
+            isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
           }
         ]}
       />
@@ -89,14 +131,12 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
 
   return (
     <Fragment>
-      <div className={'my-4 border-b-2 border-b-slate-500'}>
-        <strong className={'text-xl text-success-500'}>ข้อมูลคู่สมรส</strong>
-      </div>
+      <SectionSeparator hasEditAction title={'ข้อมูลคู่สมรส'} onClickEdit={toggleFormMode} />
 
       {
         (isLoading)
-        ? (<AppLoader asContentLoader />)
-        : (renderFormSpouse())
+          ? (<AppLoader asContentLoader />)
+          : (renderFormSpouse())
       }
     </Fragment>
   );
@@ -104,12 +144,4 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
 
 interface SpouseInfoProps {
   corporateId: string;
-}
-
-interface FormFields {
-  maritalStatus: string;
-  refType: string;
-  refId: string;
-  firstname: string;
-  lastname: string;
 }

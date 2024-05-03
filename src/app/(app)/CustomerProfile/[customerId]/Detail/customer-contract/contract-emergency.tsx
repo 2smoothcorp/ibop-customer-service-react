@@ -110,21 +110,21 @@ export default function ContractEmergency() {
                                     label="ชื่อ-นามสกุล"
                                     defaultValue={item && normalizationData('name', item) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name={`name${index}`}
                                 />
                                 <InputHorizontal
                                     label="โทรศัพท์มือถือ"
                                     defaultValue={item && normalizationData('mobile', item) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name={`mobile${index}`}
                                 />
                                 <InputHorizontal
                                     label="ความสัมพันธ์"
                                     defaultValue={item && normalizationData('relationship', item) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name={`relationship${index}`}
                                 />
                             </div>

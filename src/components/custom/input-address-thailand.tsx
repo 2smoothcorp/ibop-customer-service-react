@@ -1,35 +1,20 @@
 import { AddressBySearchProps } from "@/utils/function";
 import { Autocomplete, Box, TextField } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
-import { UseFormRegister } from "react-hook-form";
 
 export default function InputAddressThailand({
     name,
     defaultValue,
     placeholder,
-    className,
-    register,
     required = false,
     list = [],
     disabled = false,
     onChange,
+    onChangeText,
     optionType = 'postCode',
 }: InputAddressThailandProps) {
-    const [data, setData] = React.useState<AddressBySearchProps | null>(null);
 
-    useMemo(() => {
-        // if (defaultValue && list.length > 0) {
-        //     setData(list.find(item => item.value === defaultValue) || null)
-        // }
-    }, [defaultValue, list]);
-
-    useEffect(() => {
-        // if (data && onChange) {
-        //     onChange(data.value)
-        // }
-    }, [data, onChange])
-
-    const getOption = (option: AddressBySearchProps) => {
+    const getOption = (option: AddressBySearchProps | null | string): string => {
+        if (!option || typeof option === 'string') return '';
         switch (optionType) {
             case 'postCode':
                 return option.value.postCode;
@@ -42,17 +27,24 @@ export default function InputAddressThailand({
         }
     }
 
+    if (!defaultValue) return <></>
+
     return (
         <Autocomplete
+            value={defaultValue}
             fullWidth
-            // value={data}
-            // onChange={(_, item) => setData(item)}
-            // defaultValue={list.find(item => item.value === defaultValue) || null}
+            isOptionEqualToValue={(option, value) => option.value.subDistrictCode === value.value.subDistrictCode}
+            onInputChange={(_, value) => onChangeText && onChangeText(value)}
+            onChange={(_, item) => typeof item !== 'string' && item && onChange && onChange(item)}
+            filterOptions={(x) => x}
             disabled={disabled}
             options={list}
+            freeSolo
             getOptionLabel={(option) => getOption(option)}
             renderOption={(props, option) => (
-                <Box component="li" {...props} key={`${name}`}>
+                <Box component="li" {...props}
+                    key={option.label}
+                >
                     {option.label}
                 </Box>
             )}
@@ -64,12 +56,11 @@ export default function InputAddressThailand({
 interface InputAddressThailandProps {
     required?: boolean;
     name: string;
-    defaultValue?: string;
+    defaultValue?: AddressBySearchProps;
     placeholder?: string;
-    className?: string;
-    register?: UseFormRegister<any>;
     list?: AddressBySearchProps[];
     disabled?: boolean;
-    onChange?: (value: string) => void;
+    onChange?: (value: AddressBySearchProps) => void;
+    onChangeText?: (value: string) => void;
     optionType?: 'postCode' | 'province' | 'district' | 'subDistrict';
 }

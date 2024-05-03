@@ -4,39 +4,57 @@
 
 'use client'
 
+import { useQuery } from '@tanstack/react-query';
 import {
-  type ReactElement,
   Fragment,
   useEffect,
-  useState
+  useState,
+  type ReactElement
 } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
+import { SectionSeparator } from '@/components/section-separator';
+import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
+import { useThailandAddress, addressEmptyOption, addressForeignOption, type ThaiAddrInfo } from '@/hooks/thailand-address';
+import { useAppDispatch } from '@/libs/redux/hook';
+import { type StoreTypeKycCdd, saveCurrentAddressInfo, saveWorkAddressInfo } from '@/libs/redux/store/kyc-cdd';
+import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycAddressOutputListDataResponse } from '@/services/rest-api/customer-service';
+import { Codex } from '@/utils/codex';
+import { removeObjectKeyPrefix } from '@/utils/remove-object-key-prefix';
 
 export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => {
   const [ isEditingCurrentAddr, setIsEditingCurrentAddr ] = useState(false);
   const [ isEditingWorkAddr, setIsEditingWorkAddr ] = useState(false);
+  const [ selectedCurrentAddrCountry, setSelectedCurrentAddrCountry ] = useState<ComboBoxWrapperOption>();
+  const [ selectedWorkAddrCountry, setSelectedWorkAddrCountry ] = useState<ComboBoxWrapperOption>();
+  const [ selectedCurrentThAddr, setSelectedCurrentThAddr ] = useState<ThaiAddrInfo>(addressEmptyOption);
+  const [ selectedWorkThAddr, setSelectedWorkThAddr ] = useState<ThaiAddrInfo>(addressEmptyOption);
 
-  const currentAddrHookForm = useForm<CurrentAddrFormFields>({
+  const reduxDispatcher = useAppDispatch();
+  const masterCountryList = useMasterDataCountriesCustom();
+  const thaiAddrInfo = useThailandAddress();
+
+  const currentAddrHookForm = useForm<StoreTypeKycCdd.CurrentAddrFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
 
-  const workAddrHookForm = useForm<WorkAddrFormFields>({
+  const workAddrHookForm = useForm<StoreTypeKycCdd.WorkAddrFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
-
-  useEffect(() => {}, []);
 
   const { data: addressList, isLoading } = useQuery({
     queryFn: () => fetchGetAddress(),
     queryKey: ['kyccdd-address-info', corporateId]
   });
+
+  useEffect(() => {
+
+  }, []);
 
   const fetchGetAddress = async () => {
     const request = await fetch(`/api/kyc/get-address/${corporateId}`, { method: 'GET' });
@@ -45,21 +63,106 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const { data } = response;
     if (!data) { return ({ currentAddr: {}, workAddr: {} }); }
 
-    const currentAddr = data.find((_f) => _f.addressTypeCode === '02');
-    const workAddr = data.find((_f) => _f.addressTypeCode === '03');
+    const currentAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.current);
+    const workAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.work);
+    if(currentAddr) {
+      const { setValue } = currentAddrHookForm;
+      const {
+        addressNo,
+        moo,
+        buildingOrVillage,
+        roomNo,
+        floor,
+        soi,
+        street,
+        countryCode,
+        zipCode,
+        provinceCode,
+        districtCode,
+        subDistrictCode,
+        customAddress1,
+        customAddress2,
+        customAddress3
+      } = currentAddr;
+      setValue('currentAddr_addressNo', addressNo || '');
+      setValue('currentAddr_moo', moo || '');
+      setValue('currentAddr_buildingOrVillage', buildingOrVillage || '');
+      setValue('currentAddr_roomNo', roomNo || '');
+      setValue('currentAddr_floor', floor || '');
+      setValue('currentAddr_soi', soi || '');
+      setValue('currentAddr_street', street || '');
+      setValue('currentAddr_countryCode', countryCode || '');
+      setValue('currentAddr_zipCode', zipCode || '');
+      setValue('currentAddr_provinceCode', provinceCode || '');
+      setValue('currentAddr_districtCode', districtCode || '');
+      setValue('currentAddr_subDistrictCode', subDistrictCode || '');
+      setValue('currentAddr_customAddress1', customAddress1 || '');
+      setValue('currentAddr_customAddress2', customAddress2 || '');
+      setValue('currentAddr_customAddress3', customAddress3 || '');
+    }
+
+    if(workAddr) {
+      const { setValue } = workAddrHookForm;
+      const {
+        addressNo,
+        moo,
+        buildingOrVillage,
+        roomNo,
+        floor,
+        soi,
+        street,
+        countryCode,
+        zipCode,
+        provinceCode,
+        districtCode,
+        subDistrictCode,
+        customAddress1,
+        customAddress2,
+        customAddress3
+      } = workAddr;
+      setValue('workAddr_addressNo', addressNo || '');
+      setValue('workAddr_moo', moo || '');
+      setValue('workAddr_buildingOrVillage', buildingOrVillage || '');
+      setValue('workAddr_roomNo', roomNo || '');
+      setValue('workAddr_floor', floor || '');
+      setValue('workAddr_soi', soi || '');
+      setValue('workAddr_street', street || '');
+      setValue('workAddr_countryCode', countryCode || '');
+      setValue('workAddr_zipCode', zipCode || '');
+      setValue('workAddr_provinceCode', provinceCode || '');
+      setValue('workAddr_districtCode', districtCode || '');
+      setValue('workAddr_subDistrictCode', subDistrictCode || '');
+      setValue('workAddr_customAddress1', customAddress1 || '');
+      setValue('workAddr_customAddress2', customAddress2 || '');
+      setValue('workAddr_customAddress3', customAddress3 || '');
+    }
+
     return ({ currentAddr: currentAddr || {}, workAddr: workAddr || {} });
   }
 
-  const onSubmitCurrentAddrForm = (fieldsData: CurrentAddrFormFields) => {
-    console.log('onSubmitCurrentAddrForm', fieldsData)
+  const toggleCurrentAddrFormMode = () => { setIsEditingCurrentAddr((current) => !current); }
+  const toggleWorkAddrFormMode = () => { setIsEditingWorkAddr((current) => !current); }
+
+  const onSubmitCurrentAddrForm = (fieldsData: StoreTypeKycCdd.CurrentAddrFormFields) => {
+    if(!selectedCurrentAddrCountry) { return; }
+    if(!selectedCurrentThAddr) { return; }
+
+    const refinedFieldsData: StoreTypeKycCdd.AddressFields = removeObjectKeyPrefix({ obj: fieldsData, prefix: 'currentAddr_' });
+    reduxDispatcher(saveCurrentAddressInfo(refinedFieldsData));
+    setIsEditingCurrentAddr(false);
   }
 
-  const onSubmitWorkAddrForm = (fieldsData: WorkAddrFormFields) => {
-    console.log('onSubmitWorkAddrForm', fieldsData)
+  const onSubmitWorkAddrForm = (fieldsData: StoreTypeKycCdd.WorkAddrFormFields) => {
+    if(!selectedWorkAddrCountry) { return; }
+    if(!selectedWorkThAddr) { return; }
+
+    const refinedFieldsData: StoreTypeKycCdd.AddressFields = removeObjectKeyPrefix({ obj: fieldsData, prefix: 'workAddr_' });
+    reduxDispatcher(saveWorkAddressInfo(refinedFieldsData));
+    setIsEditingWorkAddr(false);
   }
 
   const renderFormCurrentAddress = () => {
-    const { register, handleSubmit } = currentAddrHookForm;
+    const { register, handleSubmit, setValue } = currentAddrHookForm;
     const _info = addressList?.currentAddr;
     const _addressNo = _info?.addressNo || '-';
     const _moo = _info?.moo || '-';
@@ -68,25 +171,27 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _floor = _info?.floor || '-';
     const _soi = _info?.soi || '-';
     const _street = _info?.street || '-';
+
+    const _zipCode = _info?.zipCode || '';
     const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName || '' }`.trim();
-    const _zipCode = _info?.zipCode || '-';
     const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
     const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
     const _subDistrict = `${ _info?.subDistrictCode || '' } - ${ _info?.subDistrictName || '' }`.trim();
     const _customAddress1 = _info?.customAddress1 || '-';
     const _customAddress2 = _info?.customAddress2 || '-';
     const _customAddress3 = _info?.customAddress3 || '-';
+    const _isForeign = selectedCurrentThAddr?.po === Codex.Postcode.foreign;
     return (
-      <Form<CurrentAddrFormFields>
-        isEditing={ isEditingCurrentAddr }
+      <Form<StoreTypeKycCdd.CurrentAddrFormFields>
+        isEditing={isEditingCurrentAddr}
         baseColSpan={4}
-        register={ register }
-        onSubmit={ handleSubmit(onSubmitCurrentAddrForm) }
+        register={register}
+        onSubmit={handleSubmit(onSubmitCurrentAddrForm)}
         fields={[
           {
             type: 'text',
             label: 'เลขที่', viewText: _addressNo,
-            name: 'currentAddr_houseNumber'
+            name: 'currentAddr_addressNo'
           },
           {
             type: 'text',
@@ -96,12 +201,12 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
           {
             type: 'text',
             label: 'หมู่บ้าน / อาคาร', viewText: _buildingOrVillage,
-            name: 'currentAddr_building'
+            name: 'currentAddr_buildingOrVillage'
           },
           {
             type: 'text',
             label: 'ห้อง', viewText: _roomNo,
-            name: 'currentAddr_room'
+            name: 'currentAddr_roomNo'
           },
           {
             type: 'text',
@@ -116,51 +221,103 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
           {
             type: 'text',
             label: 'ถนน', viewText: _street,
-            name: 'currentAddr_road'
+            name: 'currentAddr_street'
           },
           {
-            type: 'select',
+            type: 'autocomplete',
             label: 'ประเทศ', viewText: _country,
-            name: 'currentAddr_country',
-            options: []
+            name: 'currentAddr_countryCode', value: selectedCurrentAddrCountry,
+            options: masterCountryList.data || [],
+            searchMethod: 'contain',
+            onSelect: (selectedItem: ComboBoxWrapperOption) => {
+              const isForeign = selectedItem.value !== '000';
+              setSelectedCurrentAddrCountry(selectedItem);
+              if(isForeign) {
+                setSelectedCurrentThAddr(addressForeignOption);
+                setValue('currentAddr_zipCode', addressForeignOption.po);
+                setValue('currentAddr_provinceCode', addressForeignOption.p);
+                setValue('currentAddr_districtCode', addressForeignOption.d);
+                setValue('currentAddr_subDistrictCode', addressForeignOption.s);
+              }
+            }
           },
           {
-            type: 'text',
+            type: 'autocomplete', isAddress: true,
             label: 'รหัสไปรษณีย์', viewText: _zipCode,
-            name: 'currentAddr_postcode'
+            name: 'currentAddr_zipCode', value: selectedCurrentThAddr,
+            options: thaiAddrInfo.data || [], optionSearchKey: 'po',
+            getOptionKey: (item) => item.value,
+            getOptionLabel: (item) => item.po,
+            onSelect: (selectedItem: ThaiAddrInfo) => {
+              setSelectedCurrentThAddr(selectedItem);
+              setValue('currentAddr_zipCode', selectedItem.po);
+              setValue('currentAddr_provinceCode', selectedItem.p);
+              setValue('currentAddr_districtCode', selectedItem.d);
+              setValue('currentAddr_subDistrictCode', selectedItem.s);
+            }
           },
           {
-            type: 'select',
+            type: 'autocomplete', isAddress: true,
             label: 'จังหวัด', viewText: _province,
-            name: 'currentAddr_province', disabled: false,
-            options: []
+            name: 'currentAddr_provinceCode', value: selectedCurrentThAddr,
+            isHidden: _isForeign,
+            options: thaiAddrInfo.data || [], optionSearchKey: 'p',
+            getOptionKey: (item) => item.value,
+            getOptionLabel: (item) => item.pName,
+            onSelect: (selectedItem: ThaiAddrInfo) => {
+              setSelectedCurrentThAddr(selectedItem);
+              setValue('currentAddr_zipCode', selectedItem.po);
+              setValue('currentAddr_provinceCode', selectedItem.p);
+              setValue('currentAddr_districtCode', selectedItem.d);
+              setValue('currentAddr_subDistrictCode', selectedItem.s);
+            }
           },
           {
-            type: 'select',
+            type: 'autocomplete', isAddress: true,
             label: 'อำเภอ / เขต', viewText: _district,
-            name: 'currentAddr_district', disabled: true,
-            options: []
+            name: 'currentAddr_districtCode', value: selectedCurrentThAddr,
+            isHidden: _isForeign,
+            options: thaiAddrInfo.data || [], optionSearchKey: 'd',
+            getOptionKey: (item) => item.value,
+            getOptionLabel: (item) => item.dName,
+            onSelect: (selectedItem: ThaiAddrInfo) => {
+              setSelectedCurrentThAddr(selectedItem);
+              setValue('currentAddr_zipCode', selectedItem.po);
+              setValue('currentAddr_provinceCode', selectedItem.p);
+              setValue('currentAddr_districtCode', selectedItem.d);
+              setValue('currentAddr_subDistrictCode', selectedItem.s);
+            }
           },
           {
-            type: 'select',
+            type: 'autocomplete', isAddress: true,
             label: 'ตำบล / แขวง', viewText: _subDistrict,
-            name: 'currentAddr_subDistrict', disabled: true,
-            options: []
+            name: 'currentAddr_subDistrictCode', value: selectedCurrentThAddr,
+            isHidden: _isForeign,
+            options: thaiAddrInfo.data || [], optionSearchKey: 's',
+            getOptionKey: (item) => item.value,
+            getOptionLabel: (item) => item.sName,
+            onSelect: (selectedItem: ThaiAddrInfo) => {
+              setSelectedCurrentThAddr(selectedItem);
+              setValue('currentAddr_zipCode', selectedItem.po);
+              setValue('currentAddr_provinceCode', selectedItem.p);
+              setValue('currentAddr_districtCode', selectedItem.d);
+              setValue('currentAddr_subDistrictCode', selectedItem.s);
+            }
           },
           {
             type: 'text',
             label: 'ที่อยู่ 1', viewText: _customAddress1,
-            name: 'currentAddr_addr1'
+            name: 'currentAddr_customAddress1', isHidden: !_isForeign
           },
           {
             type: 'text',
             label: 'ที่อยู่ 2', viewText: _customAddress2,
-            name: 'currentAddr_addr2'
+            name: 'currentAddr_customAddress2', isHidden: !_isForeign
           },
           {
             type: 'text',
             label: 'ที่อยู่ 3', viewText: _customAddress3,
-            name: 'currentAddr_addr3'
+            name: 'currentAddr_customAddress3', isHidden: !_isForeign
           }
         ]}
       />
@@ -168,7 +325,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
   }
 
   const renderFormWorkAddress = () => {
-    const { register, handleSubmit } = workAddrHookForm;
+    const { register, handleSubmit, setValue } = workAddrHookForm;
     const _info = addressList?.workAddr;
     const _addressNo = _info?.addressNo || '-';
     const _moo = _info?.moo || '-';
@@ -177,25 +334,26 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const _floor = _info?.floor || '-';
     const _soi = _info?.soi || '-';
     const _street = _info?.street || '-';
-    const _country = `${ _info?.countryCode || '' } - ${ _info?.countryName || '' }`.trim();
+    const _country = `${_info?.countryCode || ''} - ${_info?.countryName || ''}`.trim();
     const _zipCode = _info?.zipCode || '-';
-    const _province = `${ _info?.provinceCode || '' } - ${ _info?.provinceName || '' }`.trim();
-    const _district = `${ _info?.districtCode || '' } - ${ _info?.districtName || '' }`.trim();
-    const _subDistrict = `${ _info?.subDistrictCode || '' } - ${ _info?.subDistrictCode || '' }`.trim();
+    const _province = `${_info?.provinceCode || ''} - ${_info?.provinceName || ''}`.trim();
+    const _district = `${_info?.districtCode || ''} - ${_info?.districtName || ''}`.trim();
+    const _subDistrict = `${_info?.subDistrictCode || ''} - ${_info?.subDistrictCode || ''}`.trim();
     const _customAddress1 = _info?.customAddress1 || '-';
     const _customAddress2 = _info?.customAddress2 || '-';
     const _customAddress3 = _info?.customAddress3 || '-';
+    const _isForeign = selectedWorkThAddr?.po === Codex.Postcode.foreign || false;
     return (
-      <Form<WorkAddrFormFields>
-        isEditing={ isEditingWorkAddr }
+      <Form<StoreTypeKycCdd.WorkAddrFormFields>
+        isEditing={isEditingWorkAddr}
         baseColSpan={4}
-        register={ register }
-        onSubmit={ handleSubmit(onSubmitWorkAddrForm) }
+        register={register}
+        onSubmit={handleSubmit(onSubmitWorkAddrForm)}
         fields={[
           {
             type: 'text',
             label: 'เลขที่', viewText: _addressNo,
-            name: 'workAddr_houseNumber'
+            name: 'workAddr_addressNo'
           },
           {
             type: 'text',
@@ -205,12 +363,12 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
           {
             type: 'text',
             label: 'หมู่บ้าน / อาคาร', viewText: _buildingOrVillage,
-            name: 'workAddr_building'
+            name: 'workAddr_buildingOrVillage'
           },
           {
             type: 'text',
             label: 'ห้อง', viewText: _roomNo,
-            name: 'workAddr_room'
+            name: 'workAddr_roomNo'
           },
           {
             type: 'text',
@@ -225,51 +383,103 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
           {
             type: 'text',
             label: 'ถนน', viewText: _street,
-            name: 'workAddr_road'
+            name: 'workAddr_street'
           },
           {
-            type: 'select',
+            type: 'autocomplete',
             label: 'ประเทศ', viewText: _country,
-            name: 'workAddr_country',
-            options: []
+            name: 'workAddr_countryCode', value: selectedWorkAddrCountry,
+            options: masterCountryList.data || [],
+            searchMethod: 'contain',
+            onSelect: (selectedItem: ComboBoxWrapperOption) => {
+              const isForeign = selectedItem.value !== '000';
+              setSelectedWorkAddrCountry(selectedItem);
+              if(isForeign) {
+                setSelectedWorkThAddr(addressForeignOption);
+                setValue('workAddr_zipCode', addressForeignOption.po);
+                setValue('workAddr_provinceCode', addressForeignOption.p);
+                setValue('workAddr_districtCode', addressForeignOption.d);
+                setValue('workAddr_subDistrictCode', addressForeignOption.s);
+              }
+            }
           },
           {
-            type: 'text',
+            type: 'autocomplete', isAddress: true,
             label: 'รหัสไปรษณีย์', viewText: _zipCode,
-            name: 'workAddr_postcode'
+            name: 'workAddr_zipCode', value: selectedWorkThAddr,
+            options: thaiAddrInfo.data || [], optionSearchKey: 'po',
+            getOptionKey: (item) => item.value,
+            getOptionLabel: (item) => item.po,
+            onSelect: (selectedItem: ThaiAddrInfo) => {
+              setSelectedWorkThAddr(selectedItem);
+              setValue('workAddr_zipCode', selectedItem.po);
+              setValue('workAddr_provinceCode', selectedItem.p);
+              setValue('workAddr_districtCode', selectedItem.d);
+              setValue('workAddr_subDistrictCode', selectedItem.s);
+            }
           },
           {
-            type: 'select',
+            type: 'autocomplete', isAddress: true,
             label: 'จังหวัด', viewText: _province,
-            name: 'workAddr_province', disabled: false,
-            options: []
+            name: 'workAddr_provinceCode', value: selectedWorkThAddr,
+            isHidden: _isForeign,
+            options: thaiAddrInfo.data || [], optionSearchKey: 'p',
+            getOptionKey: (item) => item.value,
+            getOptionLabel: (item) => item.pName,
+            onSelect: (selectedItem: ThaiAddrInfo) => {
+              setSelectedWorkThAddr(selectedItem);
+              setValue('workAddr_zipCode', selectedItem.po);
+              setValue('workAddr_provinceCode', selectedItem.p);
+              setValue('workAddr_districtCode', selectedItem.d);
+              setValue('workAddr_subDistrictCode', selectedItem.s);
+            }
           },
           {
-            type: 'select',
+            type: 'autocomplete', isAddress: true,
             label: 'อำเภอ / เขต', viewText: _district,
-            name: 'workAddr_district', disabled: true,
-            options: []
+            name: 'workAddr_districtCode', value: selectedWorkThAddr,
+            isHidden: _isForeign,
+            options: thaiAddrInfo.data || [], optionSearchKey: 'd',
+            getOptionKey: (item) => item.value,
+            getOptionLabel: (item) => item.dName,
+            onSelect: (selectedItem: ThaiAddrInfo) => {
+              setSelectedWorkThAddr(selectedItem);
+              setValue('workAddr_zipCode', selectedItem.po);
+              setValue('workAddr_provinceCode', selectedItem.p);
+              setValue('workAddr_districtCode', selectedItem.d);
+              setValue('workAddr_subDistrictCode', selectedItem.s);
+            }
           },
           {
-            type: 'select',
+            type: 'autocomplete', isAddress: true,
             label: 'ตำบล / แขวง', viewText: _subDistrict,
-            name: 'workAddr_subDistrict', disabled: true,
-            options: []
+            name: 'workAddr_subDistrictCode', value: selectedWorkThAddr,
+            isHidden: _isForeign,
+            options: thaiAddrInfo.data || [], optionSearchKey: 's',
+            getOptionKey: (item) => item.value,
+            getOptionLabel: (item) => item.sName,
+            onSelect: (selectedItem: ThaiAddrInfo) => {
+              setSelectedWorkThAddr(selectedItem);
+              setValue('workAddr_zipCode', selectedItem.po);
+              setValue('workAddr_provinceCode', selectedItem.p);
+              setValue('workAddr_districtCode', selectedItem.d);
+              setValue('workAddr_subDistrictCode', selectedItem.s);
+            }
           },
           {
             type: 'text',
             label: 'ที่อยู่ 1', viewText: _customAddress1,
-            name: 'workAddr_addr1'
+            name: 'workAddr_customAddress1', isHidden: !_isForeign
           },
           {
             type: 'text',
             label: 'ที่อยู่ 2', viewText: _customAddress2,
-            name: 'workAddr_addr2'
+            name: 'workAddr_customAddress2', isHidden: !_isForeign
           },
           {
             type: 'text',
             label: 'ที่อยู่ 3', viewText: _customAddress3,
-            name: 'workAddr_addr3'
+            name: 'workAddr_customAddress3', isHidden: !_isForeign
           }
         ]}
       />
@@ -278,18 +488,14 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
   return (
     <Fragment>
-      <div className={'my-4 border-b-2 border-b-slate-500'}>
-        <strong className={'text-xl text-success-500'}>ข้อมูลที่อยู่ปัจจุบัน</strong>
-      </div>
+      <SectionSeparator title={'ข้อมูลที่อยู่ปัจจุบัน'} hasEditAction={ !isEditingCurrentAddr } onClickEdit={ toggleCurrentAddrFormMode } />
       {
         (isLoading)
           ? (<AppLoader asContentLoader />)
           : (renderFormCurrentAddress())
       }
 
-      <div className={'my-4 border-b-2 border-b-slate-500'}>
-        <strong className={'text-xl text-success-500'}>ข้อมูลที่ทำงาน</strong>
-      </div>
+      <SectionSeparator title={'ข้อมูลที่ทำงาน'} hasEditAction={ !isEditingWorkAddr } onClickEdit={ toggleWorkAddrFormMode } />
       {
         (isLoading)
           ? (<AppLoader asContentLoader />)
@@ -301,40 +507,4 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
 interface AddrInfoProps {
   corporateId: string;
-}
-
-interface CurrentAddrFormFields {
-  currentAddr_houseNumber: string;
-  currentAddr_moo: string;
-  currentAddr_building: string;
-  currentAddr_room: string;
-  currentAddr_floor: string;
-  currentAddr_soi: string;
-  currentAddr_road: string;
-  currentAddr_country: string;
-  currentAddr_postcode: string;
-  currentAddr_province: string;
-  currentAddr_district: string;
-  currentAddr_subDistrict: string;
-  currentAddr_addr1: string;
-  currentAddr_addr2: string;
-  currentAddr_addr3: string;
-}
-
-interface WorkAddrFormFields {
-  workAddr_houseNumber: string;
-  workAddr_moo: string;
-  workAddr_building: string;
-  workAddr_room: string;
-  workAddr_floor: string;
-  workAddr_soi: string;
-  workAddr_road: string;
-  workAddr_country: string;
-  workAddr_postcode: string;
-  workAddr_province: string;
-  workAddr_district: string;
-  workAddr_subDistrict: string;
-  workAddr_addr1: string;
-  workAddr_addr2: string;
-  workAddr_addr3: string;
 }
