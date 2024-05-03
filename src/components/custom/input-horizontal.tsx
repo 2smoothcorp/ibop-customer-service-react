@@ -137,7 +137,7 @@ export default function InputHorizontal({
                             className="text-lg px-4 font-semibold tracking-wide"
                         >{label} {getRequired()}</div>
                         : (
-                            <div className="w-full text-lg font-semibold text-right px-4 tracking-wide">{label} {getRequired()}</div>
+                            <div className="text-lg px-4 font-semibold tracking-wide w-full text-right">{label} {getRequired()}</div>
                         )
                 }
             </div>

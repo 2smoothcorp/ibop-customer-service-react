@@ -26,7 +26,7 @@ import { Codex } from '@/utils/codex';
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
   const [ maritalStatus, setMaritalStatus ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
+  const { register, handleSubmit, watch: watchFormValue, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
@@ -41,7 +41,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     enabled: !!corporateId
   });
 
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
 
   const fetchGetSpouse = async () => {
     const request = await fetch(`/api/kyc/get-spouse/${corporateId}`, { method: 'GET' });
@@ -62,15 +62,15 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     setFormValue('lastname', spouseLastName || '');
     setFormValue('refType', spouseReferenceType || '');
     setFormValue('refId', spouseIdentityId || '');
+    reduxDispatcher(saveSpouseInfo(getFormValue()));
     return data;
   }
 
   const toggleFormMode = () => { setIsEditing((current) => !current); }
 
   const onSubmitForm = (fieldsData: StoreTypeKycCdd.SpouseFormFields) => {
-    console.log('onSubmitForm', fieldsData)
-    // reduxDispatcher(saveSpouseInfo(fieldsData));
-    // setIsEditing(false);
+    reduxDispatcher(saveSpouseInfo(fieldsData));
+    setIsEditing(false);
   }
 
   const renderFormSpouse = () => {
@@ -94,7 +94,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
           {
             type: 'radio',
             label: 'สถานสภาพสมรส', viewText: _maritalStatusText,
-            name: 'maritalStatus', value: getFormValue('maritalStatus'),
+            name: 'maritalStatus', value: watchFormValue('maritalStatus'),
             options: [
               { label: 'โสด', value: Codex.MaritaiStatus.single },
               { label: 'สมรส', value: Codex.MaritaiStatus.married }
@@ -120,7 +120,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
           {
             type: 'select',
             label: 'คำนำหน้า', viewText: _titleText,
-            name: 'title', value: getFormValue('title'),
+            name: 'title', value: watchFormValue('title'),
             options: masterTitleList.data || [],
             isHidden: maritalStatus !== Codex.MaritaiStatus.married
           },

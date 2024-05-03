@@ -10,8 +10,8 @@ const initData: StoreTypeKycCdd.SliceData = {
   currentAddrInfo: {},
   workAddrInfo: {},
   spouseInfo: {},
-  beneficiaryInfo: {},
-  attorneyInfo: {}
+  // beneficiaryInfo: {},
+  // attorneyInfo: {}
 };
 
 const StoreKycCdd = createSlice({
@@ -30,12 +30,12 @@ const StoreKycCdd = createSlice({
     saveSpouseInfo: (state, action: PayloadAction<StoreTypeKycCdd.SpouseFormFields>) => {
       state.spouseInfo = action.payload;
     },
-    saveBeneficiarryInfo: (state, action: PayloadAction<StoreTypeKycCdd.BeneficiaryFormFields>) => {
-      state.beneficiaryInfo = action.payload;
-    },
-    saveAttorneyInfo: (state, action: PayloadAction<StoreTypeKycCdd.AttorneyFormFields>) => {
-      state.attorneyInfo = action.payload;
-    }
+    // saveBeneficiarryInfo: (state, action: PayloadAction<StoreTypeKycCdd.BeneficiaryFormFields>) => {
+    //   state.beneficiaryInfo = action.payload;
+    // },
+    // saveAttorneyInfo: (state, action: PayloadAction<StoreTypeKycCdd.AttorneyFormFields>) => {
+    //   state.attorneyInfo = action.payload;
+    // }
   }
 })
 
@@ -46,6 +46,6 @@ export const {
   saveCurrentAddressInfo,
   saveWorkAddressInfo,
   saveSpouseInfo,
-  saveBeneficiarryInfo,
-  saveAttorneyInfo
+  // saveBeneficiarryInfo,
+  // saveAttorneyInfo
 } = StoreKycCdd.actions;
