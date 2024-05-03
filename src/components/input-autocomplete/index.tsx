@@ -19,7 +19,10 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
   const [ inputOptions, setInputOptions ] = useState<Array<any>>([]);
   const [ isLoading, setIsLoading ] = useState(false);
 
-  useEffect(() => {}, [ props.selectedOption ]);
+  useEffect(() => {
+    const { options, selectedOption } = props;
+    setInputOptions(options.slice(0, 20));
+  }, [ props ]);
 
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
     const { name, register, registerOption } = props;
@@ -45,6 +48,7 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
 
       return _f[optionSearchKey].startsWith(text);
     });
+
     setInputOptions(_filtered);
     setIsLoading(false);
     if(onSearch) { onSearch(text); }

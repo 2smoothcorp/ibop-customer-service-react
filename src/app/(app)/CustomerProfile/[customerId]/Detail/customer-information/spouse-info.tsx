@@ -110,7 +110,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                             <>
                                 <InputHorizontal
                                     label="ประเภทหลักฐานลูกค้า"
-                                    defaultValue={data && (isEmptyStringFormApi(data.spouseReferenceType) ? data.spouseReferenceType : undefined) || undefined}
+                                    defaultValue={watch('spouseInfo.spouseReferenceType')}
                                     textShow={data && normalizationData('spouseReferenceType', data) || "-"}
                                     isEditable={isEditable}
                                     // register={register}
@@ -123,7 +123,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                 />
                                 <InputHorizontal
                                     label="เลขที่บัตร"
-                                    defaultValue={data && (isEmptyStringFormApi(data.spouseIdentityId) ? data.spouseIdentityId : undefined) || undefined}
+                                    defaultValue={watch('spouseInfo.spouseIdentityId')}
                                     textShow={data && normalizationData('spouseIdentityId', data) || "-"}
                                     isEditable={isEditable}
                                     // register={register}
@@ -132,7 +132,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                 />
                                 <InputHorizontal
                                     label="คำนำหน้า"
-                                    defaultValue={data && (isEmptyStringFormApi(data.spouseTitleCode) ? data.spouseTitleCode : undefined) || undefined}
+                                    defaultValue={watch('spouseInfo.spouseTitleCode')}
                                     textShow={data && normalizationData('spouseTitle', data) || "-"}
                                     isEditable={isEditable}
                                     // register={register}
@@ -145,7 +145,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                 />
                                 <InputHorizontal
                                     label="ชื่อคู่สมรส"
-                                    defaultValue={data && (isEmptyStringFormApi(data.spouseFirstName) ? data.spouseFirstName : undefined) || undefined}
+                                    defaultValue={watch('spouseInfo.spouseFirstName')}
                                     textShow={data && normalizationData('spouseFirstName', data) || "-"}
                                     isEditable={isEditable}
                                     // register={register}
@@ -155,7 +155,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                 />
                                 <InputHorizontal
                                     label="นามสกุลคู่สมรส"
-                                    defaultValue={data && (isEmptyStringFormApi(data.spouseLastName) ? data.spouseLastName : undefined) || undefined}
+                                    defaultValue={watch('spouseInfo.spouseLastName')}
                                     textShow={data && normalizationData('spouseLastName', data) || "-"}
                                     isEditable={isEditable}
                                     // register={register}

@@ -5,7 +5,7 @@ export interface CusomterInformationState {
     personalInfo: PersonalInfo,
     spouseInfo: SpouseInfo,
     addressByType: AddressInfo,
-    addressBycurrent: AddressInfo,
+    addressByCurrent: AddressInfo,
     occupationInfo: OccupationInfo,
     politicRelationInfo: PoliticRelationInfo,
 }
@@ -45,6 +45,7 @@ interface SpouseInfo {
 }
 
 interface AddressInfo {
+    addressType: '01' | '02' | '03' | '04',
     addressNo: string;
     moo: string;
     buildingOrVillage: string;
@@ -68,6 +69,7 @@ interface OccupationInfo {
     occupation: {
         occupationCode: string;
         occupation: string;
+        occupationDescOther: string;
         jobWorkPlace: string;
         jobPosition: string;
         jobDepartment: string;
@@ -90,7 +92,7 @@ const initialState: CusomterInformationState = {
         referenceID: '',
         riskGroup: '',
         country: '',
-        countryCode: '',
+        countryCode: '000',
         nation: '',
         nationalityCode: '',
         identityExpireDate: '',
@@ -115,6 +117,7 @@ const initialState: CusomterInformationState = {
         spouseLastName: '',
     },
     addressByType: {
+        addressType: '01',
         addressNo: '',
         moo: '',
         buildingOrVillage: '',
@@ -123,7 +126,7 @@ const initialState: CusomterInformationState = {
         soi: '',
         street: '',
         country: '',
-        countryCode: '',
+        countryCode: '000',
         zipCode: '',
         provinceCode: '',
         districtCode: '',
@@ -132,7 +135,8 @@ const initialState: CusomterInformationState = {
         customAddress2: '',
         customAddress3: '',
     },
-    addressBycurrent: {
+    addressByCurrent: {
+        addressType: '01',
         addressNo: '',
         moo: '',
         buildingOrVillage: '',
@@ -141,7 +145,7 @@ const initialState: CusomterInformationState = {
         soi: '',
         street: '',
         country: '',
-        countryCode: '',
+        countryCode: '000',
         zipCode: '',
         provinceCode: '',
         districtCode: '',
@@ -152,6 +156,7 @@ const initialState: CusomterInformationState = {
     },
     occupationInfo: {
         address: {
+            addressType: '01',
             addressNo: '',
             moo: '',
             buildingOrVillage: '',
@@ -160,7 +165,7 @@ const initialState: CusomterInformationState = {
             soi: '',
             street: '',
             country: '',
-            countryCode: '',
+            countryCode: '000',
             zipCode: '',
             provinceCode: '',
             districtCode: '',
@@ -171,6 +176,7 @@ const initialState: CusomterInformationState = {
         },
         occupation: {
             occupationCode: '',
+            occupationDescOther: '',
             occupation: '',
             jobWorkPlace: '',
             jobPosition: '',
@@ -184,19 +190,25 @@ const initialState: CusomterInformationState = {
     },
 }
 
-export const customerInfoSlice = createSlice({
+export const customerInformationSlice = createSlice({
     name: 'customer-information',
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     reducers: {
         setDataCustomerInformation: (state, action: PayloadAction<CusomterInformationState>) => {
-            state = action.payload
+            const { personalInfo, spouseInfo, addressByType, addressByCurrent, occupationInfo, politicRelationInfo } = action.payload
+            state.personalInfo = personalInfo
+            state.spouseInfo = spouseInfo
+            state.addressByType = addressByType
+            state.addressByCurrent = addressByCurrent
+            state.occupationInfo = occupationInfo
+            state.politicRelationInfo = politicRelationInfo
         }
     }
 })
 
 export const {
     setDataCustomerInformation
-} = customerInfoSlice.actions
+} = customerInformationSlice.actions
 
-export default customerInfoSlice.reducer
+export default customerInformationSlice.reducer

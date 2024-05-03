@@ -75,7 +75,6 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
     }
 
     const setDefaultData = (addressInfo: AddressInfoModel) => {
-
         setValue('addressByType.addressNo', isEmptyStringFormApi(addressInfo.addressNo) ? '' : addressInfo.addressNo || '');
         setValue('addressByType.moo', isEmptyStringFormApi(addressInfo.moo) ? '' : addressInfo.moo || '');
         setValue('addressByType.buildingOrVillage', isEmptyStringFormApi(addressInfo.buildingOrVillage) ? '' : addressInfo.buildingOrVillage || '');
@@ -106,6 +105,11 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
     }
 
     const getData = async () => {
+        if (!watch('addressByType.addressNo')) {
+            const list = getAddressBySearch('', 'postCode');
+            if (list.length > 0)
+                setAddress(list[0])
+        }
         if (data) {
             setDefaultData(data)
         }
@@ -144,66 +148,73 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                 <div className="grid grid-cols-3">
                     <InputHorizontal
                         label="เลขที่"
-                        defaultValue={data && normalizationData('addressNo', data) || "-"}
+                        defaultValue={watch("addressByType.addressNo")}
+                        textShow={data && normalizationData('addressNo', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="addressNo"
                         onChange={(value) => setValue('addressByType.addressNo', value)}
                     />
                     <InputHorizontal
                         label="หมู่ที่"
-                        defaultValue={data && normalizationData('moo', data) || "-"}
+                        defaultValue={watch("addressByType.moo")}
+                        textShow={data && normalizationData('moo', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="moo"
                         onChange={(value) => setValue('addressByType.moo', value)}
                     />
                     <InputHorizontal
                         label="หมู่บ้าน / อาคาร"
-                        defaultValue={data && normalizationData('buildingOrVillage', data) || "-"}
+                        defaultValue={watch("addressByType.buildingOrVillage")}
+                        textShow={data && normalizationData('buildingOrVillage', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="buildingOrVillage"
                         onChange={(value) => setValue('addressByType.buildingOrVillage', value)}
                     />
                     <InputHorizontal
                         label="เลขที่ห้อง"
-                        defaultValue={data && normalizationData('roomNo', data) || "-"}
+                        defaultValue={watch("addressByType.roomNo")}
+                        textShow={data && normalizationData('roomNo', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="roomNo"
                         onChange={(value) => setValue('addressByType.roomNo', value)}
                     />
                     <InputHorizontal
                         label="ชั้น"
-                        defaultValue={data && normalizationData('floor', data) || "-"}
+                        defaultValue={watch("addressByType.floor")}
+                        textShow={data && normalizationData('floor', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="floor"
                         onChange={(value) => setValue('addressByType.floor', value)}
                     />
                     <InputHorizontal
                         label="ตรอก / ซอย"
-                        defaultValue={data && normalizationData('soi', data) || "-"}
+                        defaultValue={watch("addressByType.soi")}
+                        textShow={data && normalizationData('soi', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="soi"
                         onChange={(value) => setValue('addressByType.soi', value)}
                     />
                     <InputHorizontal
                         label="ถนน"
-                        defaultValue={data && normalizationData('street', data) || "-"}
+                        defaultValue={watch("addressByType.street")}
+                        textShow={data && normalizationData('street', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="street"
                         onChange={(value) => setValue('addressByType.street', value)}
                     />
                     <InputHorizontal
                         label="ประเทศ"
-                        defaultValue={data && normalizationData('countryCode', data) || undefined}
+                        defaultValue={watch("addressByType.countryCode")}
                         textShow={data && normalizationData('country', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="countryCode"
                         isRequired
                         type="autocomplete"
@@ -220,7 +231,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         defaultValueAddress={address}
                         textShow={data && normalizationData('zipCode', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
+                        // register={register}
                         name="zipCode"
                         isRequired
                         type="addressThailand"
@@ -240,7 +251,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     label="ที่อยู่ 1"
                                     defaultValue={data && normalizationData('customAddress1', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name="customAddress1"
                                     isRequired
                                 />
@@ -248,7 +259,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     label="ที่อยู่ 2"
                                     defaultValue={data && normalizationData('customAddress2', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name="customAddress2"
                                     isRequired
                                 />
@@ -256,7 +267,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     label="ที่อยู่ 3"
                                     defaultValue={data && normalizationData('customAddress3', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name="customAddress3"
                                     isRequired
                                 />
@@ -267,7 +278,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     defaultValueAddress={address}
                                     textShow={data && normalizationData('province', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name="provinceCode"
                                     isRequired
                                     type="addressThailand"
@@ -284,7 +295,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     defaultValueAddress={address}
                                     textShow={data && normalizationData('district', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name="districtCode"
                                     isRequired
                                     type="addressThailand"
@@ -301,7 +312,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     defaultValueAddress={address}
                                     textShow={data && normalizationData('subDistrict', data) || "-"}
                                     isEditable={isEditable}
-                                    register={register}
+                                    // register={register}
                                     name="subDistrictCode"
                                     isRequired
                                     type="addressThailand"
