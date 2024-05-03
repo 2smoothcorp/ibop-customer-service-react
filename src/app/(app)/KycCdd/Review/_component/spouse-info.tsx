@@ -22,7 +22,7 @@ import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/custom
 
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit } = useForm<StoreTypeKycCdd.SpouseFormFields>({
+  const { register, handleSubmit, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
@@ -42,6 +42,17 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
 
     const { data } = response;
     if(!data) { return ({}); }
+
+    const {
+      familyStatus,
+      spouseFirstName, spouseLastName,
+      spouseReferenceType, spouseIdentityId
+    } = data;
+    setFormValue('maritalStatus', familyStatus || '');
+    setFormValue('firstname', spouseFirstName || '');
+    setFormValue('lastname', spouseLastName || '');
+    setFormValue('refType', spouseReferenceType || '');
+    setFormValue('refId', spouseIdentityId || '');
     return data;
   }
 

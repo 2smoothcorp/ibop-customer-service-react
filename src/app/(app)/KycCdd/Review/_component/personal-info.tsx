@@ -35,7 +35,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
   const [ selectedOccupation, setSelectedOccupation ] = useState<ComboBoxWrapperOption>();
   const [ selectedIncomeCountry, setSelectedIncomeCountry ] = useState<ComboBoxWrapperOption>();
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit, setValue } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
+  const { register, handleSubmit, setValue: setFormValue } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
@@ -62,7 +62,30 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     const { data } = response;
     if(!data) { return {}; }
 
-    // setValue();
+    const {
+      titleCode,
+      firstNameTh, lastNameTh,
+      firstNameEn, lastNameEn,
+      nationalityCode,
+      occupationCode,
+      incomeRateCode,
+      incomeSourceCode,
+      incomeCountry,
+      investmentYear,
+      investmentPurposeCode
+    } = data;
+    setFormValue('titleTh', titleCode || '');
+    setFormValue('firstnameTh', firstNameTh || '');
+    setFormValue('lastnameTh', lastNameTh || '');
+    setFormValue('firstnameEn', firstNameEn || '');
+    setFormValue('lastnameEn', lastNameEn || '');
+    setFormValue('nationality', nationalityCode || '');
+    setFormValue('occupation', occupationCode || '');
+    setFormValue('incomeRate', incomeRateCode || '');
+    setFormValue('incomeSource', (incomeSourceCode || '').split(','));
+    setFormValue('incomeCountry', incomeCountry || '');
+    setFormValue('exp', investmentYear || 0);
+    setFormValue('investmentPurpose', (investmentPurposeCode || '').split(','));
     return data;
   }
 
@@ -133,7 +156,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             searchMethod: 'contain',
             onSelect: (selectedItem: ComboBoxWrapperOption) => {
               setSelectedOccupation(selectedItem);
-              setValue('occupation', selectedItem.value);
+              setFormValue('occupation', selectedItem.value);
             }
           },
           {
@@ -157,7 +180,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             searchMethod: 'contain',
             onSelect: (selectedItem: ComboBoxWrapperOption) => {
               setSelectedIncomeCountry(selectedItem);
-              setValue('incomeCountry', selectedItem.value);
+              setFormValue('incomeCountry', selectedItem.value);
             }
           },
           {

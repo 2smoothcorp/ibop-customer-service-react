@@ -65,6 +65,78 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
     const currentAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.current);
     const workAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.work);
+    if(currentAddr) {
+      const { setValue } = currentAddrHookForm;
+      const {
+        addressNo,
+        moo,
+        buildingOrVillage,
+        roomNo,
+        floor,
+        soi,
+        street,
+        countryCode,
+        zipCode,
+        provinceCode,
+        districtCode,
+        subDistrictCode,
+        customAddress1,
+        customAddress2,
+        customAddress3
+      } = currentAddr;
+      setValue('currentAddr_addressNo', addressNo || '');
+      setValue('currentAddr_moo', moo || '');
+      setValue('currentAddr_buildingOrVillage', buildingOrVillage || '');
+      setValue('currentAddr_roomNo', roomNo || '');
+      setValue('currentAddr_floor', floor || '');
+      setValue('currentAddr_soi', soi || '');
+      setValue('currentAddr_street', street || '');
+      setValue('currentAddr_countryCode', countryCode || '');
+      setValue('currentAddr_zipCode', zipCode || '');
+      setValue('currentAddr_provinceCode', provinceCode || '');
+      setValue('currentAddr_districtCode', districtCode || '');
+      setValue('currentAddr_subDistrictCode', subDistrictCode || '');
+      setValue('currentAddr_customAddress1', customAddress1 || '');
+      setValue('currentAddr_customAddress2', customAddress2 || '');
+      setValue('currentAddr_customAddress3', customAddress3 || '');
+    }
+
+    if(workAddr) {
+      const { setValue } = workAddrHookForm;
+      const {
+        addressNo,
+        moo,
+        buildingOrVillage,
+        roomNo,
+        floor,
+        soi,
+        street,
+        countryCode,
+        zipCode,
+        provinceCode,
+        districtCode,
+        subDistrictCode,
+        customAddress1,
+        customAddress2,
+        customAddress3
+      } = workAddr;
+      setValue('workAddr_addressNo', addressNo || '');
+      setValue('workAddr_moo', moo || '');
+      setValue('workAddr_buildingOrVillage', buildingOrVillage || '');
+      setValue('workAddr_roomNo', roomNo || '');
+      setValue('workAddr_floor', floor || '');
+      setValue('workAddr_soi', soi || '');
+      setValue('workAddr_street', street || '');
+      setValue('workAddr_countryCode', countryCode || '');
+      setValue('workAddr_zipCode', zipCode || '');
+      setValue('workAddr_provinceCode', provinceCode || '');
+      setValue('workAddr_districtCode', districtCode || '');
+      setValue('workAddr_subDistrictCode', subDistrictCode || '');
+      setValue('workAddr_customAddress1', customAddress1 || '');
+      setValue('workAddr_customAddress2', customAddress2 || '');
+      setValue('workAddr_customAddress3', customAddress3 || '');
+    }
+
     return ({ currentAddr: currentAddr || {}, workAddr: workAddr || {} });
   }
 

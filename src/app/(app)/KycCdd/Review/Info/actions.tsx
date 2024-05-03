@@ -24,29 +24,19 @@ export const actionRevaluation = async (input: ActionReviewInfo.Input): Promise<
   const _addrInfo: Array<KycAddressInput> = [];
   _addrInfo.push(currentAddressInfo);
   _addrInfo.push(workAddressInfo);
-  
-  const payload = JSON.stringify({
-    corporateId,
-    kycSaveCorporateIdPostRequest: {
-      kycPersonalInput: personalInfo,
-      kycAddressInputs: _addrInfo,
-      kycSpouseInput: spouseInfo
-    }
-  });
 
   try {
     const apiService = await services.getCustomerServiceApi();
-    // const result = await apiService.getKycApi().kycSaveCorporateIdPost({
-    //   corporateId,
-    //   kycSaveCorporateIdPostRequest: {
-    //     kycPersonalInput: personalInfo,
-    //     kycAddressInputs: _addrInfo,
-    //     kycSpouseInput: spouseInfo
-    //   }
-    // });
+    const result = await apiService.getKycApi().kycSaveCorporateIdPost({
+      corporateId,
+      kycSaveCorporateIdPostRequest: {
+        kycPersonalInput: personalInfo,
+        kycAddressInputs: _addrInfo,
+        kycSpouseInput: spouseInfo
+      }
+    });
 
-    // return result;
-    return ({ status: 200, message: payload, errors: null });
+    return result;
   }
   catch(err: any) {
     return ({ status: 500, message: '', errors: err });
