@@ -19,16 +19,12 @@ export default function CustomerInformation() {
 
     const customerInformation = useAppSelector(state => state.customerInformation)
 
-    // console.log(customerInformation)
-
     const useFormAll = useForm<CusomterInformationState>({
         defaultValues: customerInformation
     })
 
     const saveData = () => {
         const { getValues } = useFormAll
-        const result = getValues()
-        console.log(result)
         dispatch(setDataCustomerInformation(getValues()))
         dispatch(nextStep())
 
