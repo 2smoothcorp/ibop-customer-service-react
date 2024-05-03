@@ -106,10 +106,15 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
         );
       }
       case 'radio': {
-        const { options } = info;
+        const { options, onSelect } = info;
         return (
           <Grid item xs={ inputCol }>
-            <InputRadio row name={ name } options={ options } defaultValue={ value } register={ register } />
+            <InputRadio row name={ name }
+              options={ options }
+              defaultValue={ value }
+              // register={ register }
+              onSelectOption={ onSelect }
+            />
           </Grid>
         );
       }
@@ -241,7 +246,7 @@ export module FormInternalTypeDef {
     isHidden?: boolean;
   }
 
-  export interface WithnInputOption {
+  export interface WithInputOption {
     options: Array<InputChoiceItem>;
   }
 
@@ -255,10 +260,17 @@ export module FormInternalTypeDef {
   export interface EmptySpaceField extends BaseInputField { type: 'space'; }
   export interface TextInputField extends BaseInputField { type: 'text'; name: string; value?: string; }
   export interface NumberInputField extends BaseInputField { type: 'number'; name: string; value?: number; }
-  export interface SelectInputField extends BaseInputField, WithnInputOption { type: 'select'; name: string; value?: string; }
-  export interface CheckboxInputField extends BaseInputField, WithnInputOption { type: 'checkbox'; name: string; value?: Array<string>; }
-  export interface RadioInputField extends BaseInputField, WithnInputOption { type: 'radio'; name: string; value?: string; }
-  export interface AutoCompleteInputField extends BaseInputField, WithnInputOption {
+  export interface SelectInputField extends BaseInputField, WithInputOption { type: 'select'; name: string; value?: string; }
+  export interface CheckboxInputField extends BaseInputField, WithInputOption { type: 'checkbox'; name: string; value?: Array<string>; }
+
+  export interface RadioInputField extends BaseInputField, WithInputOption {
+    type: 'radio';
+    name: string;
+    value?: string;
+    onSelect?: (selected: string) => void;
+  }
+
+  export interface AutoCompleteInputField extends BaseInputField, WithInputOption {
     type: 'autocomplete';
     name: string;
     optionSearchKey?: string;
