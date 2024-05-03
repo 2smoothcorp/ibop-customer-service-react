@@ -271,6 +271,7 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                                     <div className="text-[18px] px-4 font-semibold tracking-wide">ที่อยู่สถานที่ทำงาน</div>
                                 </div>
                                 <InputRadio
+                                    disabled={!isEditable}
                                     name="addressType"
                                     defaultValue={watch('occupationInfo.address.addressType')}
                                     onChange={(value) => setValue('occupationInfo.address.addressType', value as "01" | "02" | "03", { shouldDirty: true })}

@@ -2,8 +2,9 @@
 
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
+import InputText from "@/components/custom/input-text";
 import HeaderTitle from "@/components/navbar/header-title";
-import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
+import { useMasterDataRelationCustom } from "@/hooks/master-data-relation";
 import { CustomerContractState } from "@/libs/redux/store/customer-contract-slice";
 import { EmergencyContactInfoModel, EmergencyContactInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi } from "@/utils/function";
@@ -17,7 +18,7 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
 
-    const { data: titles, isLoading: isLoadingTitles } = useMasterDataTitlesCustom();
+    const { data: relation, isLoading: isLoadingRelation } = useMasterDataRelationCustom();
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['contractEmergency', params.customerId],
@@ -38,6 +39,12 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
             case 'emergencyContactId':
                 return emergencyContactInfo.emergencyContactId;
 
+            case 'relationshipOther':
+                return emergencyContactInfo.relationshipOther;
+
+            case 'relationshipCode':
+                return handleEmptyStringFormApi(emergencyContactInfo.relationshipCode);
+
             default:
                 return '-';
         }
@@ -50,6 +57,8 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
             setValue(`contractEmergency.${i}.name`, normalizationData('name', item));
             setValue(`contractEmergency.${i}.mobile`, normalizationData('mobile', item));
             setValue(`contractEmergency.${i}.relationship`, normalizationData('relationship', item));
+            setValue(`contractEmergency.${i}.relationshipCode`, normalizationData('relationshipCode', item));
+            setValue(`contractEmergency.${i}.relationshipOther`, normalizationData('relationshipOther', item));
         }
     }
 
@@ -114,13 +123,24 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
                                     < InputHorizontal
                                         label="ความสัมพันธ์"
                                         placeholder="โปรดเลือกความสัมพันธ์"
-                                        defaultValue={watch(`contractEmergency.${index}.relationship`)}
+                                        defaultValue={watch(`contractEmergency.${index}.relationshipCode`)}
                                         isEditable={isEditable}
                                         name={`relationship${index}`}
                                         type="autocomplete"
-                                        list={titles}
+                                        list={relation}
                                         isRequired
-                                        onChange={(value) => setValue(`contractEmergency.${index}.relationship`, value, { shouldDirty: true })}
+                                        onChange={(item) => {
+                                            setValue(`contractEmergency.${index}.relationshipCode`, item, { shouldDirty: true })
+                                        }}
+                                        rightInputComponent={
+                                            watch(`contractEmergency.${index}.relationshipCode`) === '4' && (
+                                                <InputText
+                                                    className="ml-2"
+                                                    name={`contractEmergency.${index}.relationshipOther`}
+                                                    defaultValue={watch(`contractEmergency.${index}.relationshipOther`)}
+                                                />
+                                            )
+                                        }
                                     />
                                 </div>
                             )

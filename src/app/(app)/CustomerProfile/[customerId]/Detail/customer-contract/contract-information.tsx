@@ -199,24 +199,19 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                     <ContentLabel
                         label="ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย์ (กรุณาระบุข้อความให้ครบถ้วนแม้ว่าท่านจะได้ระบุวิธีการรับเอกสารทางอีเมล)"
                     >
-                        {
-                            isEditable ? (
-                                <InputRadio
-                                    name={"politicianRelation"}
-                                    defaultValue={watch('contractInformation.docReceiveAddressType') || '04'}
-                                    list={[
-                                        { value: "01", label: "ตามประเภทหลักฐาน" },
-                                        { value: "02", label: "ตามที่อยู่ปัจจุบัน" },
-                                        { value: "03", label: "ตามที่อยู่สถานที่ทำงาน" },
-                                        { value: "04", label: "อื่นๆ (โปรดระบุข้อมูลด้านล่างนี้)" }
+                        <InputRadio
+                            disabled={!isEditable}
+                            name={"politicianRelation"}
+                            defaultValue={watch('contractInformation.docReceiveAddressType') || '04'}
+                            list={[
+                                { value: "01", label: "ตามประเภทหลักฐาน" },
+                                { value: "02", label: "ตามที่อยู่ปัจจุบัน" },
+                                { value: "03", label: "ตามที่อยู่สถานที่ทำงาน" },
+                                { value: "04", label: "อื่นๆ (โปรดระบุข้อมูลด้านล่างนี้)" }
 
-                                    ]}
-                                    onChange={(value) => setValue('contractInformation.docReceiveAddressType', value, { shouldDirty: true })}
-                                />
-                            ) : 'ที่อยู่ปัจจุบันที่ติดต่อได้'
-                            //  data && normalizationData('docReceiveChannel', data) || "-"
-                        }
-
+                            ]}
+                            onChange={(value) => setValue('contractInformation.docReceiveAddressType', value, { shouldDirty: true })}
+                        />
                     </ContentLabel>
                 </div>
                 {

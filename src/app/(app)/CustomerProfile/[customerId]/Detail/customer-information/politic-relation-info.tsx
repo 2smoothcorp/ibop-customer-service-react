@@ -42,6 +42,7 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
     }
 
     const getData = async () => {
+        console.log("getData")
         if (data) {
             setDefaultData(data)
         }
@@ -50,6 +51,7 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
             try {
                 const request = await fetch(`/api/customer-profile/politic-relation-info/${customerId}`, { method: 'GET' });
                 const response: PoliticRelationInfoResponseDataResponse = await request.json();
+                console.log(response)
                 if (response.status == 200) {
                     const { data } = response;
                     if (data && data.politicRelationInfo) {

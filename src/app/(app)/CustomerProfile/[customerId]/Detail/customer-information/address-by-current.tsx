@@ -165,6 +165,7 @@ export default function AddressByCurrent({ useForm }: { useForm: UseFormReturn<C
                 <div className="w-full px-10">
                     <InputRadio
                         defaultValue={watch("addressByCurrent.addressType")}
+                        disabled={!isEditable}
                         onChange={(value) => setValue('addressByCurrent.addressType', value as "01" | "02")}
                         name={"addressType"}
                         list={[

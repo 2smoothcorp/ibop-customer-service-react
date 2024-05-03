@@ -38,6 +38,8 @@ interface ContractEmergency {
     name: string;
     mobile: string;
     relationship: string;
+    relationshipCode: string;
+    relationshipOther: string;
 }
 
 // Define the initial state using that type
@@ -74,18 +76,24 @@ const initialState: CustomerContractState = {
             name: "",
             mobile: "",
             relationship: "",
+            relationshipCode: "",
+            relationshipOther: "",
         },
         {
             emergencyContactId: -1,
             name: "",
             mobile: "",
             relationship: "",
+            relationshipCode: "",
+            relationshipOther: "",
         },
         {
             emergencyContactId: -1,
             name: "",
             mobile: "",
             relationship: "",
+            relationshipCode: "",
+            relationshipOther: "",
         },
     ],
 }

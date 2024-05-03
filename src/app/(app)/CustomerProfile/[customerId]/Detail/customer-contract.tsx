@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { CustomerContractState } from "@/libs/redux/store/customer-contract-slice";
+import { CustomerContractState, setDataCustomerContract } from "@/libs/redux/store/customer-contract-slice";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { Button } from "@mui/material";
 import { useSearchParams } from "next/navigation";
@@ -18,6 +18,12 @@ export default function CustomerContract() {
         defaultValues: customerContract
     })
 
+    const saveData = () => {
+        const { getValues } = useFormAll
+        dispatch(setDataCustomerContract(getValues()))
+        dispatch(nextStep())
+    }
+
     return (
         <>
             <ContractInformation useForm={useFormAll} />
@@ -25,7 +31,7 @@ export default function CustomerContract() {
             {
                 isEditable && <div className="flex justify-end gap-4 mt-6">
                     <Button variant="contained" color="error" onClick={() => dispatch(prevStep())}>ย้อนกลับ</Button>
-                    <Button variant="contained" onClick={() => dispatch(nextStep())}>ถัดไป</Button>
+                    <Button variant="contained" onClick={saveData}>ถัดไป</Button>
                 </div>
             }
 
