@@ -4,7 +4,7 @@ export class Constants {
     public static AppName: string = 'Customer Service';
 
     /** @note required to be double-quote, due to deployment reason */
-    public static AppVersion: string = "0.0.26";
+    public static AppVersion: string = "0.0.27";
 
     public static readonly APIUrl: string = process.env.BASE_URL || '';
     public static readonly VaultUrl: string = process.env.VAULT_URL || '';
