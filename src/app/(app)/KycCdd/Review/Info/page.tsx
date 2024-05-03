@@ -76,12 +76,12 @@ const Page = (): ReactElement => {
       currentAddressInfo: currentAddrInfo,
       workAddressInfo: workAddrInfo,
       spouseInfo: {
-        familyStatus: spouseInfo.maritalStatus,
-        spouseTitleCode: spouseInfo.title,
-        spouseFirstName: spouseInfo.firstname,
-        spouseLastName: spouseInfo.lastname,
-        spouseReferenceType: spouseInfo.refType,
-        spouseIdentityId: spouseInfo.refId
+        familyStatus: `${ spouseInfo.maritalStatus || '' }`,
+        spouseTitleCode: `${ spouseInfo.title || '' }`,
+        spouseFirstName: `${ spouseInfo.firstname || '' }`,
+        spouseLastName: `${ spouseInfo.lastname || '' }`,
+        spouseReferenceType: `${ spouseInfo.refType || '' }`,
+        spouseIdentityId: `${ spouseInfo.refId || '' }`
       }
     });
   }
