@@ -264,7 +264,6 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                                 <div className="w-[16.66%] text-right align-middle my-auto">
                                     <div className="text-[18px] px-4 font-semibold tracking-wide">ที่อยู่สถานที่ทำงาน</div>
                                 </div>
-                                {watch('occupationInfo.address.addressType')}
                                 <InputRadio
                                     name="addressType"
                                     defaultValue={watch('occupationInfo.address.addressType')}
