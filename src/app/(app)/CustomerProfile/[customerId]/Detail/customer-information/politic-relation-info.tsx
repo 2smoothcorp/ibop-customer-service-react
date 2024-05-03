@@ -5,14 +5,14 @@ import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import InputRadio from "@/components/custom/input-radio";
 import HeaderTitle from "@/components/navbar/header-title";
-import { CusomterInformationState } from "@/libs/redux/store/customer-information-slice";
+import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { PoliticRelationInfoModel, PoliticRelationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
 
-export default function PoliticRelationInfo({ useForm }: { useForm: UseFormReturn<CusomterInformationState, any, undefined> }) {
+export default function PoliticRelationInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
     const { setValue, watch } = useForm;
     const params = useParams()
     const searchParams = useSearchParams()
@@ -88,8 +88,8 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
                                     { label: "ไม่ใช่", value: 'false' },
                                 ]}
                                 onChange={(value) => {
-                                    setValue('politicRelationInfo.politicianRelationString', value);
-                                    setValue('politicRelationInfo.politicianRelation', value == 'true')
+                                    setValue('politicRelationInfo.politicianRelationString', value, { shouldDirty: true });
+                                    setValue('politicRelationInfo.politicianRelation', value == 'true', { shouldDirty: true })
                                 }}
                             />
                             : data && data.politicianRelation ? `ใช่` : "ไม่ใช่"
@@ -105,7 +105,7 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
                             defaultValue={watch('politicRelationInfo.politicianPosition')}
                             textShow={data && data.politicianPosition || "-"}
                             isEditable={isEditable}
-                            onChange={(value) => setValue('politicRelationInfo.politicianPosition', value)}
+                            onChange={(value) => setValue('politicRelationInfo.politicianPosition', value, { shouldDirty: true })}
                             name="politicianPosition"
                             isRequired
                             type="text"

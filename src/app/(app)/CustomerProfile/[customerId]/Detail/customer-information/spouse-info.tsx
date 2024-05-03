@@ -5,14 +5,14 @@ import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataReferenceCustom } from "@/hooks/master-data-reference";
 import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
-import { CusomterInformationState } from "@/libs/redux/store/customer-information-slice";
+import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { SpouseInfoModel, SpouseInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
 
-export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<CusomterInformationState, any, undefined> }) {
+export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
     const { setValue, watch } = useForm;
     const params = useParams()
     const searchParams = useSearchParams()
@@ -118,7 +118,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                     isRequired
                                     type="autocomplete"
                                     list={reference}
-                                    onChange={(value) => setValue('spouseInfo.spouseTitleCode', value)}
+                                    onChange={(value) => setValue('spouseInfo.spouseTitleCode', value, { shouldDirty: true })}
                                     placeholder="โปรดเลือกประเภทหลักฐานลูกค้า"
                                 />
                                 <InputHorizontal
@@ -128,6 +128,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                     isEditable={isEditable}
                                     // register={register}
                                     name="spouseIdentityId"
+                                    onChange={(value) => setValue('spouseInfo.spouseIdentityId', value, { shouldDirty: true })}
                                     isRequired
                                 />
                                 <InputHorizontal
@@ -140,7 +141,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                     isRequired
                                     type="autocomplete"
                                     list={titles}
-                                    onChange={(value) => setValue('spouseInfo.spouseTitleCode', value)}
+                                    onChange={(value) => setValue('spouseInfo.spouseTitleCode', value, { shouldDirty: true })}
                                     placeholder="โปรดเลือกคำนำหน้า"
                                 />
                                 <InputHorizontal
@@ -151,7 +152,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                     // register={register}
                                     name="spouseFirstName"
                                     isRequired
-                                    onChange={(value) => setValue('spouseInfo.spouseFirstName', value)}
+                                    onChange={(value) => setValue('spouseInfo.spouseFirstName', value, { shouldDirty: true })}
                                 />
                                 <InputHorizontal
                                     label="นามสกุลคู่สมรส"
@@ -161,7 +162,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Cusomte
                                     // register={register}
                                     name="spouseLastName"
                                     isRequired
-                                    onChange={(value) => setValue('spouseInfo.spouseLastName', value)}
+                                    onChange={(value) => setValue('spouseInfo.spouseLastName', value, { shouldDirty: true })}
                                 />
                             </>
                         )

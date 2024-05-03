@@ -5,7 +5,7 @@ import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
-import { CusomterInformationState } from "@/libs/redux/store/customer-information-slice";
+import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { AddressBySearchModeProps, AddressBySearchProps, getAddressBySearch, handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +13,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
-export default function AddressByType({ useForm }: { useForm: UseFormReturn<CusomterInformationState, any, undefined> }) {
+export default function AddressByType({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
     const { register, setValue, watch } = useForm;
     const [thailandAddress, setThailandAddress] = useState<AddressBySearchProps[]>([]);
     const [address, setAddress] = useState<AddressBySearchProps | undefined>();
@@ -134,6 +134,13 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
         return null
     }
 
+    const setAddresHook = (address: AddressBySearchProps) => {
+        setValue('addressByType.zipCode', address.value.postCode, { "shouldDirty": true });
+        setValue('addressByType.provinceCode', address.value.provinceCode, { "shouldDirty": true });
+        setValue('addressByType.districtCode', address.value.districtCode, { "shouldDirty": true });
+        setValue('addressByType.subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
+    }
+
     return (
         <>
             <HeaderTitle
@@ -153,7 +160,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         isEditable={isEditable}
                         // register={register}
                         name="addressNo"
-                        onChange={(value) => setValue('addressByType.addressNo', value)}
+                        onChange={(value) => setValue('addressByType.addressNo', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="หมู่ที่"
@@ -162,7 +169,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         isEditable={isEditable}
                         // register={register}
                         name="moo"
-                        onChange={(value) => setValue('addressByType.moo', value)}
+                        onChange={(value) => setValue('addressByType.moo', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="หมู่บ้าน / อาคาร"
@@ -171,7 +178,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         isEditable={isEditable}
                         // register={register}
                         name="buildingOrVillage"
-                        onChange={(value) => setValue('addressByType.buildingOrVillage', value)}
+                        onChange={(value) => setValue('addressByType.buildingOrVillage', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="เลขที่ห้อง"
@@ -180,7 +187,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         isEditable={isEditable}
                         // register={register}
                         name="roomNo"
-                        onChange={(value) => setValue('addressByType.roomNo', value)}
+                        onChange={(value) => setValue('addressByType.roomNo', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="ชั้น"
@@ -189,7 +196,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         isEditable={isEditable}
                         // register={register}
                         name="floor"
-                        onChange={(value) => setValue('addressByType.floor', value)}
+                        onChange={(value) => setValue('addressByType.floor', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="ตรอก / ซอย"
@@ -198,7 +205,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         isEditable={isEditable}
                         // register={register}
                         name="soi"
-                        onChange={(value) => setValue('addressByType.soi', value)}
+                        onChange={(value) => setValue('addressByType.soi', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="ถนน"
@@ -207,7 +214,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         isEditable={isEditable}
                         // register={register}
                         name="street"
-                        onChange={(value) => setValue('addressByType.street', value)}
+                        onChange={(value) => setValue('addressByType.street', value, { shouldDirty: true })}
                     />
                     <InputHorizontal
                         label="ประเทศ"
@@ -221,7 +228,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         list={countries}
                         onChange={(value) => {
                             if (value !== watch("addressByType.countryCode")) {
-                                setValue('addressByType.countryCode', value);
+                                setValue('addressByType.countryCode', value, { shouldDirty: true });
                             }
                         }}
                         placeholder="โปรดเลือกประเทศ"
@@ -238,7 +245,10 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                         addressList={thailandAddress}
                         placeholder="โปรดเลือกประเทศ"
                         addressOptionType="postCode"
-                        onChangeAddress={(item) => { setAddress(item) }}
+                        onChangeAddress={(item) => {
+                            setAddress(item)
+                            setAddresHook(item);
+                        }}
                         onChange={(text) => {
                             getAddress(text, 'postCode')
                         }}
@@ -249,25 +259,28 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                             <>
                                 <InputHorizontal
                                     label="ที่อยู่ 1"
-                                    defaultValue={data && normalizationData('customAddress1', data) || "-"}
+                                    defaultValue={data && normalizationData('customAddress1', data) || ""}
+                                    textShow={data && normalizationData('customAddress1', data) || "-"}
+                                    onChange={(value) => setValue('addressByType.customAddress1', value, { shouldDirty: true })}
                                     isEditable={isEditable}
-                                    // register={register}
                                     name="customAddress1"
                                     isRequired
                                 />
                                 <InputHorizontal
                                     label="ที่อยู่ 2"
-                                    defaultValue={data && normalizationData('customAddress2', data) || "-"}
+                                    defaultValue={data && normalizationData('customAddress2', data) || ""}
+                                    textShow={data && normalizationData('customAddress2', data) || "-"}
+                                    onChange={(value) => setValue('addressByType.customAddress2', value, { shouldDirty: true })}
                                     isEditable={isEditable}
-                                    // register={register}
                                     name="customAddress2"
                                     isRequired
                                 />
                                 <InputHorizontal
                                     label="ที่อยู่ 3"
                                     defaultValue={data && normalizationData('customAddress3', data) || "-"}
+                                    textShow={data && normalizationData('customAddress3', data) || "-"}
+                                    onChange={(value) => setValue('addressByType.customAddress3', value, { shouldDirty: true })}
                                     isEditable={isEditable}
-                                    // register={register}
                                     name="customAddress3"
                                     isRequired
                                 />
@@ -285,7 +298,10 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     addressList={thailandAddress}
                                     placeholder="โปรดเลือกจังหวัด"
                                     addressOptionType="province"
-                                    onChangeAddress={(item) => { setAddress(item) }}
+                                    onChangeAddress={(item) => {
+                                        setAddress(item)
+                                        setAddresHook(item);
+                                    }}
                                     onChange={(text) => {
                                         getAddress(text, 'province')
                                     }}
@@ -302,7 +318,10 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     addressList={thailandAddress}
                                     placeholder="โปรดเลือกอำเภอ / เขต"
                                     addressOptionType="district"
-                                    onChangeAddress={(item) => { setAddress(item) }}
+                                    onChangeAddress={(item) => {
+                                        setAddress(item);
+                                        setAddresHook(item);
+                                    }}
                                     onChange={(text) => {
                                         getAddress(text, 'district')
                                     }}
@@ -319,7 +338,10 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cuso
                                     addressList={thailandAddress}
                                     placeholder="โปรดเลือกตำบล / แขวง"
                                     addressOptionType="subDistrict"
-                                    onChangeAddress={(item) => { setAddress(item) }}
+                                    onChangeAddress={(item) => {
+                                        setAddress(item);
+                                        setAddresHook(item);
+                                    }}
                                     onChange={(text) => {
                                         getAddress(text, 'subDistrict')
                                     }}

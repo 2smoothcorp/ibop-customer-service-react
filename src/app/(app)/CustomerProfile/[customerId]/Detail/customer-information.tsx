@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { CusomterInformationState, setDataCustomerInformation } from "@/libs/redux/store/customer-information-slice";
+import { CustomerInformationState, setDataCustomerInformation } from "@/libs/redux/store/customer-information-slice";
 import { nextStep } from "@/libs/redux/store/customer-profile-slice";
 import { Button } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -19,7 +19,7 @@ export default function CustomerInformation() {
 
     const customerInformation = useAppSelector(state => state.customerInformation)
 
-    const useFormAll = useForm<CusomterInformationState>({
+    const useFormAll = useForm<CustomerInformationState>({
         defaultValues: customerInformation
     })
 
@@ -27,7 +27,6 @@ export default function CustomerInformation() {
         const { getValues } = useFormAll
         dispatch(setDataCustomerInformation(getValues()))
         dispatch(nextStep())
-
     }
 
     return (
