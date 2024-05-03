@@ -190,7 +190,7 @@ const initialState: CusomterInformationState = {
     },
 }
 
-export const customerInfoSlice = createSlice({
+export const customerInformationSlice = createSlice({
     name: 'customer-information',
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
@@ -209,6 +209,6 @@ export const customerInfoSlice = createSlice({
 
 export const {
     setDataCustomerInformation
-} = customerInfoSlice.actions
+} = customerInformationSlice.actions
 
-export default customerInfoSlice.reducer
+export default customerInformationSlice.reducer
