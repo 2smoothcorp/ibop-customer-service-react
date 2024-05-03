@@ -40,12 +40,14 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
   const beneficiaryInfo = useQuery({
     queryFn: () => fetchGetBeneficiary(),
-    queryKey: ['kyccdd-beneficiary-info', corporateId]
+    queryKey: ['kyccdd-beneficiary-info', corporateId],
+    enabled: !!corporateId
   });
   
   const attorneyInfo = useQuery({
     queryFn: () => fetchGetAttorney(),
-    queryKey: ['kyccdd-attorney-info', corporateId]
+    queryKey: ['kyccdd-attorney-info', corporateId],
+    enabled: !!corporateId
   });
 
   useEffect(() => {}, []);

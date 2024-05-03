@@ -49,7 +49,8 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
   const { data: addressList, isLoading } = useQuery({
     queryFn: () => fetchGetAddress(),
-    queryKey: ['kyccdd-address-info', corporateId]
+    queryKey: ['kyccdd-address-info', corporateId],
+    enabled: !!corporateId
   });
 
   useEffect(() => {

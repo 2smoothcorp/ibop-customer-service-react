@@ -14,6 +14,7 @@ import {
   useState
 } from 'react';
 
+import { InputText } from '@/components/input-text';
 import { InputCheckbox } from '@/components/input-checkbox';
 import { Stepper } from '@/components/stepper';
 import { useAppSelector } from '@/libs/redux/hook';
@@ -43,18 +44,10 @@ const Page = (): ReactElement => {
     setStepIndex(index % stepData.length);
   }
 
-  const onChangeCorporateId = (evt: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = evt.target.value;
-    setInputCorp(inputValue);
-  }
-
+  const onChangeCorporateId = (changedText: string) => { setInputCorp(changedText); }
   const onClickSearch = () => { setCorporateId(inputCorp || ''); }
   const onClickClear = () => { setInputCorp(''); setCorporateId(''); }
-
-  const onCheckTruthConfirm = (checked: boolean) => {
-    console.log('onCheckTruthConfirm', checked)
-    setIsTruthConfirm(checked);
-  }
+  const onCheckTruthConfirm = (checked: boolean) => { setIsTruthConfirm(checked); }
 
   const onClickPrevStep = () => {
     const { back } = router;
@@ -102,9 +95,14 @@ const Page = (): ReactElement => {
               <strong>Corporate ID</strong>
             </Grid>
             <Grid item>
-              <input
+              {/* <input
                 type={'text'}
                 className={`w-full px-3 py-2 h-10 bg-[#D9D9D9] border border-slate-300 rounded-md text-xl shadow-sm placeholder-slate-400`}
+                onChange={ onChangeCorporateId }
+              /> */}
+              <InputText
+                name={'corporateId'}
+                disabled={ stepIndex !== 0 }
                 onChange={ onChangeCorporateId }
               />
             </Grid>

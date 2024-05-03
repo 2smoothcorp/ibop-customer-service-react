@@ -50,7 +50,8 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
   const { data: personalData, isLoading } = useQuery({
     queryFn: () => fetchGetPersonalInfo(),
-    queryKey: ['kyccdd-personal-info', corporateId]
+    queryKey: ['kyccdd-personal-info', corporateId],
+    enabled: !!corporateId
   });
 
   useEffect(() => {}, []);
