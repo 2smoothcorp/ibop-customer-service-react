@@ -73,7 +73,10 @@ export default function DetailPage() {
             <BreadcrumbsNavbar
                 className="px-10"
                 data={[
-                    { title: "ข้อมูลลูกค้า", link: "/CustomerProfile" },
+                    {
+                        title: isEditable ? "แก้ไขข้อมูล" : "ข้อมูลลูกค้า",
+                        link: isEditable ? "/CustomerProfile/Edit/Offline" : "/CustomerProfile"
+                    },
                     { title: "รายละเอียดลูกค้า" }
                 ]}
             />
