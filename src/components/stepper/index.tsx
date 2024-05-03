@@ -35,6 +35,7 @@ export const Stepper = (props: StepperProps): ReactElement => {
       return (
         <Step
           key={`step-item-${ idx }`}
+          // completed={ !props.nonLinear && activeStepIndex > idx }
           sx={{
             '& .MuiStepConnector-root': {
               top: '15px',
@@ -64,6 +65,9 @@ export const Stepper = (props: StepperProps): ReactElement => {
             '& .MuiStepLabel-root .Mui-active': {
               color: '#1F346B',
             },
+            '& .Mui-completed': {
+              color: '#1F346B !important'
+            },
             '& .MuiStepLabel-label.Mui-active.MuiStepLabel-alternativeLabel': {
               fontWeight: 'bold',
               color: '#000',
@@ -76,15 +80,9 @@ export const Stepper = (props: StepperProps): ReactElement => {
             }
           }}
         >
-          {
-            (disabled)
-            ? (<StepLabel>{ stepLabel }</StepLabel>)
-            : (
-              <StepButton color={'inherit'} onClick={() => { onClickStepItem(idx); }}>
-                { stepLabel }
-              </StepButton>
-            )
-          }
+          <StepButton color={'inherit'} disabled={ disabled } onClick={() => { onClickStepItem(idx); }}>
+            { stepLabel }
+          </StepButton>
         </Step>
       );
     });
