@@ -8,8 +8,8 @@ export module StoreTypeKycCdd {
     currentAddrInfo: Partial<AddressFields>,
     workAddrInfo: Partial<AddressFields>,
     spouseInfo: Partial<SpouseFormFields>,
-    beneficiaryInfo: Partial<BeneficiaryFormFields>,
-    attorneyInfo: Partial<AttorneyFormFields>
+    // beneficiaryInfo: Partial<BeneficiaryFormFields>,
+    // attorneyInfo: Partial<AttorneyFormFields>
   }
 
   export interface PersonalInfoFormFields {
