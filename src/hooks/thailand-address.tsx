@@ -4,22 +4,41 @@
 
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import thAddrJson from '@/assets/thailand-address.min.json';
+
+const _codeForeign = '99999';
+export const addressForeignOption: ThaiAddrInfo = {
+  p: '', pName: '', pCode: '',
+  d: '', dName: '', dCode: '',
+  s: '', sName: '', sCode: '',
+  po: _codeForeign,
+  label: `ต่างประเทศ » ${ _codeForeign }`,
+  value: _codeForeign
+}
+
+export const addressEmptyOption: ThaiAddrInfo = {
+  p: '', pName: '', pCode: '',
+  d: '', dName: '', dCode: '',
+  s: '', sName: '', sCode: '',
+  po: '',
+  label: '',
+  value: ''
+}
 
 export const useThailandAddress = () => {
   useEffect(() => {}, []);
 
   const addressInfo = useQuery({
     queryFn: () => fetchGetAddressDatasource(),
-    queryKey: ['thailand-address-datasource'],
-    // enabled: isEmptyAddr
+    queryKey: ['thailand-address-datasource']
   });
 
   const fetchGetAddressDatasource = async () => {
-    const request = await fetch('https://2smooth.sgp1.digitaloceanspaces.com/public/thailand-address.min.json', { method: 'GET' });
-    const response: Array<AddrJsonOutput> = await request.json();
+    // const request = await fetch('https://2smooth.sgp1.digitaloceanspaces.com/public/thailand-address.min.json', { method: 'GET' });
+    // const response: Array<AddrJsonOutput> = await request.json();
 
     const results: Array<ThaiAddrInfo> = [];
-    for(const addr of response) {
+    for(const addr of thAddrJson) {
       const { p, d, s, po } = addr;
       const [ pName, pCode ] = p.split('|');
       const [ dName, dCode ] = d.split('|');
@@ -37,7 +56,7 @@ export const useThailandAddress = () => {
       });
     }
 
-    // setIsEmptyAddr(false);
+    results.push(addressForeignOption);
     return results;
   }
 

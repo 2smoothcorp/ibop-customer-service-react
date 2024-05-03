@@ -17,38 +17,40 @@ import { Grid } from '@mui/material';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
-import { InputCheckbox } from '@/components/input-checkbox';
+import { useAppDispatch } from '@/libs/redux/hook';
+import { type StoreTypeKycCdd, saveBeneficiarryInfo, saveAttorneyInfo } from '@/libs/redux/store/kyc-cdd';
 import type {
   KycAttornetOutputDataResponse,
   KycBeneficiaryInfoOutputDataResponse
 } from '@/services/rest-api/customer-service';
 
 export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactElement => {
-  const [ isEditingBeneficiary, _setIsEditingBeneficiary ] = useState(true);
-  const [ isEditingAttorney, _setIsEditingAttorney ] = useState(true);
-  const [ isTruthConfirm, setIsTruthConfirm ] = useState(false);
+  const [ isEditingBeneficiary, setIsEditingBeneficiary ] = useState(false);
+  const [ isEditingAttorney, setIsEditingAttorney ] = useState(false);
 
-  const beneficiaryHookForm = useForm<BeneficiaryFormFields>({
+  const reduxDispatcher = useAppDispatch();
+
+  const beneficiaryHookForm = useForm<StoreTypeKycCdd.BeneficiaryFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
 
-  const attorneyHookForm = useForm<AttorneyFormFields>({
+  const attorneyHookForm = useForm<StoreTypeKycCdd.AttorneyFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
-
-  useEffect(() => {}, []);
 
   const beneficiaryInfo = useQuery({
     queryFn: () => fetchGetBeneficiary(),
     queryKey: ['kyccdd-beneficiary-info', corporateId]
   });
-
+  
   const attorneyInfo = useQuery({
     queryFn: () => fetchGetAttorney(),
     queryKey: ['kyccdd-attorney-info', corporateId]
   });
+
+  useEffect(() => {}, []);
 
   const fetchGetBeneficiary = async () => {
     const request = await fetch(`/api/kyc/get-beneficiary/${corporateId}`, { method: 'GET' });
@@ -68,20 +70,18 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
     return data;
   }
 
-  const onSubmitBeneficiaryForm = (fieldsData: BeneficiaryFormFields) => {
-    //
-  }
+  // const onSubmitBeneficiaryForm = (fieldsData: StoreTypeKycCdd.BeneficiaryFormFields) => {
+  //   reduxDispatcher(saveBeneficiarryInfo(fieldsData));
+  //   setIsEditingBeneficiary(false);
+  // }
 
-  const onSubmitAttorneyForm = (fieldsData: AttorneyFormFields) => {
-    //
-  }
-
-  const onCheckTruthConfirm = (_evt: ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    console.log('onCheckTruthConfirm', checked);
-  }
+  // const onSubmitAttorneyForm = (fieldsData: StoreTypeKycCdd.AttorneyFormFields) => {
+  //   reduxDispatcher(saveAttorneyInfo(fieldsData));
+  //   setIsEditingAttorney(false);
+  // }
 
   const renderFormBeneficiary = () => {
-    const { register, handleSubmit } = beneficiaryHookForm;
+    // const { register, handleSubmit } = beneficiaryHookForm;
     const { data } = beneficiaryInfo;
     const _type = data?.beneficiaryType || '-';
     const _firstname = data?.beneficiaryFirstName || '-';
@@ -89,11 +89,11 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
     const _refType = data?.referenceType || '-';
     const _refId = data?.referenceId || '-';
     return (
-      <Form<BeneficiaryFormFields>
-        isEditing={ isEditingBeneficiary }
+      <Form<StoreTypeKycCdd.BeneficiaryFormFields>
+        isEditing={ false }
         baseColSpan={ 4 }
-        register={ register }
-        onSubmit={ handleSubmit(onSubmitBeneficiaryForm) }
+        // register={ register }
+        // onSubmit={ handleSubmit(onSubmitBeneficiaryForm) }
         fields={[
           {
             type: 'text',
@@ -216,7 +216,7 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
   }
 
   const renderFormAttorney = () => {
-    const { register, handleSubmit } = attorneyHookForm;
+    // const { register, handleSubmit } = attorneyHookForm;
     const { data } = attorneyInfo;
     const _refType = data?.referenceType || '-';
     const _refId = data?.referenceId || '-';
@@ -256,11 +256,11 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
     return (
       <Fragment>
-        <Form<AttorneyFormFields>
-          isEditing={ isEditingAttorney }
+        <Form<StoreTypeKycCdd.AttorneyFormFields>
+          isEditing={ false }
           baseColSpan={ 4 }
-          register={ register }
-          onSubmit={ handleSubmit(onSubmitAttorneyForm) }
+          // register={ register }
+          // onSubmit={ handleSubmit(onSubmitAttorneyForm) }
           fields={[
             {
               type: 'text',
@@ -420,74 +420,10 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
           ? (<AppLoader asContentLoader />)
           : (renderFormAttorney())
       }
-
-      {
-        (isEditingAttorney) && (
-          <InputCheckbox
-            name={'truthConfirm'}
-            options={[{
-              label: 'ลูกค้าขอรับรองและยืนยันว่าข้อมูลที่ให้ไว้ข้างต้นเป็นข้อมูลถูกต้องครบถ้วนตามความเป็นจริงและเป็นปัจจุบัน',
-              value: 'confirmed'
-            }]}
-            onChange={ onCheckTruthConfirm }
-          />
-        )
-      }
     </Fragment>
   );
 }
 
 interface RelativeInfoProps {
   corporateId: string;
-}
-
-interface BeneficiaryFormFields {
-  beneficiaryType: string;
-  beneficiary_relationship: string;
-  beneficiary_firstname: string;
-  beneficiary_lastname: string;
-  beneficiary_refType: string;
-  beneficiary_refId: string;
-
-  beneficiary_houseNumber: string;
-  beneficiary_moo: string;
-  beneficiary_building: string;
-  beneficiary_room: string;
-  beneficiary_floor: string;
-  beneficiary_soi: string;
-  beneficiary_road: string;
-  beneficiary_country: string;
-  beneficiary_postcode: string;
-  beneficiary_province: string;
-  beneficiary_district: string;
-  beneficiary_subDistrict: string;
-  beneficiary_addr1: string;
-  beneficiary_addr2: string;
-  beneficiary_addr3: string;
-}
-
-interface AttorneyFormFields {
-  attorney_refType: string;
-  attorney_refId: string;
-  attorney_nationality: string;
-  attorney_title: string;
-  attorney_fullname: string;
-  attorney_relationship: string;
-  attorney_mobileNo: string;
-  
-  attorney_houseNumber: string;
-  attorney_moo: string;
-  attorney_building: string;
-  attorney_room: string;
-  attorney_floor: string;
-  attorney_soi: string;
-  attorney_road: string;
-  attorney_country: string;
-  attorney_postcode: string;
-  attorney_province: string;
-  attorney_district: string;
-  attorney_subDistrict: string;
-  attorney_addr1: string;
-  attorney_addr2: string;
-  attorney_addr3: string;
 }

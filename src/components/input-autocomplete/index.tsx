@@ -29,15 +29,22 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
   }
 
   const onChangeSearchText = (text: string) => {
-    const { options, optionSearchKey = 'label', onSearch } = props;
+    const { options, optionSearchKey = 'label', searchMethod, onSearch } = props;
     setIsLoading(true);
     if(!text || text.length < 2) {
-      setInputOptions([]);
+      setInputOptions(options.slice(0, 20));
       setIsLoading(false);
       return;
     }
 
-    const _filtered = options.filter((_f) => _f[optionSearchKey].startsWith(text));
+    const _filtered = options.filter((_f) => {
+      switch(searchMethod) {
+        case 'contain': return _f[optionSearchKey].includes(text);
+        case 'endWith': return _f[optionSearchKey].endsWith(text);
+      }
+
+      return _f[optionSearchKey].startsWith(text);
+    });
     setInputOptions(_filtered);
     setIsLoading(false);
     if(onSearch) { onSearch(text); }
@@ -53,7 +60,7 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
       renderInput={(inputProps) => (<TextField { ...inputProps } />)}
       options={ inputOptions }
       value={ props.selectedOption }
-      loading={ isLoading }
+      loading={ props.loading || isLoading }
       disabled={ props.disabled }
       getOptionKey={ props.getOptionKey }
       getOptionLabel={ props.getOptionLabel }
@@ -71,9 +78,13 @@ interface InputAutocompleteProps {
   options: Array<AutoCompleteOption>;
   selectedOption?: any;
   disabled?: boolean;
+  loading?: boolean
 
   /** @default 'label' */
   optionSearchKey?: string;
+
+  /** @default 'startWith' */
+  searchMethod?: 'startWith' | 'contain' | 'endWith',
 
   getOptionKey?: (item: any) => string;
   getOptionLabel?: (item: any) => string;

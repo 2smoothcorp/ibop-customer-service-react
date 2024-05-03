@@ -34,6 +34,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
         label,
         viewText,
         colSpan = baseColSpan || 6, labelCol = 6, viewCol = 6, // inputCol = 6
+        isHidden
       } = item;
 
       // if(type === 'address') {
@@ -51,6 +52,8 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
       //     />
       //   );
       // }
+
+      if(isHidden) { return(<div></div>); }
 
       return (
         <Grid container item spacing={2}
@@ -74,7 +77,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
     });
   }
 
-  const renderInput = (info: InputField): ReactElement => {
+  const renderInput = (info: FormInternalTypeDef.InputField): ReactElement => {
     const { register } = props;
     const { inputCol = 6, type, name, value, disabled } = info;
     switch(type) {
@@ -119,15 +122,16 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
         );
       }
       case 'autocomplete': {
-        const { options, value, optionSearchKey, asAddress, getOptionKey, getOptionLabel, onSearch, onSelect } = info;
+        const { options, value, optionSearchKey, searchMethod, isAddress, getOptionKey, getOptionLabel, onSearch, onSelect } = info;
         return (
           <Grid item xs={ inputCol }>
             <InputAutoComplete
-              { ...((asAddress) ? { mode: 'address' } : {}) }
+              isAddress={ isAddress }
               name={ name }
               options={ options }
               selectedOption={ value }
               optionSearchKey={ optionSearchKey }
+              searchMethod={ searchMethod }
               disabled={ disabled }
               getOptionKey={ getOptionKey }
               getOptionLabel={ getOptionLabel }
@@ -175,7 +179,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
 }
 
 interface FormProps<DynamicField extends {}> {
-  fields: Array<InputField>;
+  fields: Array<FormInternalTypeDef.InputField>;
   isEditing?: boolean;
 
   /**
@@ -189,72 +193,85 @@ interface FormProps<DynamicField extends {}> {
   onSubmit?: FormEventHandler<HTMLFormElement>;
 }
 
-type InputField = EmptySpaceField
-  | TextInputField
-  | NumberInputField
-  | AutoCompleteInputField
-  | SelectInputField
-  | CheckboxInputField
-  | RadioInputField;
+export module FormInternalTypeDef {
+  export type InputField = EmptySpaceField
+    | TextInputField
+    | NumberInputField
+    | AutoCompleteInputField
+    | SelectInputField
+    | CheckboxInputField
+    | RadioInputField;
 
-interface BaseInputField {
-  label: string;
-  viewText: string;
+  export interface BaseInputField {
+    label: string;
+    viewText: string;
 
-  /**
-   * Form field grid
-   * @defaut 6
-   */
-  colSpan?: ColumnSize;
+    /**
+     * Form field grid
+     * @defaut 6
+     */
+    colSpan?: ColumnSize;
 
-  /**
-   * Column span for Label part
-   * @defaut 6
-   */
-  labelCol?: ColumnSize;
+    /**
+     * Column span for Label part
+     * @defaut 6
+     */
+    labelCol?: ColumnSize;
 
-  /**
-   * Column span for Text part (view mode)
-   * @default 6
-   */
-  viewCol?: ColumnSize;
+    /**
+     * Column span for Text part (view mode)
+     * @default 6
+     */
+    viewCol?: ColumnSize;
 
-  /**
-   * Column span for input part (edit mode)
-   * @default 6
-   */
-  inputCol?: ColumnSize;
+    /**
+     * Column span for input part (edit mode)
+     * @default 6
+     */
+    inputCol?: ColumnSize;
 
-  type?: 'text' | 'number' | 'select' | 'checkbox' | 'radio' | 'autocomplete' | 'space';
-  name?: string;
-  value?: any;
-  disabled?: boolean;
-}
+    type?: 'text' | 'number' | 'select' | 'checkbox' | 'radio' | 'autocomplete' | 'space';
+    name?: string;
+    value?: any;
 
-interface WithInputOption {
-  options: Array<{
+    /** @default false */
+    disabled?: boolean;
+
+    /** @default false */
+    isHidden?: boolean;
+  }
+
+  export interface WithnInputOption {
+    options: Array<InputChoiceItem>;
+  }
+
+  export interface InputChoiceItem {
     label: string;
     value: string;
     disabled?: boolean;
     [key: string]: any;
-  }>;
-}
+  }
 
-interface EmptySpaceField extends BaseInputField { type: 'space'; }
-interface TextInputField extends BaseInputField { type: 'text'; name: string; value?: string; }
-interface NumberInputField extends BaseInputField { type: 'number'; name: string; value?: number; }
-interface SelectInputField extends BaseInputField, WithInputOption { type: 'select'; name: string; value?: string; }
-interface CheckboxInputField extends BaseInputField, WithInputOption { type: 'checkbox'; name: string; value?: Array<string>; }
-interface RadioInputField extends BaseInputField, WithInputOption { type: 'radio'; name: string; value?: string; }
-interface AutoCompleteInputField extends BaseInputField, WithInputOption {
-  type: 'autocomplete';
-  name: string;
-  optionSearchKey?: string;
-  asAddress?: boolean;
-  getOptionKey?: (item: any) => string;
-  getOptionLabel?: (item: any) => string;
-  onSearch?: (searchText: string) => void;
-  onSelect?: (selected: any) => void;
+  export interface EmptySpaceField extends BaseInputField { type: 'space'; }
+  export interface TextInputField extends BaseInputField { type: 'text'; name: string; value?: string; }
+  export interface NumberInputField extends BaseInputField { type: 'number'; name: string; value?: number; }
+  export interface SelectInputField extends BaseInputField, WithnInputOption { type: 'select'; name: string; value?: string; }
+  export interface CheckboxInputField extends BaseInputField, WithnInputOption { type: 'checkbox'; name: string; value?: Array<string>; }
+  export interface RadioInputField extends BaseInputField, WithnInputOption { type: 'radio'; name: string; value?: string; }
+  export interface AutoCompleteInputField extends BaseInputField, WithnInputOption {
+    type: 'autocomplete';
+    name: string;
+    optionSearchKey?: string;
+
+    /** @default 'startWith' */
+    searchMethod?: 'startWith' | 'contain' | 'endWith',
+
+    isAddress?: boolean;
+    getOptionKey?: (item: any) => string;
+    getOptionLabel?: (item: any) => string;
+    onSearch?: (searchText: string) => void;
+    onSelect?: (selected: any) => void;
+  }
 }
 
 type ColumnSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
