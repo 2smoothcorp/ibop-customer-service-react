@@ -4,25 +4,26 @@
 
 'use client'
 
+import { Button, Grid } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import {
-  type ReactElement,
   type ChangeEvent,
   Fragment,
+  type ReactElement,
   useEffect,
   useState
 } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button, Grid } from '@mui/material';
 
+import { InputText } from '@/components/input-text';
 import { InputCheckbox } from '@/components/input-checkbox';
-import TabNavbar from '@/components/navbar/tab-navbar';
+import { Stepper } from '@/components/stepper';
 import { useAppSelector } from '@/libs/redux/hook';
 
 import {
-  ReviewPersonalInfo,
   ReviewAddrInfo,
-  ReviewSpouseInfo,
-  ReviewRelativeInfo
+  ReviewPersonalInfo,
+  ReviewRelativeInfo,
+  ReviewSpouseInfo
 } from '../_component';
 import { actionRevaluation } from './actions';
 
@@ -43,18 +44,10 @@ const Page = (): ReactElement => {
     setStepIndex(index % stepData.length);
   }
 
-  const onChangeCorporateId = (evt: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = evt.target.value;
-    setInputCorp(inputValue);
-  }
-
+  const onChangeCorporateId = (changedText: string) => { setInputCorp(changedText); }
   const onClickSearch = () => { setCorporateId(inputCorp || ''); }
   const onClickClear = () => { setInputCorp(''); setCorporateId(''); }
-
-  const onCheckTruthConfirm = (checked: boolean) => {
-    console.log('onCheckTruthConfirm', checked)
-    setIsTruthConfirm(checked);
-  }
+  const onCheckTruthConfirm = (checked: boolean) => { setIsTruthConfirm(checked); }
 
   const onClickPrevStep = () => {
     const { back } = router;
@@ -84,6 +77,7 @@ const Page = (): ReactElement => {
       workAddressInfo: workAddrInfo,
       spouseInfo: {
         familyStatus: spouseInfo.maritalStatus,
+        spouseTitleCode: spouseInfo.title,
         spouseFirstName: spouseInfo.firstname,
         spouseLastName: spouseInfo.lastname,
         spouseReferenceType: spouseInfo.refType,
@@ -101,9 +95,14 @@ const Page = (): ReactElement => {
               <strong>Corporate ID</strong>
             </Grid>
             <Grid item>
-              <input
+              {/* <input
                 type={'text'}
                 className={`w-full px-3 py-2 h-10 bg-[#D9D9D9] border border-slate-300 rounded-md text-xl shadow-sm placeholder-slate-400`}
+                onChange={ onChangeCorporateId }
+              /> */}
+              <InputText
+                name={'corporateId'}
+                disabled={ stepIndex !== 0 }
                 onChange={ onChangeCorporateId }
               />
             </Grid>
@@ -176,7 +175,7 @@ const Page = (): ReactElement => {
 
   return (
     <Fragment>
-      <TabNavbar list={ stepData } onChange={ onChangeStep } />
+      <Stepper disabled steps={ stepData } currentStepIndex={ stepIndex } onChangeStep={ onChangeStep } />
       <div className={'p-4'}>
         { renderSearchCorporateId() }
         { renderStepperView() }

@@ -135,8 +135,9 @@ models/KycAttornetOutput.ts
 models/KycAttornetOutputDataResponse.ts
 models/KycBeneficiaryInfoOutput.ts
 models/KycBeneficiaryInfoOutputDataResponse.ts
+models/KycData.ts
 models/KycGetAllOutput.ts
-models/KycGetAllOutputListDataResponse.ts
+models/KycGetAllOutputDataResponse.ts
 models/KycInput.ts
 models/KycPersonalInput.ts
 models/KycPersonalOutput.ts

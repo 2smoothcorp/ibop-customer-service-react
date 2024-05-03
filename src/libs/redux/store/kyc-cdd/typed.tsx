@@ -13,26 +13,28 @@ export module StoreTypeKycCdd {
   }
 
   export interface PersonalInfoFormFields {
+    titleTh: string;
     firstnameTh: string;
     lastnameTh: string;
     firstnameEn: string;
     lastnameEn: string;
     nationality: string;
     occupation: string;
-    incomeRate: number;
+    incomeRate: string;
     incomeSource: Array<string>;
     incomeCountry: string;
     exp: number;
     investmentPurpose: Array<string>;
   }
 
-  export interface CurrentAddrFormFields extends PrefixedAddressFields<'currentAddr_'> {}
-  export interface WorkAddrFormFields extends PrefixedAddressFields<'workAddr_'> {}
+  export interface CurrentAddrFormFields extends PrefixedAddressFields<'currentAddr_'> { }
+  export interface WorkAddrFormFields extends PrefixedAddressFields<'workAddr_'> { }
 
   export interface SpouseFormFields {
     maritalStatus: string;
     refType: string;
     refId: string;
+    title: string;
     firstname: string;
     lastname: string;
   }

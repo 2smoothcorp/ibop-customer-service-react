@@ -6,48 +6,48 @@
 
 import {
   type ReactElement,
-  type ChangeEvent,
   Fragment,
-  useEffect,
-  useState
+  useEffect
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
+// import { useForm } from 'react-hook-form';
 import { Grid } from '@mui/material';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
-import { useAppDispatch } from '@/libs/redux/hook';
-import { type StoreTypeKycCdd, saveBeneficiarryInfo, saveAttorneyInfo } from '@/libs/redux/store/kyc-cdd';
+import { SectionSeparator } from '@/components/section-separator';
+import { type StoreTypeKycCdd } from '@/libs/redux/store/kyc-cdd';
 import type {
   KycAttornetOutputDataResponse,
   KycBeneficiaryInfoOutputDataResponse
 } from '@/services/rest-api/customer-service';
 
 export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactElement => {
-  const [ isEditingBeneficiary, setIsEditingBeneficiary ] = useState(false);
-  const [ isEditingAttorney, setIsEditingAttorney ] = useState(false);
+  // const [ isEditingBeneficiary, setIsEditingBeneficiary ] = useState(false);
+  // const [ isEditingAttorney, setIsEditingAttorney ] = useState(false);
 
-  const reduxDispatcher = useAppDispatch();
+  // const reduxDispatcher = useAppDispatch();
 
-  const beneficiaryHookForm = useForm<StoreTypeKycCdd.BeneficiaryFormFields>({
-    mode: 'onSubmit',
-    resolver: undefined
-  });
+  // const beneficiaryHookForm = useForm<StoreTypeKycCdd.BeneficiaryFormFields>({
+  //   mode: 'onSubmit',
+  //   resolver: undefined
+  // });
 
-  const attorneyHookForm = useForm<StoreTypeKycCdd.AttorneyFormFields>({
-    mode: 'onSubmit',
-    resolver: undefined
-  });
+  // const attorneyHookForm = useForm<StoreTypeKycCdd.AttorneyFormFields>({
+  //   mode: 'onSubmit',
+  //   resolver: undefined
+  // });
 
   const beneficiaryInfo = useQuery({
     queryFn: () => fetchGetBeneficiary(),
-    queryKey: ['kyccdd-beneficiary-info', corporateId]
+    queryKey: ['kyccdd-beneficiary-info', corporateId],
+    enabled: !!corporateId
   });
   
   const attorneyInfo = useQuery({
     queryFn: () => fetchGetAttorney(),
-    queryKey: ['kyccdd-attorney-info', corporateId]
+    queryKey: ['kyccdd-attorney-info', corporateId],
+    enabled: !!corporateId
   });
 
   useEffect(() => {}, []);
@@ -403,18 +403,14 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
   return (
     <Fragment>
-      <div className={'my-4 border-b-2 border-b-slate-500'}>
-        <strong className={'text-xl text-success-500'}>ผู้รับผลประโยชน์ที่แท้จริง</strong>
-      </div>
+      <SectionSeparator title={'ผู้รับผลประโยชน์ที่แท้จริง'} />
       {
         (beneficiaryInfo.isLoading)
           ? (<AppLoader asContentLoader />)
           : (renderFormBeneficiary())
       }
 
-      <div className={'my-4 border-b-2 border-b-slate-500'}>
-        <strong className={'text-xl text-success-500'}>ผู้รับมอบอำนาจ</strong>
-      </div>
+      <SectionSeparator title={'ผู้รับมอบอำนาจ'} />
       {
         (attorneyInfo.isLoading)
           ? (<AppLoader asContentLoader />)
