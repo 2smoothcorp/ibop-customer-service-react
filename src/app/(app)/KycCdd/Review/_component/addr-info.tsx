@@ -10,7 +10,6 @@ import {
   useState,
   type ReactElement
 } from 'react';
-import { Button } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
@@ -54,9 +53,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     enabled: !!corporateId
   });
 
-  useEffect(() => {
-
-  }, []);
+  useEffect(() => {}, []);
 
   const fetchGetAddress = async () => {
     const request = await fetch(`/api/kyc/get-address/${corporateId}`, { method: 'GET' });
@@ -68,7 +65,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     const currentAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.current);
     const workAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.work);
     if(currentAddr) {
-      const { setValue: setFormValue } = currentAddrHookForm;
+      const { getValues: getFormValue, setValue: setFormValue } = currentAddrHookForm;
       const {
         addressNo,
         moo,
@@ -101,10 +98,13 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       setFormValue('currentAddr_customAddress1', customAddress1 || '');
       setFormValue('currentAddr_customAddress2', customAddress2 || '');
       setFormValue('currentAddr_customAddress3', customAddress3 || '');
+
+      const _refined = removeObjectKeyPrefix({ obj: getFormValue(), prefix: 'currentAddr_' });;
+      reduxDispatcher(saveCurrentAddressInfo(_refined));
     }
 
     if(workAddr) {
-      const { setValue: setFormValue } = workAddrHookForm;
+      const { getValues: getFormValue, setValue: setFormValue } = workAddrHookForm;
       const {
         addressNo,
         moo,
@@ -137,6 +137,9 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       setFormValue('workAddr_customAddress1', customAddress1 || '');
       setFormValue('workAddr_customAddress2', customAddress2 || '');
       setFormValue('workAddr_customAddress3', customAddress3 || '');
+
+      const _refined = removeObjectKeyPrefix({ obj: getFormValue(), prefix: 'workAddr_' });;
+      reduxDispatcher(saveCurrentAddressInfo(_refined));
     }
 
     return ({ currentAddr: currentAddr || {}, workAddr: workAddr || {} });
@@ -146,8 +149,8 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
   const toggleWorkAddrFormMode = () => { setIsEditingWorkAddr((current) => !current); }
 
   const onSubmitCurrentAddrForm = (fieldsData: StoreTypeKycCdd.CurrentAddrFormFields) => {
-    // if(!selectedCurrentAddrCountry) { return; }
-    // if(!selectedCurrentThAddr) { return; }
+    if(!selectedCurrentAddrCountry) { return; }
+    if(!selectedCurrentThAddr) { return; }
 
     const refinedFieldsData: StoreTypeKycCdd.AddressFields = removeObjectKeyPrefix({ obj: fieldsData, prefix: 'currentAddr_' });
     reduxDispatcher(saveCurrentAddressInfo(refinedFieldsData));
@@ -155,8 +158,8 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
   }
 
   const onSubmitWorkAddrForm = (fieldsData: StoreTypeKycCdd.WorkAddrFormFields) => {
-    // if(!selectedWorkAddrCountry) { return; }
-    // if(!selectedWorkThAddr) { return; }
+    if(!selectedWorkAddrCountry) { return; }
+    if(!selectedWorkThAddr) { return; }
 
     const refinedFieldsData: StoreTypeKycCdd.AddressFields = removeObjectKeyPrefix({ obj: fieldsData, prefix: 'workAddr_' });
     reduxDispatcher(saveWorkAddressInfo(refinedFieldsData));

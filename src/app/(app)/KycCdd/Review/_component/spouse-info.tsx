@@ -26,7 +26,7 @@ import { Codex } from '@/utils/codex';
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
   const [ maritalStatus, setMaritalStatus ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit, watch: watchFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
+  const { register, handleSubmit, watch: watchFormValue, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
@@ -41,7 +41,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     enabled: !!corporateId
   });
 
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
 
   const fetchGetSpouse = async () => {
     const request = await fetch(`/api/kyc/get-spouse/${corporateId}`, { method: 'GET' });
@@ -62,6 +62,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     setFormValue('lastname', spouseLastName || '');
     setFormValue('refType', spouseReferenceType || '');
     setFormValue('refId', spouseIdentityId || '');
+    reduxDispatcher(saveSpouseInfo(getFormValue()));
     return data;
   }
 

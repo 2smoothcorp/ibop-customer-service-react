@@ -18,6 +18,7 @@ import { InputText } from '@/components/input-text';
 import { InputCheckbox } from '@/components/input-checkbox';
 import { Stepper } from '@/components/stepper';
 import { useAppSelector } from '@/libs/redux/hook';
+import { swal } from '@/libs/sweetalert';
 
 import {
   ReviewAddrInfo,
@@ -55,8 +56,8 @@ const Page = (): ReactElement => {
     setStepIndex((current) => current - 1);
   }
 
-  const onClickNextStep = () => {
-    const {} = router;
+  const onClickNextStep = async () => {
+    const { replace } = router;
     const isLastStep = stepIndex === 3;
     if(!isLastStep) {
       setStepIndex((current) => current + 1);
@@ -70,7 +71,7 @@ const Page = (): ReactElement => {
       spouseInfo
     } = storeKycCdd;
     
-    actionRevaluation({
+    const response = await actionRevaluation({
       corporateId: corporateId,
       personalInfo: personalInfo,
       currentAddressInfo: currentAddrInfo,
@@ -84,6 +85,13 @@ const Page = (): ReactElement => {
         spouseIdentityId: `${ spouseInfo.refId || '' }`
       }
     });
+
+    if(response.status === 500) {
+      return swal({ title: 'ทำการบันทึกการทบทวน KYC ล้มเหลว', icon: 'warning' });
+    }
+
+    await swal({ title: 'ทำการบันทึกการทบทวน KYC สำเร็จ', icon: 'success' });
+    replace('/KycCdd/Review');
   }
 
   const renderSearchCorporateId = (): ReactElement => {
@@ -95,11 +103,6 @@ const Page = (): ReactElement => {
               <strong>Corporate ID</strong>
             </Grid>
             <Grid item>
-              {/* <input
-                type={'text'}
-                className={`w-full px-3 py-2 h-10 bg-[#D9D9D9] border border-slate-300 rounded-md text-xl shadow-sm placeholder-slate-400`}
-                onChange={ onChangeCorporateId }
-              /> */}
               <InputText
                 name={'corporateId'}
                 disabled={ stepIndex !== 0 }

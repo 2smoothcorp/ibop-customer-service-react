@@ -35,7 +35,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
   const [ selectedOccupation, setSelectedOccupation ] = useState<ComboBoxWrapperOption>();
   const [ selectedIncomeCountry, setSelectedIncomeCountry ] = useState<ComboBoxWrapperOption>();
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit, watch: watchFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
+  const { register, handleSubmit, watch: watchFormValue, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
@@ -87,6 +87,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     setFormValue('incomeCountry', incomeCountry || '');
     setFormValue('exp', investmentYear || 0);
     setFormValue('investmentPurpose', (investmentPurposeCode || '').split(','));
+    reduxDispatcher(savePersonalInfo(getFormValue()));
     return data;
   }
 
