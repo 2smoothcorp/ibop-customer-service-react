@@ -63,8 +63,9 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
   const toggleFormMode = () => { setIsEditing((current) => !current); }
 
   const onSubmitForm = (fieldsData: StoreTypeKycCdd.SpouseFormFields) => {
-    reduxDispatcher(saveSpouseInfo(fieldsData));
-    setIsEditing(false);
+    console.log('onSubmitForm', fieldsData)
+    // reduxDispatcher(saveSpouseInfo(fieldsData));
+    // setIsEditing(false);
   }
 
   const renderFormSpouse = () => {
@@ -92,37 +93,38 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
             options: [
               { label: 'โสด', value: Codex.MaritaiStatus.single },
               { label: 'สมรส', value: Codex.MaritaiStatus.married }
-            ]
+            ],
           },
           {
             type: 'text',
             label: 'ประเภทหลักฐาน', viewText: _refTypeText,
             name: 'refType', value: _refTypeInitValue,
-            isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
+            // isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
           },
           {
             type: 'text',
             label: 'เลขทีบัตร', viewText: _refIdText,
             name: 'refId', value: _refIdInitValue,
-            isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
+            // isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
           },
           {
             type: 'select',
             label: 'คำนำหน้า', viewText: _titleText,
             name: 'title', value: getFormValue('title'),
-            options: masterTitleList.data || []
+            options: masterTitleList.data || [],
+            // isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
           },
           {
             type: 'text',
             label: 'ชื่อ', viewText: _firstnameText,
             name: 'firstname', value: _firstnameInitValue,
-            isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
+            // isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
           },
           {
             type: 'text',
             label: 'นามสกุล', viewText: _lastnameText,
             name: 'lastname', value: _lastnameInitValue,
-            isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
+            // isHidden: getFormValue('maritalStatus') !== Codex.MaritaiStatus.married
           }
         ]}
       />
