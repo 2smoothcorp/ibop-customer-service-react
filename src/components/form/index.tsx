@@ -53,11 +53,11 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
       //   );
       // }
 
-      if(isHidden) { return(<div></div>); }
+      if(isHidden) { return(<div key={`empty-space-${ idx }`}></div>); }
 
       return (
         <Grid container item spacing={2}
-          key={idx} xs={ colSpan }
+          key={`field-item-${ idx }`} xs={ colSpan }
           // className={'flex items-center gap-x-2'}
         >
           <Grid item
