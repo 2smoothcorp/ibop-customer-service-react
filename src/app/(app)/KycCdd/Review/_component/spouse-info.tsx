@@ -15,12 +15,13 @@ import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
+import { SectionSeparator } from '@/components/section-separator';
 import { useAppDispatch } from '@/libs/redux/hook';
 import { type StoreTypeKycCdd, saveSpouseInfo } from '@/libs/redux/store/kyc-cdd';
 import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/customer-service';
 
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
-  const [ isEditing, setIsEditing ] = useState(true);
+  const [ isEditing, setIsEditing ] = useState(false);
   const { register, handleSubmit } = useForm<StoreTypeKycCdd.SpouseFormFields>({
     mode: 'onSubmit',
     resolver: undefined
@@ -43,6 +44,8 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     if(!data) { return ({}); }
     return data;
   }
+
+  const toggleFormMode = () => { setIsEditing((current) => !current); }
 
   const onSubmitForm = (fieldsData: StoreTypeKycCdd.SpouseFormFields) => {
     reduxDispatcher(saveSpouseInfo(fieldsData));
@@ -99,9 +102,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
 
   return (
     <Fragment>
-      <div className={'my-4 border-b-2 border-b-slate-500'}>
-        <strong className={'text-xl text-success-500'}>ข้อมูลคู่สมรส</strong>
-      </div>
+      <SectionSeparator hasEditAction title={'ข้อมูลคู่สมรส'} onClickEdit={ toggleFormMode } />
 
       {
         (isLoading)

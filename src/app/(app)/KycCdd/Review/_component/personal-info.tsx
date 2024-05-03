@@ -14,8 +14,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import { AppLoader } from '@/components/app-loader';
+import { SectionSeparator } from '@/components/section-separator';
 import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
 import { useMasterDataTitlesCustom } from '@/hooks/master-data-titles';
+import { useMasterDataOccupationCustom } from '@/hooks/master-data-occupation';
 import { useMasterDataIncomeRate } from '@/hooks/master-data-income-rate';
 import { useMasterDataIncomeSource } from '@/hooks/master-data-income-source';
 import { useMasterDataInvestmentPurpose } from '@/hooks/master-data-investment-purpose';
@@ -24,20 +26,24 @@ import {
   type StoreTypeKycCdd,
   savePersonalInfo
 } from '@/libs/redux/store/kyc-cdd';
+import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
 
 import { Form } from '@/components/form';
 
 export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactElement => {
-  const [ isEditing, setIsEditing ] = useState(true);
-  const { register, handleSubmit } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
+  const [ selectedOccupation, setSelectedOccupation ] = useState<ComboBoxWrapperOption>();
+  const [ selectedIncomeCountry, setSelectedIncomeCountry ] = useState<ComboBoxWrapperOption>();
+  const [ isEditing, setIsEditing ] = useState(false);
+  const { register, handleSubmit, setValue } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
 
   const reduxDispatcher = useAppDispatch();
-  const masterDataTitleList = useMasterDataTitlesCustom();
+  const masterTitleList = useMasterDataTitlesCustom();
   const masterCountryList = useMasterDataCountriesCustom();
+  const masterOccupationList = useMasterDataOccupationCustom();
   const masterIncomeRateList = useMasterDataIncomeRate();
   const masterIncomeSourceList = useMasterDataIncomeSource();
   const masterInvestmentPurposeList = useMasterDataInvestmentPurpose();
@@ -55,8 +61,12 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
     const { data } = response;
     if(!data) { return {}; }
+
+    // setValue();
     return data;
   }
+
+  const toggleFormMode = () => { setIsEditing((current) => !current); }
 
   const onSubmitForm = (fieldsData: StoreTypeKycCdd.PersonalInfoFormFields) => {
     reduxDispatcher(savePersonalInfo(fieldsData));
@@ -88,7 +98,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             type: 'select',
             label: 'คำนำหน้า', viewText: _titleTh,
             name: 'titleTh',
-            options: masterDataTitleList.data || []
+            options: masterTitleList.data || []
           },
           {
             type: 'text',
@@ -116,9 +126,15 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             name: 'lastnameEn'
           },
           {
-            type: 'text',
+            type: 'autocomplete',
             label: 'อาชีพ', viewText: _occupation,
-            name: 'occupation'
+            name: 'occupation', value: selectedOccupation,
+            options: masterOccupationList.data || [],
+            searchMethod: 'contain',
+            onSelect: (selectedItem: ComboBoxWrapperOption) => {
+              setSelectedOccupation(selectedItem);
+              setValue('occupation', selectedItem.value);
+            }
           },
           {
             type: 'select',
@@ -134,10 +150,15 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             options: masterIncomeSourceList.data || []
           },
           {
-            type: 'select',
+            type: 'autocomplete',
             label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: _incomeCountry,
-            name: 'incomeCountry',
-            options: masterCountryList.data || []
+            name: 'incomeCountry', value: selectedIncomeCountry,
+            options: masterCountryList.data || [],
+            searchMethod: 'contain',
+            onSelect: (selectedItem: ComboBoxWrapperOption) => {
+              setSelectedIncomeCountry(selectedItem);
+              setValue('incomeCountry', selectedItem.value);
+            }
           },
           {
             type: 'number',
@@ -158,9 +179,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
   return (
     <Fragment>
-      <div className={'my-4 border-b-2 border-b-slate-500'}>
-        <strong className={'text-xl text-success-500'}>ข้อมูลส่วนตัว</strong>
-      </div>
+      <SectionSeparator title={'ข้อมูลส่วนตัว'} hasEditAction={ !isEditing } onClickEdit={ toggleFormMode } />
 
       {
         (isLoading)

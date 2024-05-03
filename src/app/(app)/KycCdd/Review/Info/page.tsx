@@ -15,7 +15,8 @@ import { useRouter } from 'next/navigation';
 import { Button, Grid } from '@mui/material';
 
 import { InputCheckbox } from '@/components/input-checkbox';
-import TabNavbar from '@/components/navbar/tab-navbar';
+import { Stepper } from '@/components/stepper';
+import TabNav from '@/components/navbar/tab-navbar';
 import { useAppSelector } from '@/libs/redux/hook';
 
 import {
@@ -176,7 +177,7 @@ const Page = (): ReactElement => {
 
   return (
     <Fragment>
-      <TabNavbar list={ stepData } onChange={ onChangeStep } />
+      <Stepper disabled steps={ stepData } currentStepIndex={ stepIndex } onChangeStep={ onChangeStep } />
       <div className={'p-4'}>
         { renderSearchCorporateId() }
         { renderStepperView() }
