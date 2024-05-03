@@ -102,6 +102,7 @@ const Page = (): ReactElement => {
               /> */}
               <InputText
                 name={'corporateId'}
+                disabled={ stepIndex !== 0 }
                 onChange={ onChangeCorporateId }
               />
             </Grid>

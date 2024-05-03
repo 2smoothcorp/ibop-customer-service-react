@@ -37,7 +37,8 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
 
   const { data: spouseInfo, isLoading } = useQuery({
     queryFn: () => fetchGetSpouse(),
-    queryKey: ['kyccdd-spouse-info', corporateId]
+    queryKey: ['kyccdd-spouse-info', corporateId],
+    enabled: !!corporateId
   });
 
   useEffect(() => { }, []);
