@@ -20,8 +20,17 @@ const Postcode = {
   foreign: '99999'
 }
 
+const MaritaiStatus = {
+  /** @return 'SINGLE' */
+  single: 'SINGLE',
+
+  /** @return 'MARRIED' */
+  married: 'MARRIED'
+}
+
 export const Codex = {
   AddressType,
   Country,
-  Postcode
+  Postcode,
+  MaritaiStatus
 }
