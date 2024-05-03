@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 // Define a type for the slice state
-export interface CusomterInformationState {
+export interface CustomerInformationState {
     personalInfo: PersonalInfo,
     spouseInfo: SpouseInfo,
     addressByType: AddressInfo,
@@ -83,7 +83,7 @@ interface PoliticRelationInfo {
 }
 
 // Define the initial state using that type
-const initialState: CusomterInformationState = {
+const initialState: CustomerInformationState = {
     personalInfo: {
         personType: '',
         personTypeCode: '',
@@ -195,7 +195,7 @@ export const customerInformationSlice = createSlice({
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     reducers: {
-        setDataCustomerInformation: (state, action: PayloadAction<CusomterInformationState>) => {
+        setDataCustomerInformation: (state, action: PayloadAction<CustomerInformationState>) => {
             const { personalInfo, spouseInfo, addressByType, addressByCurrent, occupationInfo, politicRelationInfo } = action.payload
             state.personalInfo = personalInfo
             state.spouseInfo = spouseInfo
