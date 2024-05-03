@@ -35,7 +35,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
   const [ selectedOccupation, setSelectedOccupation ] = useState<ComboBoxWrapperOption>();
   const [ selectedIncomeCountry, setSelectedIncomeCountry ] = useState<ComboBoxWrapperOption>();
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit, setValue: setFormValue } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
+  const { register, handleSubmit, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
     mode: 'onSubmit',
     resolver: undefined
   });
@@ -120,33 +120,33 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           {
             type: 'select',
             label: 'คำนำหน้า', viewText: _titleTh,
-            name: 'titleTh',
+            name: 'titleTh', value: getFormValue('titleTh'),
             options: masterTitleList.data || []
           },
           {
             type: 'text',
             label: 'ชื่อ (ภาษาไทย)', viewText: _firstNameTh,
-            name: 'firstnameTh'
+            name: 'firstnameTh', value: getFormValue('firstnameTh'),
           },
           {
             type: 'text',
             label: 'นามสกุล (ภาษาไทย)', viewText: _lastNameTh,
-            name: 'lastnameTh'
+            name: 'lastnameTh', value: getFormValue('lastnameTh'),
           },
           {
             type: 'text',
             label: 'ประเทศเจ้าของสัญชาติ ', viewText: _nationality,
-            name: 'nationality'
+            name: 'nationality', value: getFormValue('nationality'),
           },
           {
             type: 'text',
             label: 'ชื่อ (ภาษาอังกฤษ)', viewText: _firstNameEn,
-            name: 'firstnameEn'
+            name: 'firstnameEn', value: getFormValue('firstnameEn'),
           },
           {
             type: 'text',
             label: 'นามสกุล (ภาษาอังกฤษ)', viewText: _lastNameEn,
-            name: 'lastnameEn'
+            name: 'lastnameEn', value: getFormValue('lastnameEn'),
           },
           {
             type: 'autocomplete',
@@ -162,14 +162,14 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           {
             type: 'select',
             label: 'รายได้รวมต่อเดือน', viewText: `${ _incomeRate }`,
-            name: 'incomeRate',
+            name: 'incomeRate', value: getFormValue('incomeRate'),
             options: masterIncomeRateList.data || []
           },
           {
             type: 'checkbox',
             label: 'แหล่งที่มาของรายได้', viewText: _incomeSource,
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {}),
-            name: 'incomeSource',
+            name: 'incomeSource', value: getFormValue('incomeSource'),
             options: masterIncomeSourceList.data || []
           },
           {
@@ -186,13 +186,13 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           {
             type: 'number',
             label: 'ประสบการณ์การลงทุน (ปี)', viewText: `${ _investmentYear }`,
-            name: 'exp'
+            name: 'exp', value: getFormValue('exp')
           },
           {
             type: 'checkbox',
             label: 'วัตถุประสงค์การลงทุน', viewText: _investmentPurpose,
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {}),
-            name: 'investmentPurpose',
+            name: 'investmentPurpose', value: getFormValue('investmentPurpose'),
             options: masterInvestmentPurposeList.data || []
           }
         ]}

@@ -82,9 +82,13 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
         onSubmit={ handleSubmit(onSubmitForm) }
         fields={[
           {
-            type: 'text',
+            type: 'radio',
             label: 'สถานสภาพสมรส', viewText: _maritalStatusText,
-            name: 'maritalStatus', value: _maritalStatusInitValue
+            name: 'maritalStatus', value: _maritalStatusInitValue,
+            options: [
+              { label: 'โสด', value: 'SINGLE' },
+              { label: 'สมรส', value: 'MARRIED' }
+            ]
           },
           {
             type: 'text',
