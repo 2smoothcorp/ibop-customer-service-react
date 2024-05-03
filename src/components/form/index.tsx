@@ -163,7 +163,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
                     variant={'contained'}
                     className={'bg-neutral-200 hover:bg-neutral-200 hover:brightness-95 text-xl text-black py-0 w-25 h-10'}
                   >
-                    ย้อนกลับ
+                    ล้างค่า
                   </Button>
                   <Button type={'submit'} variant={'contained'} className={'text-xl py-0 w-25 h-10'}>
                     บันทึก
