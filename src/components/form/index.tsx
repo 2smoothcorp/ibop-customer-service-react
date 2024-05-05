@@ -80,7 +80,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
   const renderInput = (info: FormInternalTypeDef.InputField<DynamicField>): ReactElement => {
     const { hookForm: { register, errors } } = props;
     const { type, name, value, disabled } = info;
-    const errorMsg = (errors) ? `${ errors[name]?.message }` : '';
+    const errorMsg = (errors) ? `${ errors[name]?.message || '' }` : '';
     switch(type) {
       case 'text': {
         const {} = info;

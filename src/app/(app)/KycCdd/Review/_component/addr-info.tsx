@@ -18,7 +18,7 @@ import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
 import { SectionSeparator } from '@/components/section-separator';
 import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
-import { useThailandAddress, addressEmptyOption, addressForeignOption, type ThaiAddrInfo } from '@/hooks/thailand-address';
+import { useThailandAddress, getSingleThailandAddress, addressEmptyOption, addressForeignOption, type ThaiAddrInfo } from '@/hooks/thailand-address';
 import { useAppDispatch } from '@/libs/redux/hook';
 import { type StoreTypeKycCdd, saveCurrentAddressInfo, saveWorkAddressInfo } from '@/libs/redux/store/kyc-cdd';
 import type { ComboBoxWrapperOption } from '@/type/api';
@@ -102,6 +102,13 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       setFormValue('currentAddr_customAddress2', customAddress2 || '');
       setFormValue('currentAddr_customAddress3', customAddress3 || '');
 
+      if(countryCode === '000') {
+        setSelectedCurrentAddrCountry({ label: '000 - ไทย', value: '000' });
+      }
+
+      const _addr = getSingleThailandAddress({ po: zipCode || '', p: provinceCode || '', d: districtCode || '', s: subDistrictCode || '' });
+      setSelectedCurrentThAddr(_addr);
+
       const _refined = removeObjectKeyPrefix({ obj: getFormValue(), prefix: 'currentAddr_' });;
       reduxDispatcher(saveCurrentAddressInfo(_refined));
     }
@@ -140,6 +147,13 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       setFormValue('workAddr_customAddress1', customAddress1 || '');
       setFormValue('workAddr_customAddress2', customAddress2 || '');
       setFormValue('workAddr_customAddress3', customAddress3 || '');
+
+      if(countryCode === '000') {
+        setSelectedWorkAddrCountry({ label: '000 - ไทย', value: '000' });
+      }
+
+      const _addr = getSingleThailandAddress({ po: zipCode || '', p: provinceCode || '', d: districtCode || '', s: subDistrictCode || '' });
+      setSelectedWorkThAddr(_addr);
 
       const _refined = removeObjectKeyPrefix({ obj: getFormValue(), prefix: 'workAddr_' });;
       reduxDispatcher(saveCurrentAddressInfo(_refined));
