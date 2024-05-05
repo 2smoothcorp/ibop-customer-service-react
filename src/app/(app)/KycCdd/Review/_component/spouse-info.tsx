@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
@@ -23,12 +24,14 @@ import { type StoreTypeKycCdd, saveSpouseInfo } from '@/libs/redux/store/kyc-cdd
 import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/customer-service';
 import { Codex } from '@/utils/codex';
 
+import { FormSchemaSpouseInfo } from './_form-schema';
+
 export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
   const [ maritalStatus, setMaritalStatus ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit, watch: watchFormValue, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
+  const { register, handleSubmit, formState, watch: watchFormValue, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
     mode: 'onSubmit',
-    resolver: undefined
+    resolver: zodResolver(FormSchemaSpouseInfo)
   });
 
   const reduxDispatcher = useAppDispatch();
@@ -74,6 +77,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
   }
 
   const renderFormSpouse = () => {
+    const { errors } = formState;
     const _maritalStatusText = spouseInfo?.familyStatus || '-';
     const _refTypeText = spouseInfo?.spouseReferenceType || '-';
     const _refTypeInitValue = spouseInfo?.spouseReferenceType || undefined;
@@ -88,7 +92,7 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
       <Form<StoreTypeKycCdd.SpouseFormFields>
         isEditing={isEditing}
         baseColSpan={4}
-        register={register}
+        hookForm={{ register, errors }}
         onSubmit={handleSubmit(onSubmitForm)}
         fields={[
           {
@@ -96,8 +100,8 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
             label: 'สถานสภาพสมรส', viewText: _maritalStatusText,
             name: 'maritalStatus', value: watchFormValue('maritalStatus'),
             options: [
-              { label: 'โสด', value: Codex.MaritaiStatus.single },
-              { label: 'สมรส', value: Codex.MaritaiStatus.married }
+              { label: 'โสด', value: Codex.MaritalStatus.single },
+              { label: 'สมรส', value: Codex.MaritalStatus.married }
             ],
             onSelect: (selected) => {
               setFormValue('maritalStatus', selected);
@@ -108,33 +112,33 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
             type: 'select',
             label: 'ประเภทหลักฐาน', viewText: _refTypeText,
             name: 'refType', value: _refTypeInitValue,
-            isHidden: maritalStatus !== Codex.MaritaiStatus.married,
+            isHidden: maritalStatus !== Codex.MaritalStatus.married,
             options: masterReferenceTypeList.data || []
           },
           {
             type: 'text',
             label: 'เลขทีบัตร', viewText: _refIdText,
             name: 'refId', value: _refIdInitValue,
-            isHidden: maritalStatus !== Codex.MaritaiStatus.married
+            isHidden: maritalStatus !== Codex.MaritalStatus.married
           },
           {
             type: 'select',
             label: 'คำนำหน้า', viewText: _titleText,
             name: 'title', value: watchFormValue('title'),
             options: masterTitleList.data || [],
-            isHidden: maritalStatus !== Codex.MaritaiStatus.married
+            isHidden: maritalStatus !== Codex.MaritalStatus.married
           },
           {
             type: 'text',
             label: 'ชื่อ', viewText: _firstnameText,
             name: 'firstname', value: _firstnameInitValue,
-            isHidden: maritalStatus !== Codex.MaritaiStatus.married
+            isHidden: maritalStatus !== Codex.MaritalStatus.married
           },
           {
             type: 'text',
             label: 'นามสกุล', viewText: _lastnameText,
             name: 'lastname', value: _lastnameInitValue,
-            isHidden: maritalStatus !== Codex.MaritaiStatus.married
+            isHidden: maritalStatus !== Codex.MaritalStatus.married
           }
         ]}
       />

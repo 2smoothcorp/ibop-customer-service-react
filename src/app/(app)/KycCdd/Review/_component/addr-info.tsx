@@ -12,18 +12,21 @@ import {
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AppLoader } from '@/components/app-loader';
 import { Form } from '@/components/form';
 import { SectionSeparator } from '@/components/section-separator';
 import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
-import { useThailandAddress, addressEmptyOption, addressForeignOption, type ThaiAddrInfo } from '@/hooks/thailand-address';
+import { useThailandAddress, getSingleThailandAddress, addressEmptyOption, addressForeignOption, type ThaiAddrInfo } from '@/hooks/thailand-address';
 import { useAppDispatch } from '@/libs/redux/hook';
 import { type StoreTypeKycCdd, saveCurrentAddressInfo, saveWorkAddressInfo } from '@/libs/redux/store/kyc-cdd';
 import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycAddressOutputListDataResponse } from '@/services/rest-api/customer-service';
 import { Codex } from '@/utils/codex';
 import { removeObjectKeyPrefix } from '@/utils/remove-object-key-prefix';
+
+import { FormSchemaCurrentAddress, FormSchemaWorkAddress } from './_form-schema';
 
 export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => {
   const [ isEditingCurrentAddr, setIsEditingCurrentAddr ] = useState(false);
@@ -39,12 +42,12 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
   const currentAddrHookForm = useForm<StoreTypeKycCdd.CurrentAddrFormFields>({
     mode: 'onSubmit',
-    resolver: undefined
+    resolver: zodResolver(FormSchemaCurrentAddress)
   });
 
   const workAddrHookForm = useForm<StoreTypeKycCdd.WorkAddrFormFields>({
     mode: 'onSubmit',
-    resolver: undefined
+    resolver: zodResolver(FormSchemaWorkAddress)
   });
 
   const { data: addressList, isLoading } = useQuery({
@@ -99,6 +102,13 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       setFormValue('currentAddr_customAddress2', customAddress2 || '');
       setFormValue('currentAddr_customAddress3', customAddress3 || '');
 
+      if(countryCode === '000') {
+        setSelectedCurrentAddrCountry({ label: '000 - ไทย', value: '000' });
+      }
+
+      const _addr = getSingleThailandAddress({ po: zipCode || '', p: provinceCode || '', d: districtCode || '', s: subDistrictCode || '' });
+      setSelectedCurrentThAddr(_addr);
+
       const _refined = removeObjectKeyPrefix({ obj: getFormValue(), prefix: 'currentAddr_' });;
       reduxDispatcher(saveCurrentAddressInfo(_refined));
     }
@@ -138,6 +148,13 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       setFormValue('workAddr_customAddress2', customAddress2 || '');
       setFormValue('workAddr_customAddress3', customAddress3 || '');
 
+      if(countryCode === '000') {
+        setSelectedWorkAddrCountry({ label: '000 - ไทย', value: '000' });
+      }
+
+      const _addr = getSingleThailandAddress({ po: zipCode || '', p: provinceCode || '', d: districtCode || '', s: subDistrictCode || '' });
+      setSelectedWorkThAddr(_addr);
+
       const _refined = removeObjectKeyPrefix({ obj: getFormValue(), prefix: 'workAddr_' });;
       reduxDispatcher(saveCurrentAddressInfo(_refined));
     }
@@ -167,7 +184,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
   }
 
   const renderFormCurrentAddress = () => {
-    const { register, handleSubmit, watch: watchFormValue, setValue: setFormValue } = currentAddrHookForm;
+    const { register, handleSubmit, watch: watchFormValue, setValue: setFormValue, formState: { errors } } = currentAddrHookForm;
     const _info = addressList?.currentAddr;
     const _addressNo = _info?.addressNo || '-';
     const _moo = _info?.moo || '-';
@@ -190,7 +207,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       <Form<StoreTypeKycCdd.CurrentAddrFormFields>
         isEditing={isEditingCurrentAddr}
         baseColSpan={4}
-        register={register}
+        hookForm={{ register, errors }}
         onSubmit={handleSubmit(onSubmitCurrentAddrForm)}
         fields={[
           {
@@ -333,7 +350,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
   }
 
   const renderFormWorkAddress = () => {
-    const { register, handleSubmit, watch: watchFormValue, setValue: setFormValue } = workAddrHookForm;
+    const { register, handleSubmit, watch: watchFormValue, setValue: setFormValue, formState: { errors } } = workAddrHookForm;
     const _info = addressList?.workAddr;
     const _addressNo = _info?.addressNo || '-';
     const _moo = _info?.moo || '-';
@@ -355,7 +372,7 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
       <Form<StoreTypeKycCdd.WorkAddrFormFields>
         isEditing={isEditingWorkAddr}
         baseColSpan={4}
-        register={register}
+        hookForm={{ register, errors }}
         onSubmit={handleSubmit(onSubmitWorkAddrForm)}
         fields={[
           {

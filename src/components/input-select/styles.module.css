@@ -8,3 +8,8 @@
     text-xl shadow-sm placeholder-slate-400
     disabled:bg-neutral-300 disabled:cursor-default;
 }
+
+.select-input-error {
+  outline: unset !important;
+  @apply border-danger-500 !important;
+}

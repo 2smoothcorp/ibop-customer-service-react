@@ -19,8 +19,11 @@ export const Basic: Story = {
   args: {
     //👇 The args you need here will depend on your component
     name: 'storybook_checkbox',
+    errorMessage: '',
     options: [
-      { label: 'sample1', value: 'sample1', disabled: false }
-    ]
+      { label: 'sample1', value: 'sample1', disabled: false },
+      { label: 'sample2', value: 'sample2', disabled: false }
+    ],
+    onTick: (checked) => { console.log('[Storybook::InputCheckbox] Tick', checked); }
   }
 };
