@@ -19,6 +19,8 @@ export const Basic: Story = {
   args: {
     //👇 The args you need here will depend on your component
     name: 'storybook_number',
-    disabled: false
+    disabled: false,
+    errorMessage: '',
+    onChange: (value: number) => { console.log('[Storybook::InputNumber] Changed value', value); }
   }
 };

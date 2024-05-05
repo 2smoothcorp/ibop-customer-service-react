@@ -7,6 +7,7 @@
 import {
   type ReactElement,
   type ChangeEvent,
+  Fragment,
   useEffect
 } from 'react';
 import {
@@ -53,23 +54,27 @@ export const InputNumber = (props: InputNumberProps): ReactElement => {
   }
 
   return (
-    <NumericFormat
-      decimalScale={0}
-      decimalSeparator={'.'}
-      thousandSeparator={','}
-      inputMode={'numeric'}
-      { ...props }
-      
-      className={[ styles['number-input'], props.className ].join(' ')}
+    <Fragment>
+      <NumericFormat
+        decimalScale={0}
+        decimalSeparator={'.'}
+        thousandSeparator={','}
+        inputMode={'numeric'}
+        { ...props }
+        
+        className={[ styles['number-input'], (props.errorMessage) ? styles['number-input-error'] : '', props.className ].join(' ')}
 
-      { ...(registerHookForm() || { onChange: onChangeText }) }
-      getInputRef={ registerHookForm()?.ref }
-    />
+        { ...(registerHookForm() || { onChange: onChangeText }) }
+        getInputRef={ registerHookForm()?.ref }
+      />
+      { (props.errorMessage) && (<div className={'text-danger-500'}>{ props.errorMessage }</div>) }
+    </Fragment>
   );
 }
 
-type InputNumberProps = NumericFormatProps & {
+type InputNumberProps = Omit<NumericFormatProps, 'onChange'> & {
   name: string;
+  errorMessage?: string;
   onChange?: (value: number) => void;
   register?: UseFormRegister<any>;
   registerOption?: RegisterOptions;

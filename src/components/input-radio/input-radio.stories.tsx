@@ -19,8 +19,11 @@ export const Basic: Story = {
   args: {
     //👇 The args you need here will depend on your component
     name: 'storybook_radio',
+    errorMessage: '',
+    row: false,
     options: [
-      { label: 'sample1', value: 'sample1', disabled: false }
-    ]
+      { label: 'sample1', value: 'sample1', disabled: false },
+      { label: 'sample2', value: 'sample2', disabled: false }
+    ],
   }
 };

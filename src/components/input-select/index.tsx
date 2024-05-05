@@ -4,7 +4,7 @@
 
 'use client'
 
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, Fragment, useEffect } from 'react';
 import {
   type SelectProps,
   type SelectChangeEvent,
@@ -48,23 +48,27 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
   }
 
   return (
-    <Select
-      { ...props }
-      className={ styles['select-input'] }
-      inputProps={{ 'aria-label': 'Without label' }}
-      { ...(registerHookForm() || { onChange: onChangeSelection }) }
-    >
-      <MenuItem value={''}>
-        -- กรุณาเลือก --
-      </MenuItem>
-      { generateOptions() }
-    </Select>
+    <Fragment>
+      <Select
+        { ...props }
+        className={[ styles['select-input'], (props.errorMessage) ? styles['select-input-error'] : '' ].join(' ')}
+        inputProps={{ 'aria-label': 'Without label' }}
+        { ...(registerHookForm() || { onChange: onChangeSelection }) }
+      >
+        <MenuItem value={''}>
+          -- กรุณาเลือก --
+        </MenuItem>
+        { generateOptions() }
+      </Select>
+      { (props.errorMessage) && (<div className={'text-danger-500'}>{ props.errorMessage }</div>) }
+    </Fragment>
   );
 }
 
 type InputSelectProps = SelectProps<any> & {
   name: string;
   options: Array<SelectOption>;
+  errorMessage?: string;
   onSelect?: (selected: string) => void;
   register?: UseFormRegister<any>;
   registerOption?: RegisterOptions;

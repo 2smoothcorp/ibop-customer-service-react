@@ -20,8 +20,10 @@ export const Basic: Story = {
   args: {
     //👇 The args you need here will depend on your component
     name: 'storybook_select',
+    errorMessage: '',
     options: [
-      { label: 'sample1', value: 'sample1' }
+      { label: 'sample1', value: 'sample1' },
+      { label: 'sample2', value: 'sample2' }
     ]
   }
 };

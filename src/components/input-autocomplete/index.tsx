@@ -4,7 +4,7 @@
 
 'use client'
 
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, Fragment, useEffect, useState } from 'react';
 import {
   Autocomplete,
   TextField
@@ -60,19 +60,22 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
   }
 
   return (
-    <Autocomplete disablePortal
-      renderInput={(inputProps) => (<TextField { ...inputProps } />)}
-      options={ inputOptions }
-      value={ props.selectedOption }
-      loading={ props.loading || isLoading }
-      disabled={ props.disabled }
-      getOptionKey={ props.getOptionKey }
-      getOptionLabel={ props.getOptionLabel }
-      onInputChange={(_, text) => { onChangeSearchText(text); }}
-      renderOption={ (props.isAddress) ? (liProps, item) => (<li {...liProps}>{ item.label }</li>) : undefined }
-      
-      { ...(registerHookForm() || { onChange: (_, selected: any) => { onSelectOption(selected); } }) }
-    />
+    <Fragment>
+      <Autocomplete disablePortal
+        renderInput={(inputProps) => (<TextField { ...inputProps } />)}
+        options={ inputOptions }
+        value={ props.selectedOption }
+        loading={ props.loading || isLoading }
+        disabled={ props.disabled }
+        getOptionKey={ props.getOptionKey }
+        getOptionLabel={ props.getOptionLabel }
+        onInputChange={(_, text) => { onChangeSearchText(text); }}
+        renderOption={ (props.isAddress) ? (liProps, item) => (<li {...liProps}>{ item.label }</li>) : undefined }
+        
+        { ...(registerHookForm() || { onChange: (_, selected: any) => { onSelectOption(selected); } }) }
+      />
+      {/* <div className={'text-danger-500'}>{ props.errorMessage }</div> */}
+    </Fragment>
   );
 }
 
@@ -80,6 +83,7 @@ interface InputAutocompleteProps {
   isAddress?: boolean;
   name: string;
   options: Array<AutoCompleteOption>;
+  errorMessage?: string;
   selectedOption?: any;
   disabled?: boolean;
   loading?: boolean

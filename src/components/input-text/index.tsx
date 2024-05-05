@@ -7,6 +7,7 @@
 import {
   type ReactElement,
   type ChangeEvent,
+  Fragment,
   useEffect
 } from 'react';
 import type {
@@ -36,13 +37,16 @@ export const InputText = (props: InputTextProps): ReactElement => {
   }
 
   return (
-    <input
-      type={'text'}
-      className={ styles['text-input'] }
-      defaultValue={ props.defaultValue }
-      disabled={ props.disabled }
-      { ...(registerHookForm() || { onChange: onChangeText }) }
-    />
+    <Fragment>
+      <input
+        type={'text'}
+        className={[ styles['text-input'], (props.errorMessage) ? styles['text-input-error'] : '' ].join(' ')}
+        defaultValue={ props.defaultValue }
+        disabled={ props.disabled }
+        { ...(registerHookForm() || { onChange: onChangeText }) }
+      />
+      { (props.errorMessage) && (<div className={'text-danger-500'}>{ props.errorMessage }</div>) }
+    </Fragment>
   );
 }
 
@@ -51,6 +55,7 @@ interface InputTextProps {
   value?: string;
   defaultValue?: string;
   disabled?: boolean;
+  errorMessage?: string;
   onChange?: (text: string) => void;
   register?: UseFormRegister<any>;
   registerOption?: RegisterOptions;
