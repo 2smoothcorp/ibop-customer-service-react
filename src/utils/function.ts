@@ -22,16 +22,18 @@ interface ThailandAddressProps {
 }
 
 export interface AddressBySearchProps {
-    value: {
-        postCode: string;
-        province: string;
-        provinceCode: string;
-        district: string;
-        districtCode: string;
-        subDistrict: string;
-        subDistrictCode: string;
-    };
+    value: AddressValues;
     label: string;
+}
+
+export interface AddressValues {
+    postCode: string;
+    province: string;
+    provinceCode: string;
+    district: string;
+    districtCode: string;
+    subDistrict: string;
+    subDistrictCode: string;
 }
 
 export const getAddressBySearch = (search: string, mode: AddressBySearchModeProps): AddressBySearchProps[] => {

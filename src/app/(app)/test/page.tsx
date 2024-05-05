@@ -1,9 +1,14 @@
+"use client"
+
+import AddressComponent from "@/components/address";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import { AddressInfo } from "@/libs/redux/store/customer-information-slice";
-import { AddressInfoModel } from "@/services/rest-api/customer-service/models";
+import { AddressInfoModel, BeneficiaryInfoModel } from "@/services/rest-api/customer-service/models";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { Button } from "@mui/material";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
+import PersonForm from "./person-form";
 
 interface DetailSection {
     name: keyof AddressInfo
@@ -13,9 +18,11 @@ interface DetailSection {
     isEditable?: boolean
     normalize?: string
     type?: string
+    onChange?: (value: string) => void
 }
 
-const fieldList: Array<DetailSection> =
+const fieldList = ({ form }: { form: UseFormReturn<AddressInfo> }): Array<DetailSection> => (
+
     [
         {
             label: 'เลขที่',
@@ -48,9 +55,15 @@ const fieldList: Array<DetailSection> =
         {
             label: 'ประเทศ',
             name: 'countryCode',
-            type: 'autocomplete'
+            type: 'autocomplete',
+            onChange: (value) => {
+                if (value !== form.watch("countryCode")) {
+                    form.setValue('countryCode', value, { shouldDirty: true });
+                }
+            }
         }
-    ];
+    ]
+)
 
 const getValueFromFieldName = (attributeName: string, data: AddressInfoModel | undefined, normalize?: string): string => {
     if (!data) return '-'
@@ -124,21 +137,68 @@ const TestPage = () => {
         customAddress3: '',
     }
 
-    const useFormAll = useForm<AddressInfo>({
+    const personInfo: BeneficiaryInfoModel = {
+
+    }
+
+    const useFormAll = useForm<AddressInfo & BeneficiaryInfoModel>({
         defaultValues: addressInfo
     })
 
-    const { register, setValue, watch } = useFormAll;
+    const form = useFormAll;
+    const { register, setValue, watch } = form
 
     const setValueToForm = (name: keyof AddressInfo, value: any) => {
         setValue(name, value)
     }
 
-    return (<div>
+    const Address = AddressComponent({
+        isEditable: true,
+        province: {
+            name: 'province',
+            isRequired: true,
+        },
+        district: {
+            name: 'district',
+            isRequired: true,
+        },
+        subDistrict: {
+            name: 'subDistrict',
+            isRequired: true
+        },
+        zipCode: {
+            name: 'zipCode',
+            isRequired: true
+        },
+        addressValues: {
+            postCode: '10220',
+            province: '',
+            provinceCode: '',
+            district: '',
+            districtCode: '',
+            subDistrict: '',
+            subDistrictCode: '',
+        },
+        onAddressChange(address) {
+            setValue('zipCode', address.value.postCode, { "shouldDirty": true });
+            setValue('provinceCode', address.value.provinceCode, { "shouldDirty": true });
+            setValue('districtCode', address.value.districtCode, { "shouldDirty": true });
+            setValue('subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
+        },
+    })
 
+    const saveData = () => {
+        const { getValues } = useFormAll
+        console.log(`saveData fields ===> `, getValues())
+    }
+
+    return (<div>
+        <div className="grid grid-cols-3">
+            <PersonForm form={form} dataInfo={personInfo} isEditable={isEditable} />
+        </div>
         <div className="grid grid-cols-3">
             {
-                fieldList.map((detail: DetailSection, idx: number) => {
+                fieldList({ form }).map((detail: DetailSection, idx: number) => {
                     const { name, label, defaultValue, isRequired, normalize } = detail
                     const _value = getValueFromFieldName(name, addressInfo, normalize);
                     const textShow = watch(name);
@@ -157,202 +217,22 @@ const TestPage = () => {
                 })
             }
 
-            <InputHorizontal
-                label="เลขที่"
-                defaultValue={watch("addressByType.addressNo")}
-                textShow={data && normalizationData('addressNo', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="addressNo"
-                onChange={(value) => setValue('addressByType.addressNo', value, { shouldDirty: true })}
-            />
-            <InputHorizontal
-                label="หมู่ที่"
-                defaultValue={watch("addressByType.moo")}
-                textShow={data && normalizationData('moo', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="moo"
-                onChange={(value) => setValue('addressByType.moo', value, { shouldDirty: true })}
-            />
-            <InputHorizontal
-                label="หมู่บ้าน / อาคาร"
-                defaultValue={watch("addressByType.buildingOrVillage")}
-                textShow={data && normalizationData('buildingOrVillage', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="buildingOrVillage"
-                onChange={(value) => setValue('addressByType.buildingOrVillage', value, { shouldDirty: true })}
-            />
-            <InputHorizontal
-                label="เลขที่ห้อง"
-                defaultValue={watch("addressByType.roomNo")}
-                textShow={data && normalizationData('roomNo', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="roomNo"
-                onChange={(value) => setValue('addressByType.roomNo', value, { shouldDirty: true })}
-            />
-            <InputHorizontal
-                label="ชั้น"
-                defaultValue={watch("addressByType.floor")}
-                textShow={data && normalizationData('floor', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="floor"
-                onChange={(value) => setValue('addressByType.floor', value, { shouldDirty: true })}
-            />
-            <InputHorizontal
-                label="ตรอก / ซอย"
-                defaultValue={watch("addressByType.soi")}
-                textShow={data && normalizationData('soi', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="soi"
-                onChange={(value) => setValue('addressByType.soi', value, { shouldDirty: true })}
-            />
-            <InputHorizontal
-                label="ถนน"
-                defaultValue={watch("addressByType.street")}
-                textShow={data && normalizationData('street', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="street"
-                onChange={(value) => setValue('addressByType.street', value, { shouldDirty: true })}
-            />
-            <InputHorizontal
-                label="ประเทศ"
-                defaultValue={watch("addressByType.countryCode")}
-                textShow={data && normalizationData('country', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="countryCode"
-                isRequired
-                type="autocomplete"
-                list={countries}
-                onChange={(value) => {
-                    if (value !== watch("addressByType.countryCode")) {
-                        setValue('addressByType.countryCode', value, { shouldDirty: true });
-                    }
-                }}
-                placeholder="โปรดเลือกประเทศ"
-            />
-            <InputHorizontal
-                label="รหัสไปรษณีย์"
-                defaultValueAddress={address}
-                textShow={data && normalizationData('zipCode', data) || "-"}
-                isEditable={isEditable}
-                // register={register}
-                name="zipCode"
-                isRequired
-                type="addressThailand"
-                addressList={thailandAddress}
-                placeholder="โปรดเลือกประเทศ"
-                addressOptionType="postCode"
-                onChangeAddress={(item) => {
-                    setAddress(item)
-                    setAddresHook(item);
-                }}
-                onChange={(text) => {
-                    getAddress(text, 'postCode')
-                }}
-            />
             {
-                watch("addressByType.countryCode") !== '000'
-                    ?
-                    <>
-                        <InputHorizontal
-                            label="ที่อยู่ 1"
-                            defaultValue={data && normalizationData('customAddress1', data) || ""}
-                            textShow={data && normalizationData('customAddress1', data) || "-"}
-                            onChange={(value) => setValue('addressByType.customAddress1', value, { shouldDirty: true })}
-                            isEditable={isEditable}
-                            name="customAddress1"
-                            isRequired
-                        />
-                        <InputHorizontal
-                            label="ที่อยู่ 2"
-                            defaultValue={data && normalizationData('customAddress2', data) || ""}
-                            textShow={data && normalizationData('customAddress2', data) || "-"}
-                            onChange={(value) => setValue('addressByType.customAddress2', value, { shouldDirty: true })}
-                            isEditable={isEditable}
-                            name="customAddress2"
-                            isRequired
-                        />
-                        <InputHorizontal
-                            label="ที่อยู่ 3"
-                            defaultValue={data && normalizationData('customAddress3', data) || "-"}
-                            textShow={data && normalizationData('customAddress3', data) || "-"}
-                            onChange={(value) => setValue('addressByType.customAddress3', value, { shouldDirty: true })}
-                            isEditable={isEditable}
-                            name="customAddress3"
-                            isRequired
-                        />
-                    </>
-                    : <>
-                        <InputHorizontal
-                            label="จังหวัด"
-                            defaultValueAddress={address}
-                            textShow={data && normalizationData('province', data) || "-"}
-                            isEditable={isEditable}
-                            // register={register}
-                            name="provinceCode"
-                            isRequired
-                            type="addressThailand"
-                            addressList={thailandAddress}
-                            placeholder="โปรดเลือกจังหวัด"
-                            addressOptionType="province"
-                            onChangeAddress={(item) => {
-                                setAddress(item)
-                                setAddresHook(item);
-                            }}
-                            onChange={(text) => {
-                                getAddress(text, 'province')
-                            }}
-                        />
-                        <InputHorizontal
-                            label="อำเภอ / เขต"
-                            defaultValueAddress={address}
-                            textShow={data && normalizationData('district', data) || "-"}
-                            isEditable={isEditable}
-                            // register={register}
-                            name="districtCode"
-                            isRequired
-                            type="addressThailand"
-                            addressList={thailandAddress}
-                            placeholder="โปรดเลือกอำเภอ / เขต"
-                            addressOptionType="district"
-                            onChangeAddress={(item) => {
-                                setAddress(item);
-                                setAddresHook(item);
-                            }}
-                            onChange={(text) => {
-                                getAddress(text, 'district')
-                            }}
-                        />
-                        <InputHorizontal
-                            label="ตำบล / แขวง"
-                            defaultValueAddress={address}
-                            textShow={data && normalizationData('subDistrict', data) || "-"}
-                            isEditable={isEditable}
-                            // register={register}
-                            name="subDistrictCode"
-                            isRequired
-                            type="addressThailand"
-                            addressList={thailandAddress}
-                            placeholder="โปรดเลือกตำบล / แขวง"
-                            addressOptionType="subDistrict"
-                            onChangeAddress={(item) => {
-                                setAddress(item);
-                                setAddresHook(item);
-                            }}
-                            onChange={(text) => {
-                                getAddress(text, 'subDistrict')
-                            }}
-                        />
-                    </>
+                Address.ZipCode
             }
+            {
+                Address.Province
+            }
+            {
+                Address.District
+            }
+            {
+                Address.SubDistrict
+            }
+
+
         </div>
+        <Button variant="contained" onClick={saveData}>ถัดไป</Button>
     </div>)
 }
 
