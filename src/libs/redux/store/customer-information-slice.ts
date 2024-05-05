@@ -44,7 +44,7 @@ interface SpouseInfo {
     spouseLastName: string;
 }
 
-interface AddressInfo {
+export interface AddressInfo {
     addressType: '01' | '02' | '03' | '04',
     addressNo: string;
     moo: string;
