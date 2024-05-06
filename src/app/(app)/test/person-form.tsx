@@ -1,15 +1,17 @@
 import InputHorizontal from "@/components/custom/input-horizontal"
+import ReferenceTypeDDL from "@/components/dropdownlist/reference-type"
 import { BeneficiaryInfoModel } from "@/services/rest-api/customer-service"
-import { AddressInfo } from "net"
 import React, { ReactElement } from "react"
 import { UseFormReturn } from "react-hook-form"
 import IdentityForm from "./identity-form"
 import RelationShipForm from "./relationship-form"
 
 export interface PersonFormProps {
-    form: UseFormReturn<AddressInfo & BeneficiaryInfoModel>
-    dataInfo: BeneficiaryInfoModel
+    form: UseFormReturn<BeneficiaryInfoModel, any, undefined>
+    dataInfo: BeneficiaryInfoModel | null | undefined
     isEditable?: boolean
+    getValueFromFieldName: (attributeName: string, data: BeneficiaryInfoModel | undefined | null, normalize?: string) => string | boolean
+    normalizationData: (attributeName: string, data: BeneficiaryInfoModel | undefined, defaultValue: string | boolean) => string | boolean
 }
 
 interface DetailSection {
@@ -24,7 +26,7 @@ interface DetailSection {
     CustomComponent?: ReactElement
 }
 
-const fieldList = ({ form, isEditable }: { form: UseFormReturn<AddressInfo & BeneficiaryInfoModel>, isEditable?: boolean }): Array<DetailSection> => (
+const fieldList = ({ form, isEditable }: { form: UseFormReturn<BeneficiaryInfoModel>, isEditable?: boolean }): Array<DetailSection> => (
     [
         {
             label: 'ชื่อ',
@@ -45,7 +47,11 @@ const fieldList = ({ form, isEditable }: { form: UseFormReturn<AddressInfo & Ben
         },
         {
             label: 'ประเภทหลักฐานลูกค้า',
-            name: 'beneficiaryType'
+            name: 'beneficiaryType',
+            CustomComponent: <ReferenceTypeDDL
+                name="beneficiaryType"
+                isEditable={isEditable}
+            />
         },
         {
             label: 'เลขที่บัตร',
@@ -58,19 +64,9 @@ const fieldList = ({ form, isEditable }: { form: UseFormReturn<AddressInfo & Ben
     ]
 )
 
-const getValueFromFieldName = (attributeName: string, data: BeneficiaryInfoModel | undefined, normalize?: string): string | boolean => {
-    if (!data) return '-'
-    const value = data[attributeName as keyof typeof data] || '-';
-    return normalize ? normalizationData(normalize, data as BeneficiaryInfoModel, value) : value
-}
-
-const normalizationData = (attributeName: string, data: BeneficiaryInfoModel | undefined, defaultValue: string) => {
-    return defaultValue || ''
-}
-
 const PersonForm = (props: PersonFormProps) => {
 
-    const { form, dataInfo, isEditable } = props;
+    const { form, dataInfo, isEditable, getValueFromFieldName, normalizationData } = props;
     const { register, setValue, watch } = form
 
     return (<>
@@ -78,13 +74,13 @@ const PersonForm = (props: PersonFormProps) => {
             fieldList({ form, isEditable }).map((detail: DetailSection, idx: number) => {
                 const { name, label, defaultValue, isRequired, normalize, CustomComponent } = detail
                 const _value = getValueFromFieldName(name, dataInfo, normalize);
-                const textShow = watch(name);
+                const textShow = watch(name)?.toString();
 
                 if (CustomComponent) return CustomComponent
                 return <React.Fragment key={`field-item-${idx}`}>
                     <InputHorizontal
                         label={label || ''}
-                        defaultValue={_value || ''}
+                        defaultValue={_value.toString() || ''}
                         isEditable={isEditable}
                         textShow={textShow || ''}
                         name={name}

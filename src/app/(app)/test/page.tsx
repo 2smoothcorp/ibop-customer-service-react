@@ -2,16 +2,19 @@
 
 import AddressComponent from "@/components/address";
 import InputHorizontal from "@/components/custom/input-horizontal";
-import { AddressInfo } from "@/libs/redux/store/customer-information-slice";
-import { AddressInfoModel, BeneficiaryInfoModel } from "@/services/rest-api/customer-service/models";
+import InputRadio from "@/components/custom/input-radio";
+import HeaderTitle from "@/components/navbar/header-title";
+import HeaderTitleSub from "@/components/navbar/header-title-sub";
+import { BeneficiaryInfoModel } from "@/services/rest-api/customer-service/models";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { Button } from "@mui/material";
+import { useParams } from "next/navigation";
 import React from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import PersonForm from "./person-form";
 
 interface DetailSection {
-    name: keyof AddressInfo
+    name: keyof BeneficiaryInfoModel
     label: string
     defaultValue?: string
     isRequired?: boolean
@@ -21,7 +24,7 @@ interface DetailSection {
     onChange?: (value: string) => void
 }
 
-const fieldList = ({ form }: { form: UseFormReturn<AddressInfo> }): Array<DetailSection> => (
+const fieldList = ({ form }: { form: UseFormReturn<BeneficiaryInfoModel> }): Array<DetailSection> => (
 
     [
         {
@@ -65,13 +68,13 @@ const fieldList = ({ form }: { form: UseFormReturn<AddressInfo> }): Array<Detail
     ]
 )
 
-const getValueFromFieldName = (attributeName: string, data: AddressInfoModel | undefined, normalize?: string): string => {
+const getValueFromFieldName = (attributeName: string, data: BeneficiaryInfoModel | undefined | null, normalize?: string): string | boolean => {
     if (!data) return '-'
     const value = data[attributeName as keyof typeof data] || '-';
-    return normalize ? normalizationData(normalize, data as AddressInfoModel, value) : value
+    return normalize ? normalizationData(normalize, data as BeneficiaryInfoModel, value) : value
 }
 
-const normalizationData = (attributeName: string, data: AddressInfoModel | undefined, defaultValue: string) => {
+const normalizationData = (attributeName: string, data: BeneficiaryInfoModel | undefined, defaultValue: string | boolean) => {
     switch (attributeName) {
         case 'addressNo':
             return handleEmptyStringFormApi(data?.addressNo);
@@ -114,41 +117,37 @@ const addressInfo: any = {};
 
 const TestPage = () => {
 
-    const isEditable = true
+    const params = useParams()
+    const [isEditable, setIsEditable] = React.useState<boolean>(true);
+    /*
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['financialInfo', params.customerId],
+        queryFn: async function () {
+            try {
+                const { customerId } = params;
+                const request = await fetch(`/api/customer-profile/beneficiary/${customerId}`)
+                const response: BeneficiaryInfoResponseDataResponse = await request.json();
+                if (response.status == 200 && response.data && response.data.beneficiaryInfo) {
+                    return response.data.beneficiaryInfo
+                }
+                return null;
+            } catch (e) {
+                return null;
+            } finally {
+            }
+        }
+    })
+    */
+    const data: BeneficiaryInfoModel | undefined = undefined;
 
-    //const addressInfo = useAppSelector(state => state.customerInformation)
-    const addressInfo: AddressInfo = {
-        addressType: '01',
-        addressNo: '',
-        moo: '',
-        buildingOrVillage: '',
-        roomNo: '',
-        floor: '',
-        soi: '',
-        street: '',
-        country: '',
-        countryCode: '000',
-        zipCode: '',
-        provinceCode: '',
-        districtCode: '',
-        subDistrictCode: '',
-        customAddress1: '',
-        customAddress2: '',
-        customAddress3: '',
-    }
-
-    const personInfo: BeneficiaryInfoModel = {
-
-    }
-
-    const useFormAll = useForm<AddressInfo & BeneficiaryInfoModel>({
-        defaultValues: addressInfo
+    const useFormAll = useForm<BeneficiaryInfoModel>({
+        defaultValues: { ...data }
     })
 
     const form = useFormAll;
     const { register, setValue, watch } = form
 
-    const setValueToForm = (name: keyof AddressInfo, value: any) => {
+    const setValueToForm = (name: keyof BeneficiaryInfoModel, value: any) => {
         setValue(name, value)
     }
 
@@ -193,45 +192,79 @@ const TestPage = () => {
     }
 
     return (<div>
-        <div className="grid grid-cols-3">
-            <PersonForm form={form} dataInfo={personInfo} isEditable={isEditable} />
+        <HeaderTitle
+            className="gap-0"
+            title="ผู้รับผลประโยชน์ที่แท้จริง ULTIMATE BENEFICIARY"
+        />
+        <div className="px-10">
+            <HeaderTitleSub
+                title="ข้าพเจ้าเป็นเจ้าของบัญชีและเป็นผู้รับประโยชน์ที่แท้จริงจากการซื้อขายหลักทรัพย์ในบัญชีนี้"
+                isBorder={false}
+            />
+            {
+                !isEditable ?
+                    <div className="text-lg px-6 tracking-wide" >{data && data.isOwner ? 'ใช่' : 'บุคคลอื่นๆ'}</div>
+                    :
+                    <InputRadio
+                        defaultValue={watch("isOwner") ? "01" : "02"}
+                        disabled={!isEditable}
+                        onChange={(value) => setValue('isOwner', value === "01" ? true : false)}
+                        name={"addressType"}
+                        list={[
+                            { value: "01", label: 'ใช่ (รับรองว่าไม่มีบุคคลอื่น)' },
+                            { value: "02", label: 'บุคคลอื่นๆ (โปรดระบุข้างล่าง)' }
+                        ]} />
+            }
         </div>
-        <div className="grid grid-cols-3">
-            {
-                fieldList({ form }).map((detail: DetailSection, idx: number) => {
-                    const { name, label, defaultValue, isRequired, normalize } = detail
-                    const _value = getValueFromFieldName(name, addressInfo, normalize);
-                    const textShow = watch(name);
-                    return <React.Fragment key={`field-item-${idx}`}>
-                        <InputHorizontal
-                            label={label}
-                            defaultValue={_value}
-                            isEditable={isEditable}
-                            textShow={textShow}
-                            //register={register}
-                            name={name}
-                            isRequired={isRequired}
-                            onChange={(value) => setValue(name, value, { shouldDirty: true })}
-                        />
-                    </React.Fragment>
-                })
-            }
+        {
+            watch("isOwner") ?
+                <></>
+                :
+                <>
+                    <div className="grid grid-cols-3">
+                        <PersonForm form={form} dataInfo={data} isEditable={isEditable} getValueFromFieldName={getValueFromFieldName} normalizationData={normalizationData} />
+                    </div>
+                    <HeaderTitle
+                        className="gap-0"
+                        title="ที่อยู่ตามประเภทหลักฐาน"
+                    />
+                    <div className="grid grid-cols-3">
+                        {
+                            fieldList({ form }).map((detail: DetailSection, idx: number) => {
+                                const { name, label, defaultValue, isRequired, normalize } = detail
+                                const _value = getValueFromFieldName(name, addressInfo, normalize);
+                                const textShow = watch(name)?.toString();
+                                return <React.Fragment key={`field-item-${idx}`}>
+                                    <InputHorizontal
+                                        label={label}
+                                        defaultValue={_value.toString()}
+                                        isEditable={isEditable}
+                                        textShow={textShow}
+                                        //register={register}
+                                        name={name}
+                                        isRequired={isRequired}
+                                        onChange={(value) => setValue(name, value, { shouldDirty: true })}
+                                    />
+                                </React.Fragment>
+                            })
+                        }
 
-            {
-                Address.ZipCode
-            }
-            {
-                Address.Province
-            }
-            {
-                Address.District
-            }
-            {
-                Address.SubDistrict
-            }
+                        {
+                            Address.ZipCode
+                        }
+                        {
+                            Address.Province
+                        }
+                        {
+                            Address.District
+                        }
+                        {
+                            Address.SubDistrict
+                        }
+                    </div>
+                </>
+        }
 
-
-        </div>
         <Button variant="contained" onClick={saveData}>ถัดไป</Button>
     </div>)
 }
