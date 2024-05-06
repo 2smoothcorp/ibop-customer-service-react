@@ -1,11 +1,13 @@
 "use client"
 
+import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { AddressBySearchModeProps, AddressBySearchProps, AddressValues, getAddressBySearch } from "@/utils/function";
 import { ReactElement, useState } from "react";
 import InputHorizontal from "../custom/input-horizontal";
 
 export interface AddressComponentProps {
     isEditable?: boolean
+    country?: AddressProps
     province: AddressProps
     district: AddressProps
     subDistrict: AddressProps
@@ -20,9 +22,11 @@ export interface AddressProps {
     textShow?: string
     placeHolder?: string
     isRequired?: boolean
+    setValue?: (value: string) => void
 }
 
 export interface AddressComponentReturn {
+    Country: ReactElement
     Province: ReactElement
     District: ReactElement
     SubDistrict: ReactElement
@@ -31,7 +35,9 @@ export interface AddressComponentReturn {
 
 const AddressComponent = (props: AddressComponentProps): AddressComponentReturn => {
 
-    const { isEditable, province, district, subDistrict, zipCode, onAddressChange, addressValues } = props
+    const { isEditable, province, district, subDistrict, country, zipCode, onAddressChange, addressValues } = props
+
+    const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
 
     const [thailandAddress, setThailandAddress] = useState<AddressBySearchProps[]>([]);
     const [address, setAddress] = useState<AddressBySearchProps | undefined>({
@@ -62,6 +68,23 @@ const AddressComponent = (props: AddressComponentProps): AddressComponentReturn 
         setValue('contractInformation.subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
         */
     }
+
+    const Country = (
+        <InputHorizontal
+            label={country?.label || "ประเทศ"}
+            name={country?.name || ""}
+            defaultValue={country?.textShow}
+            textShow={country?.textShow || "-"}
+            isEditable={isEditable}
+            isRequired
+            type="autocomplete"
+            list={countries}
+            onChange={(value) => {
+                country?.setValue?.(value)
+            }}
+            placeholder={country?.placeHolder || "โปรดเลือกประเทศ"}
+        />
+    )
 
     const Province = (
         <InputHorizontal
@@ -152,6 +175,7 @@ const AddressComponent = (props: AddressComponentProps): AddressComponentReturn 
     )
 
     return {
+        Country,
         Province,
         District,
         SubDistrict,
