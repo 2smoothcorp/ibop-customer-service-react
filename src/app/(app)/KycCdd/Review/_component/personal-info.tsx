@@ -23,13 +23,14 @@ import { useMasterDataOccupationCustom } from '@/hooks/master-data-occupation';
 import { useMasterDataIncomeRate } from '@/hooks/master-data-income-rate';
 import { useMasterDataIncomeSource } from '@/hooks/master-data-income-source';
 import { useMasterDataInvestmentPurpose } from '@/hooks/master-data-investment-purpose';
-import { useAppDispatch } from '@/libs/redux/hook';
+import { useAppSelector, useAppDispatch } from '@/libs/redux/hook';
 import {
   type StoreTypeKycCdd,
   savePersonalInfo
 } from '@/libs/redux/store/kyc-cdd';
 import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
+import { swal } from '@/libs/sweetalert';
 import { getSingleLabelFromValue, getAggregateLabelFromValue } from '@/utils/get-label-from-value';
 
 import { FormSchemaPersonalInfo } from './_form-schema';
@@ -62,6 +63,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
   });
 
   const reduxDispatcher = useAppDispatch();
+  const kyccddStored = useAppSelector((selector) => selector.kyccdd);
   const masterTitleList = useMasterDataTitlesCustom();
   const masterCountryList = useMasterDataCountriesCustom();
   const masterOccupationList = useMasterDataOccupationCustom();
@@ -83,6 +85,38 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
 
     const { data } = response;
     if(!data) { return {}; }
+
+    if(kyccddStored) {
+      const { personalInfo } = kyccddStored;
+      const {
+        titleTh,
+        firstnameTh,
+        lastnameTh,
+        firstnameEn,
+        lastnameEn,
+        nationality,
+        occupation,
+        incomeRate,
+        incomeSource,
+        incomeCountry,
+        exp,
+        investmentPurpose
+      } = personalInfo;
+
+      setFormValue('titleTh', titleTh || '');
+      setFormValue('firstnameTh', firstnameTh || '');
+      setFormValue('lastnameTh', lastnameTh || '');
+      setFormValue('firstnameEn', firstnameEn || '');
+      setFormValue('lastnameEn', lastnameEn || '');
+      setFormValue('nationality', nationality || '');
+      setFormValue('occupation', occupation || '');
+      setFormValue('incomeRate', incomeRate || '');
+      setFormValue('incomeSource', incomeSource || []);
+      setFormValue('incomeCountry', incomeCountry || '');
+      setFormValue('exp', exp || 0);
+      setFormValue('investmentPurpose', investmentPurpose || []);
+      return data;
+    }
 
     const {
       titleCode,
@@ -117,8 +151,16 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
     setIsEditing((current) => !current);
   }
 
-  const onSubmitForm = (fieldsData: StoreTypeKycCdd.PersonalInfoFormFields) => {
+  const onSubmitForm = async (fieldsData: StoreTypeKycCdd.PersonalInfoFormFields) => {
     reduxDispatcher(savePersonalInfo(fieldsData));
+
+    await swal({
+      title: 'ยืนยันข้อมูลสำเร็จ',
+      description: 'ระบบได้ทำการบันทึกข้อมูลของคุณเรียบร้อย',
+      icon: 'success',
+      confirmButton: { text: 'เสร็จสิ้น' }
+    });
+
     toggleFormMode();
   }
 
@@ -130,6 +172,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
         baseColSpan={4}
         hookForm={{ register, errors }}
         onSubmit={ handleSubmit(onSubmitForm) }
+        onCancel={ toggleFormMode }
         fields={[
           {
             type: 'select',

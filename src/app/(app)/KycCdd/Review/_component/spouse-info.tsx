@@ -19,7 +19,8 @@ import { Form } from '@/components/form';
 import { SectionSeparator } from '@/components/section-separator';
 import { useMasterDataTitlesCustom } from '@/hooks/master-data-titles';
 import { useMasterDataReferenceCustom } from '@/hooks/master-data-reference';
-import { useAppDispatch } from '@/libs/redux/hook';
+import { swal } from '@/libs/sweetalert';
+import { useAppDispatch, useAppSelector } from '@/libs/redux/hook';
 import { type StoreTypeKycCdd, saveSpouseInfo } from '@/libs/redux/store/kyc-cdd';
 import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/customer-service';
 import { Codex } from '@/utils/codex';
@@ -48,6 +49,7 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
   });
 
   const reduxDispatcher = useAppDispatch();
+  const kyccddStored = useAppSelector((selector) => selector.kyccdd);
   const masterTitleList = useMasterDataTitlesCustom();
   const masterReferenceTypeList = useMasterDataReferenceCustom();
 
@@ -70,6 +72,25 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
 
     const { data } = response;
     if (!data) { return ({}); }
+
+    if(kyccddStored) {
+      const { spouseInfo } = kyccddStored;
+      const {
+        maritalStatus,
+        refType, refId,
+        title, firstname, lastname
+      } = spouseInfo;
+
+      setMaritalStatus(maritalStatus || '');
+      setFormValue('maritalStatus', maritalStatus || '');
+      setFormValue('title', title || '');
+      setFormValue('firstname', firstname || '');
+      setFormValue('lastname', lastname || '');
+      setFormValue('refType', refType || '');
+      setFormValue('refId', refId || '');
+
+      return data;
+    }
 
     const {
       familyStatus,
@@ -104,7 +125,8 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
         isEditing={isEditing}
         baseColSpan={4}
         hookForm={{ register, errors }}
-        onSubmit={handleSubmit(onSubmitForm)}
+        onSubmit={ handleSubmit(onSubmitForm) }
+        onCancel={ toggleFormMode }
         fields={[
           {
             type: 'radio',
