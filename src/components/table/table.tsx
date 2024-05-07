@@ -16,7 +16,7 @@ import { useMemo, useState } from 'react';
 const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
   const { totalItems, totalPages, paginationModel } = props
   const [filterModel, setFilterModel] = useState<GridFilterModel>({ items: [] });
-  const pageSizeOptions = [1, 5, 10, 25];
+  const pageSizeOptions = [10, 25, 50, 100];
 
   const gridWidth = useMemo(() => {
     const { columns } = props;
