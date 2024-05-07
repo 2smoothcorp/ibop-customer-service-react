@@ -92,6 +92,7 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
       <Form<StoreTypeKycCdd.BeneficiaryFormFields>
         isEditing={ false }
         baseColSpan={ 4 }
+        hookForm={{}}
         // register={ register }
         // onSubmit={ handleSubmit(onSubmitBeneficiaryForm) }
         fields={[
@@ -134,7 +135,7 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
           {
             type: 'text',
             label: 'เลขที่', viewText: 'test_no',
-            name: 'beneficiary_houseNumber'
+            name: 'beneficiary_addressNo'
           },
           {
             type: 'text',
@@ -144,12 +145,12 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
           {
             type: 'text',
             label: 'หมู่บ้าน / อาคาร', viewText: 'test_building',
-            name: 'beneficiary_building'
+            name: 'beneficiary_buildingOrVillage'
           },
           {
             type: 'text',
             label: 'ห้อง', viewText: 'test_room',
-            name: 'beneficiary_room'
+            name: 'beneficiary_roomNo'
           },
           {
             type: 'text',
@@ -164,51 +165,51 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
           {
             type: 'text',
             label: 'ถนน', viewText: 'test_road',
-            name: 'beneficiary_road'
+            name: 'beneficiary_street'
           },
           {
             type: 'select',
             label: 'ประเทศ', viewText: 'test_country',
-            name: 'beneficiary_country',
+            name: 'beneficiary_countryCode',
             options: []
           },
           {
             type: 'text',
             label: 'รหัสไปรษณีย์', viewText: 'test_postcode',
-            name: 'beneficiary_postcode'
+            name: 'beneficiary_zipCode'
           },
           {
             type: 'select',
             label: 'จังหวัด', viewText: 'test_province',
-            name: 'beneficiary_province', disabled: false,
+            name: 'beneficiary_provinceCode', disabled: false,
             options: []
           },
           {
             type: 'select',
             label: 'อำเภอ / เขต', viewText: 'test_district',
-            name: 'beneficiary_district', disabled: true,
+            name: 'beneficiary_districtCode', disabled: true,
             options: []
           },
           {
             type: 'select',
             label: 'ตำบล / แขวง', viewText: 'test_subdistrict',
-            name: 'beneficiary_subDistrict', disabled: true,
+            name: 'beneficiary_subDistrictCode', disabled: true,
             options: []
           },
           {
             type: 'text',
             label: 'ที่อยู่ 1', viewText: 'test_addr1',
-            name: 'beneficiary_addr1'
+            name: 'beneficiary_customAddress1'
           },
           {
             type: 'text',
             label: 'ที่อยู่ 2', viewText: 'test_addr2',
-            name: 'beneficiary_addr2'
+            name: 'beneficiary_customAddress2'
           },
           {
             type: 'text',
             label: 'ที่อยู่ 3', viewText: 'test_addr3',
-            name: 'beneficiary_addr3'
+            name: 'beneficiary_customAddress3'
           }
         ]}
       />
@@ -259,6 +260,7 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
         <Form<StoreTypeKycCdd.AttorneyFormFields>
           isEditing={ false }
           baseColSpan={ 4 }
+          hookForm={{}}
           // register={ register }
           // onSubmit={ handleSubmit(onSubmitAttorneyForm) }
           fields={[
@@ -307,7 +309,7 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
             {
               type: 'text',
               label: 'เลขที่', viewText: _addressNo,
-              name: 'attorney_houseNumber'
+              name: 'attorney_addressNo'
             },
             {
               type: 'text',
@@ -317,12 +319,12 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
             {
               type: 'text',
               label: 'หมู่บ้าน / อาคาร', viewText: _buildingOrVillage,
-              name: 'attorney_building'
+              name: 'attorney_buildingOrVillage'
             },
             {
               type: 'text',
               label: 'ห้อง', viewText: _roomNo,
-              name: 'attorney_room'
+              name: 'attorney_roomNo'
             },
             {
               type: 'text',
@@ -337,51 +339,51 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
             {
               type: 'text',
               label: 'ถนน', viewText: _street,
-              name: 'attorney_road'
+              name: 'attorney_street'
             },
             {
               type: 'select',
               label: 'ประเทศ', viewText: _country,
-              name: 'attorney_country',
+              name: 'attorney_countryCode',
               options: []
             },
             {
               type: 'text',
               label: 'รหัสไปรษณีย์', viewText: _postCode,
-              name: 'attorney_postcode'
+              name: 'attorney_zipCode'
             },
             {
               type: 'select',
               label: 'จังหวัด', viewText: _province,
-              name: 'attorney_province', disabled: false,
+              name: 'attorney_provinceCode', disabled: false,
               options: []
             },
             {
               type: 'select',
               label: 'อำเภอ / เขต', viewText: _amphur,
-              name: 'attorney_district', disabled: true,
+              name: 'attorney_districtCode', disabled: true,
               options: []
             },
             {
               type: 'select',
               label: 'ตำบล / แขวง', viewText: _tambon,
-              name: 'attorney_subDistrict', disabled: true,
+              name: 'attorney_subDistrictCode', disabled: true,
               options: []
             },
             {
               type: 'text',
               label: 'ที่อยู่ 1', viewText: _customAddr1,
-              name: 'attorney_addr1'
+              name: 'attorney_customAddress1'
             },
             {
               type: 'text',
               label: 'ที่อยู่ 2', viewText: _customAddr2,
-              name: 'attorney_addr2'
+              name: 'attorney_customAddress2'
             },
             {
               type: 'text',
               label: 'ที่อยู่ 3', viewText: _customAddr3,
-              name: 'attorney_addr3'
+              name: 'attorney_customAddress3'
             }
           ]}
         />

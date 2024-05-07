@@ -34,6 +34,7 @@ import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer
 import { FormSchemaPersonalInfo } from './_form-schema';
 
 export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactElement => {
+  const [ selectedNationality, setSelectedNationality ] = useState<ComboBoxWrapperOption>();
   const [ selectedOccupation, setSelectedOccupation ] = useState<ComboBoxWrapperOption>();
   const [ selectedIncomeCountry, setSelectedIncomeCountry ] = useState<ComboBoxWrapperOption>();
   const [ isEditing, setIsEditing ] = useState(false);
@@ -110,13 +111,13 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     const _lastNameTh = personalData?.lastNameTh || '-';
     const _firstNameEn = personalData?.firstNameEn || '-';
     const _lastNameEn = personalData?.lastNameEn || '-';
-    const _nationality = `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
-    const _occupation = `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
+    // const _nationality = `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
+    // const _occupation = `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
     const _incomeRate = `${ personalData?.incomeRateCode || '' } - ${ personalData?.incomeRateDesc || '' }`.trim();
-    const _incomeSource = personalData?.incomeSourceDesc || '-';
-    const _incomeCountry = personalData?.incomeCountry || '-';
+    // const _incomeSource = personalData?.incomeSourceDesc || '-';
+    // const _incomeCountry = personalData?.incomeCountry || '-';
     const _investmentYear = personalData?.investmentYear || 0;
-    const _investmentPurpose = (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '-' : personalData?.investmentPurposeDesc || '-';
+    // const _investmentPurpose = (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '-' : personalData?.investmentPurposeDesc || '-';
 
     return (
       <Form<StoreTypeKycCdd.PersonalInfoFormFields>
@@ -142,9 +143,15 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
             name: 'lastnameTh', value: watchFormValue('lastnameTh'),
           },
           {
-            type: 'text',
-            label: 'ประเทศเจ้าของสัญชาติ ', viewText: watchFormValue('nationality') || _nationality,
-            name: 'nationality', value: watchFormValue('nationality'),
+            type: 'autocomplete',
+            label: 'ประเทศเจ้าของสัญชาติ ', viewText: (masterCountryList.data || []).find((_f) => _f.value === watchFormValue('nationality'))?.label || '-',
+            name: 'nationality', value: selectedNationality,
+            options: masterCountryList.data || [],
+            searchMethod: 'contain',
+            onSelect: (selectedItem: ComboBoxWrapperOption) => {
+              setSelectedNationality(selectedItem);
+              setFormValue('nationality', selectedItem.value);
+            }
           },
           {
             type: 'text',
@@ -158,7 +165,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           },
           {
             type: 'autocomplete',
-            label: 'อาชีพ', viewText: _occupation,
+            label: 'อาชีพ', viewText: (masterOccupationList.data || []).find((_f) => _f.value === watchFormValue('occupation'))?.label || '-',
             name: 'occupation', value: selectedOccupation,
             options: masterOccupationList.data || [],
             searchMethod: 'contain',
@@ -175,14 +182,14 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           },
           {
             type: 'checkbox',
-            label: 'แหล่งที่มาของรายได้', viewText: (watchFormValue('incomeSource') || []).join(', ') || _incomeSource,
+            label: 'แหล่งที่มาของรายได้', viewText: (masterIncomeSourceList.data || []).filter((_f) => (watchFormValue('incomeSource') || []).includes(_f.value)).map((item) => item.label).join(', '),
             name: 'incomeSource', value: watchFormValue('incomeSource'),
             options: masterIncomeSourceList.data || [],
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {})
           },
           {
             type: 'autocomplete',
-            label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: _incomeCountry,
+            label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: (masterCountryList.data || []).find((_f) => _f.value === watchFormValue('incomeCountry'))?.label || '-',
             name: 'incomeCountry', value: selectedIncomeCountry,
             options: masterCountryList.data || [],
             searchMethod: 'contain',
@@ -198,7 +205,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           },
           {
             type: 'checkbox',
-            label: 'วัตถุประสงค์การลงทุน', viewText: (watchFormValue('investmentPurpose') || []).join(', ') || _investmentPurpose,
+            label: 'วัตถุประสงค์การลงทุน', viewText: (masterIncomeSourceList.data || []).filter((_f) => (watchFormValue('investmentPurpose') || []).includes(_f.value)).map((item) => item.label).join(', '),
             name: 'investmentPurpose', value: watchFormValue('investmentPurpose'),
             options: masterInvestmentPurposeList.data || [],
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {})
