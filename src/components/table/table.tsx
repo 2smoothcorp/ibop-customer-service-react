@@ -67,6 +67,22 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
     return `${(paginationModel.page * paginationModel.pageSize) - paginationModel.pageSize + from}-${(paginationModel.page * paginationModel.pageSize) - paginationModel.pageSize + to} of ${totalItems}`;
   }
 
+  const renderNotFound = () => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          width: '100%'
+        }}
+      >
+        <div className='text-[25px] text-red-500'>ไม่มีข้อมูล</div>
+      </div>
+    );
+  }
+
   return (
     <DataGrid<DynamicType>
       sx={{
@@ -108,6 +124,12 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
       //autoPageSize
       loading={props.isLoading}
       slots={{
+        noResultsOverlay() {
+          return renderNotFound();
+        },
+        noRowsOverlay(props, deprecatedLegacyContext) {
+          return renderNotFound();
+        },
         pagination: (props) => (
           <GridPagination
             {...props}
