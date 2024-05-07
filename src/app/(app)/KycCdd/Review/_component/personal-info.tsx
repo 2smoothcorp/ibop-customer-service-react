@@ -32,6 +32,7 @@ import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
 import { swal } from '@/libs/sweetalert';
 import { getSingleLabelFromValue, getAggregateLabelFromValue } from '@/utils/get-label-from-value';
+import { hasTruthyValueFromObject } from '@/utils/has-truthy-value-from-object';
 
 import { FormSchemaPersonalInfo } from './_form-schema';
 
@@ -86,7 +87,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
     const { data } = response;
     if(!data) { return {}; }
 
-    if(kyccddStored) {
+    if(hasTruthyValueFromObject(kyccddStored.personalInfo)) {
       const { personalInfo } = kyccddStored;
       const {
         titleTh,

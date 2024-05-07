@@ -26,6 +26,7 @@ import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycAddressOutputListDataResponse } from '@/services/rest-api/customer-service';
 import { Codex } from '@/utils/codex';
 import { removeObjectKeyPrefix } from '@/utils/remove-object-key-prefix';
+import { hasTruthyValueFromObject } from '@/utils/has-truthy-value-from-object';
 
 import { FormSchemaCurrentAddress, FormSchemaWorkAddress } from './_form-schema';
 
@@ -106,51 +107,11 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
     const currentAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.current);
     const workAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.work);
 
-    if(kyccddStored) {
-      const { currentAddrInfo, workAddrInfo } = kyccddStored;
-
-      currentAddrHookForm.setValue('currentAddr_addressNo', currentAddrInfo.addressNo || '');
-      currentAddrHookForm.setValue('currentAddr_moo', currentAddrInfo.moo || '');
-      currentAddrHookForm.setValue('currentAddr_buildingOrVillage', currentAddrInfo.buildingOrVillage || '');
-      currentAddrHookForm.setValue('currentAddr_roomNo', currentAddrInfo.roomNo || '');
-      currentAddrHookForm.setValue('currentAddr_floor', currentAddrInfo.floor || '');
-      currentAddrHookForm.setValue('currentAddr_soi', currentAddrInfo.soi || '');
-      currentAddrHookForm.setValue('currentAddr_street', currentAddrInfo.street || '');
-      currentAddrHookForm.setValue('currentAddr_countryCode', currentAddrInfo.countryCode || '');
-      currentAddrHookForm.setValue('currentAddr_zipCode', currentAddrInfo.zipCode || '');
-      currentAddrHookForm.setValue('currentAddr_provinceCode', currentAddrInfo.provinceCode || '');
-      currentAddrHookForm.setValue('currentAddr_districtCode', currentAddrInfo.districtCode || '');
-      currentAddrHookForm.setValue('currentAddr_subDistrictCode', currentAddrInfo.subDistrictCode || '');
-      currentAddrHookForm.setValue('currentAddr_customAddress1', currentAddrInfo.customAddress1 || '');
-      currentAddrHookForm.setValue('currentAddr_customAddress2', currentAddrInfo.customAddress2 || '');
-      currentAddrHookForm.setValue('currentAddr_customAddress3', currentAddrInfo.customAddress3 || '');
-
-      workAddrHookForm.setValue('workAddr_addressNo', workAddrInfo.addressNo || '');
-      workAddrHookForm.setValue('workAddr_moo', workAddrInfo.moo || '');
-      workAddrHookForm.setValue('workAddr_buildingOrVillage', workAddrInfo.buildingOrVillage || '');
-      workAddrHookForm.setValue('workAddr_roomNo', workAddrInfo.roomNo || '');
-      workAddrHookForm.setValue('workAddr_floor', workAddrInfo.floor || '');
-      workAddrHookForm.setValue('workAddr_soi', workAddrInfo.soi || '');
-      workAddrHookForm.setValue('workAddr_street', workAddrInfo.street || '');
-      workAddrHookForm.setValue('workAddr_countryCode', workAddrInfo.countryCode || '');
-      workAddrHookForm.setValue('workAddr_zipCode', workAddrInfo.zipCode || '');
-      workAddrHookForm.setValue('workAddr_provinceCode', workAddrInfo.provinceCode || '');
-      workAddrHookForm.setValue('workAddr_districtCode', workAddrInfo.districtCode || '');
-      workAddrHookForm.setValue('workAddr_subDistrictCode', workAddrInfo.subDistrictCode || '');
-      workAddrHookForm.setValue('workAddr_customAddress1', workAddrInfo.customAddress1 || '');
-      workAddrHookForm.setValue('workAddr_customAddress2', workAddrInfo.customAddress2 || '');
-      workAddrHookForm.setValue('workAddr_customAddress3', workAddrInfo.customAddress3 || '');
-
-      if(currentAddrInfo.countryCode === '000') { setSelectedCurrentAddrCountry({ label: '000 - ไทย', value: '000' }); }
-      if(workAddrInfo.countryCode === '000') { setSelectedWorkAddrCountry({ label: '000 - ไทย', value: '000' }); }
-
-      const _curAddr = getSingleThailandAddress({ po: currentAddrInfo.zipCode || '', p: currentAddrInfo.provinceCode || '', d: currentAddrInfo.districtCode || '', s: currentAddrInfo.subDistrictCode || '' });
-      const _workAddr = getSingleThailandAddress({ po: workAddrInfo.zipCode || '', p: workAddrInfo.provinceCode || '', d: workAddrInfo.districtCode || '', s: workAddrInfo.subDistrictCode || '' });
-      setSelectedCurrentThAddr(_curAddr);
-      setSelectedCurrentThAddr(_workAddr);
-
-      return ({ currentAddr: {}, workAddr: {} });
-    }
+    const isTruthyCurrentAddr = hasTruthyValueFromObject(kyccddStored.currentAddrInfo)
+    const isTruthyWorkAddr = hasTruthyValueFromObject(kyccddStored.workAddrInfo)
+    if(isTruthyCurrentAddr && isTruthyWorkAddr) { feedDataByStoredCurrentAddress(); feedDataByStoredWorkAddress(); }
+    else if(isTruthyCurrentAddr) { feedDataByStoredCurrentAddress(); }
+    else if(isTruthyWorkAddr) { feedDataByStoredWorkAddress(); }
 
     if(currentAddr) {
       const { getValues: getFormValue, setValue: setFormValue } = currentAddrHookForm;
@@ -245,6 +206,52 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
     }
 
     return ({ currentAddr: currentAddr || {}, workAddr: workAddr || {} });
+  }
+
+  const feedDataByStoredCurrentAddress = () => {
+    const { currentAddrInfo } = kyccddStored;
+    currentAddrHookForm.setValue('currentAddr_addressNo', currentAddrInfo.addressNo || '');
+    currentAddrHookForm.setValue('currentAddr_moo', currentAddrInfo.moo || '');
+    currentAddrHookForm.setValue('currentAddr_buildingOrVillage', currentAddrInfo.buildingOrVillage || '');
+    currentAddrHookForm.setValue('currentAddr_roomNo', currentAddrInfo.roomNo || '');
+    currentAddrHookForm.setValue('currentAddr_floor', currentAddrInfo.floor || '');
+    currentAddrHookForm.setValue('currentAddr_soi', currentAddrInfo.soi || '');
+    currentAddrHookForm.setValue('currentAddr_street', currentAddrInfo.street || '');
+    currentAddrHookForm.setValue('currentAddr_countryCode', currentAddrInfo.countryCode || '');
+    currentAddrHookForm.setValue('currentAddr_zipCode', currentAddrInfo.zipCode || '');
+    currentAddrHookForm.setValue('currentAddr_provinceCode', currentAddrInfo.provinceCode || '');
+    currentAddrHookForm.setValue('currentAddr_districtCode', currentAddrInfo.districtCode || '');
+    currentAddrHookForm.setValue('currentAddr_subDistrictCode', currentAddrInfo.subDistrictCode || '');
+    currentAddrHookForm.setValue('currentAddr_customAddress1', currentAddrInfo.customAddress1 || '');
+    currentAddrHookForm.setValue('currentAddr_customAddress2', currentAddrInfo.customAddress2 || '');
+    currentAddrHookForm.setValue('currentAddr_customAddress3', currentAddrInfo.customAddress3 || '');
+
+    if(currentAddrInfo.countryCode === '000') { setSelectedCurrentAddrCountry({ label: '000 - ไทย', value: '000' }); }
+    const _curAddr = getSingleThailandAddress({ po: currentAddrInfo.zipCode || '', p: currentAddrInfo.provinceCode || '', d: currentAddrInfo.districtCode || '', s: currentAddrInfo.subDistrictCode || '' });
+    setSelectedCurrentThAddr(_curAddr);
+  }
+
+  const feedDataByStoredWorkAddress = () => {
+    const { workAddrInfo } = kyccddStored;
+    workAddrHookForm.setValue('workAddr_addressNo', workAddrInfo.addressNo || '');
+    workAddrHookForm.setValue('workAddr_moo', workAddrInfo.moo || '');
+    workAddrHookForm.setValue('workAddr_buildingOrVillage', workAddrInfo.buildingOrVillage || '');
+    workAddrHookForm.setValue('workAddr_roomNo', workAddrInfo.roomNo || '');
+    workAddrHookForm.setValue('workAddr_floor', workAddrInfo.floor || '');
+    workAddrHookForm.setValue('workAddr_soi', workAddrInfo.soi || '');
+    workAddrHookForm.setValue('workAddr_street', workAddrInfo.street || '');
+    workAddrHookForm.setValue('workAddr_countryCode', workAddrInfo.countryCode || '');
+    workAddrHookForm.setValue('workAddr_zipCode', workAddrInfo.zipCode || '');
+    workAddrHookForm.setValue('workAddr_provinceCode', workAddrInfo.provinceCode || '');
+    workAddrHookForm.setValue('workAddr_districtCode', workAddrInfo.districtCode || '');
+    workAddrHookForm.setValue('workAddr_subDistrictCode', workAddrInfo.subDistrictCode || '');
+    workAddrHookForm.setValue('workAddr_customAddress1', workAddrInfo.customAddress1 || '');
+    workAddrHookForm.setValue('workAddr_customAddress2', workAddrInfo.customAddress2 || '');
+    workAddrHookForm.setValue('workAddr_customAddress3', workAddrInfo.customAddress3 || '');
+
+    if(workAddrInfo.countryCode === '000') { setSelectedWorkAddrCountry({ label: '000 - ไทย', value: '000' }); }
+    const _workAddr = getSingleThailandAddress({ po: workAddrInfo.zipCode || '', p: workAddrInfo.provinceCode || '', d: workAddrInfo.districtCode || '', s: workAddrInfo.subDistrictCode || '' });
+    setSelectedCurrentThAddr(_workAddr);
   }
 
   const toggleCurrentAddrFormMode = () => {
