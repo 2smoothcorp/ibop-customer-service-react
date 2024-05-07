@@ -19,6 +19,11 @@ import type {
 import styles from './styles.module.css';
 
 export const InputSelect = (props: InputSelectProps): ReactElement => {
+  const {
+    name, options, errorMessage, onSelect, register, registerOption,
+    ...selectProps
+  } = props;
+
   useEffect(() => {}, []);
 
   const onChangeSelection = (evt: SelectChangeEvent) => {
@@ -50,7 +55,7 @@ export const InputSelect = (props: InputSelectProps): ReactElement => {
   return (
     <Fragment>
       <Select
-        { ...props }
+        { ...selectProps }
         className={[ styles['select-input'], (props.errorMessage) ? styles['select-input-error'] : '' ].join(' ')}
         inputProps={{ 'aria-label': 'Without label' }}
         { ...(registerHookForm() || { onChange: onChangeSelection }) }

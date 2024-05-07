@@ -57,7 +57,6 @@ export const ListView = ({}: ListViewProps): ReactElement => {
   });
 
   const fetchGetKycTableData = async () => {
-    const { pageSize } = tablePaginator;
     const response = await searchKyc({ ...tableFilter, ...tablePaginator });
 
     const { data } = response;
@@ -75,7 +74,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         name,
         kycRiskLevel, kycRiskLevelDescription,
         kycScore,
-        logUser
+        logUserDesc
       } = item;
 
       tableDs.push({
@@ -86,23 +85,18 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         fullname: name || '',
         riskGroup: `${kycRiskLevel} - ${kycRiskLevelDescription}`,
         riskScore: kycScore || 0,
-        createdBy: logUser || ''
+        createdBy: logUserDesc || ''
       });
     }
 
     return ({
       items: tableDs,
-      totalItems: tableDs.length,
-      totalPages: Math.ceil(tableDs.length / pageSize)
+      totalItems: data.totalRecords || 0,
+      totalPages: data.totalPages
     });
-
-    // setTableDatasource(tableDs);
-    // setTableTotalItem(tableDs.length);
-    // setTableTotalPage(Math.ceil(tableDs.length / pageSize));
   }
 
   const fetchGetRevaluateTableData = async () => {
-    const { pageSize } = tablePaginator;
     const response = await searchRevaluate({ ...tableFilter, ...tablePaginator });
 
     const { data } = response;
@@ -120,7 +114,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         name,
         kycRiskLevel, kycRiskLevelDescription,
         kycScore,
-        logUser
+        logUserDesc
       } = item;
 
       tableDs.push({
@@ -131,14 +125,14 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         fullname: name || '',
         riskGroup: `${kycRiskLevel} - ${kycRiskLevelDescription}`,
         riskScore: kycScore || 0,
-        createdBy: logUser || ''
+        createdBy: logUserDesc || ''
       });
     }
 
     return ({
       items: tableDs,
-      totalItems: tableDs.length,
-      totalPages: Math.ceil(tableDs.length / pageSize)
+      totalItems: data.totalRecords || 0,
+      totalPages: data.totalPages || 0
     });
 
     // setTableDatasource(tableDs);
@@ -228,12 +222,13 @@ export const ListView = ({}: ListViewProps): ReactElement => {
     return (
       <div className={'p-4'}>
         <Table<TableDataModel>
+          disableAutosize disableColumnMenu
           columns={[
             {
               field: 'action',
               type: 'actions',
               headerName: 'Action',
-              width: 150,
+              minWidth: 150,
               renderCell: ({ id, hasFocus }) => {
                 return (
                   <Button
@@ -247,14 +242,14 @@ export const ListView = ({}: ListViewProps): ReactElement => {
                 );
               }
             },
-            { field: 'createdDate', headerName: 'วันที่ทำรายการ', flex: 1 },
-            { field: 'corporateId', headerName: 'Corporate ID', flex: 1 },
-            { field: 'referenceType', headerName: 'ประเภทหลักฐาน', flex: 1 },
-            { field: 'referenceId', headerName: 'เลขที่หลักฐาน', flex: 1 },
-            { field: 'fullname', headerName: 'ชื่อ - นามสกุล', flex: 1 },
-            { field: 'riskGroup', headerName: 'กลุ่มความเสี่ยง', type: 'number', width: 100 },
-            { field: 'riskScore', headerName: 'คะแนน', type: 'number', width: 100 },
-            { field: 'createdBy', headerName: 'ผู้ทำรายการ', flex: 1 }
+            { field: 'createdDate', headerName: 'วันที่ทำรายการ', minWidth: 150 },
+            { field: 'corporateId', headerName: 'Corporate ID', minWidth: 200, flex: 1 },
+            { field: 'referenceType', headerName: 'ประเภทหลักฐาน', minWidth: 200 },
+            { field: 'referenceId', headerName: 'เลขที่หลักฐาน', minWidth: 200 },
+            { field: 'fullname', headerName: 'ชื่อ - นามสกุล', minWidth: 300, flex: 1 },
+            { field: 'riskGroup', headerName: 'กลุ่มความเสี่ยง', type: 'number', minWidth: 200, flex: 1 },
+            { field: 'riskScore', headerName: 'คะแนน', type: 'number', minWidth: 100 },
+            { field: 'createdBy', headerName: 'ผู้ทำรายการ', minWidth: 250 }
           ]}
           rows={ kycInfo.data?.items || [] }
           totalItems={ kycInfo.data?.totalItems || 0 }
@@ -272,6 +267,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
     return (
       <div className={'p-4'}>
         <Table<TableDataModel>
+          disableAutosize disableColumnMenu
           columns={[
             {
               field: 'action',
@@ -291,14 +287,14 @@ export const ListView = ({}: ListViewProps): ReactElement => {
                 );
               }
             },
-            { field: 'createdDate', headerName: 'วันที่ทำรายการ', flex: 1 },
-            { field: 'corporateId', headerName: 'Corporate ID', flex: 1 },
-            { field: 'referenceType', headerName: 'ประเภทหลักฐาน', flex: 1 },
-            { field: 'referenceId', headerName: 'เลขที่หลักฐาน', flex: 1 },
-            { field: 'fullname', headerName: 'ชื่อ - นามสกุล', flex: 1 },
-            { field: 'riskGroup', headerName: 'กลุ่มความเสี่ยง', type: 'number', width: 100 },
-            { field: 'riskScore', headerName: 'คะแนน', type: 'number', width: 100 },
-            { field: 'createdBy', headerName: 'ผู้ทำรายการ', flex: 1 }
+            { field: 'createdDate', headerName: 'วันที่ทำรายการ', minWidth: 150 },
+            { field: 'corporateId', headerName: 'Corporate ID', minWidth: 200, flex: 1 },
+            { field: 'referenceType', headerName: 'ประเภทหลักฐาน', minWidth: 200 },
+            { field: 'referenceId', headerName: 'เลขที่หลักฐาน', minWidth: 200 },
+            { field: 'fullname', headerName: 'ชื่อ - นามสกุล', minWidth: 300, flex: 1 },
+            { field: 'riskGroup', headerName: 'กลุ่มความเสี่ยง', type: 'number', minWidth: 200, flex: 1 },
+            { field: 'riskScore', headerName: 'คะแนน', type: 'number', minWidth: 100 },
+            { field: 'createdBy', headerName: 'ผู้ทำรายการ', minWidth: 250 }
           ]}
           rows={ revaluateInfo.data?.items || [] }
           totalItems={ revaluateInfo.data?.totalItems || 0 }

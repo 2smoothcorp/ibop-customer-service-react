@@ -108,13 +108,14 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
             defaultValue={ value }
             // register={ register }
             onSelectOption={ onSelect }
+            errorMessage={ errorMsg }
           />
         );
       }
       case 'checkbox': {
         const { options } = info;
         return (
-          <InputCheckbox name={ name } options={ options } defaultValue={ value } disabled={ disabled } register={ register } />
+          <InputCheckbox name={ name } options={ options } defaultValue={ value } disabled={ disabled } register={ register } errorMessage={ errorMsg } />
         );
       }
       case 'autocomplete': {
@@ -133,6 +134,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
             onSearch={ onSearch }
             onSelect={ onSelect }
             // register={ register }
+            errorMessage={ errorMsg }
           />
         );
       }
