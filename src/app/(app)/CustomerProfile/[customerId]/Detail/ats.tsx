@@ -10,7 +10,7 @@ import { Button, Checkbox } from "@mui/material";
 import { GridColDef, GridPaginationModel, GridRenderCellParams } from '@mui/x-data-grid';
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function ATS() {
     const searchParams = useSearchParams()
@@ -83,8 +83,6 @@ export default function ATS() {
         }
         return null
     }
-
-    useEffect(() => { console.log(idRowsMain) }, [idRowsMain])
 
     const saveData = () => {
         if (data) {
