@@ -187,6 +187,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
                     variant={'contained'}
                     className={'py-0 w-25 h-10'}
                     color={'error'}
+                    onClick={ props.onCancel }
                   >
                     ยกเลิก
                   </Button>
