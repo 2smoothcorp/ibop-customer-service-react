@@ -42,6 +42,20 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     register, handleSubmit, formState,
     watch: watchFormValue, getValues: getFormValue, setValue: setFormValue
   } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
+    defaultValues: {
+      titleTh: '',
+      firstnameTh: '',
+      lastnameTh: '',
+      firstnameEn: '',
+      lastnameEn: '',
+      nationality: '',
+      occupation: '',
+      incomeRate: '',
+      incomeSource: [],
+      incomeCountry: '',
+      exp: 0,
+      investmentPurpose: []
+    },
     mode: 'onSubmit',
     resolver: zodResolver(FormSchemaPersonalInfo)
   });
@@ -128,7 +142,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
         fields={[
           {
             type: 'select',
-            label: 'คำนำหน้า', viewText: _titleTh,
+            label: 'คำนำหน้า', viewText: (masterTitleList.data || []).find((_f) => _f.value === watchFormValue('titleTh'))?.label || '-',
             name: 'titleTh', value: watchFormValue('titleTh'),
             options: masterTitleList.data || []
           },
@@ -205,7 +219,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
           },
           {
             type: 'checkbox',
-            label: 'วัตถุประสงค์การลงทุน', viewText: (masterIncomeSourceList.data || []).filter((_f) => (watchFormValue('investmentPurpose') || []).includes(_f.value)).map((item) => item.label).join(', '),
+            label: 'วัตถุประสงค์การลงทุน', viewText: (masterInvestmentPurposeList.data || []).filter((_f) => (watchFormValue('investmentPurpose') || []).includes(_f.value)).map((item) => item.label).join(', '),
             name: 'investmentPurpose', value: watchFormValue('investmentPurpose'),
             options: masterInvestmentPurposeList.data || [],
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {})
