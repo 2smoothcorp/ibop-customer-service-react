@@ -22,7 +22,7 @@ const CustomerProfileContent = (props: CustomerInfoPageProps) => {
         error: undefined
     })
 
-    const [isLoading, setIsLOading] = useState<boolean>(false)
+    const [isLoading, setIsLOading] = useState<boolean>(true)
 
     const prepareBeforeSendAction = (formData: FormData) => {
         setPaginationModel((prev) => ({

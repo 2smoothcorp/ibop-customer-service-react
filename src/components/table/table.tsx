@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Pagination as MuiPagination } from '@mui/material';
+import { LabelDisplayedRowsArgs, Pagination as MuiPagination } from '@mui/material';
 import {
   DataGrid,
   GridCallbackDetails,
@@ -12,6 +11,7 @@ import {
   GridSortModel,
   type GridRowIdGetter
 } from '@mui/x-data-grid';
+import { useMemo, useState } from 'react';
 
 const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
   const { totalItems, totalPages, paginationModel } = props
@@ -23,27 +23,27 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
     return (columns || []).reduce((acc, column) => {
       return acc + ((column?.headerName?.length || 0) * 8);
     }, 0);
-  }, [ props ]);
+  }, [props]);
 
   const onFilterChange = (model: GridFilterModel, details: GridCallbackDetails<'filter'>) => {
     setFilterModel(model);
   }
 
-  const onSortChange = (model: GridSortModel, details: GridCallbackDetails<any>) => {}
+  const onSortChange = (model: GridSortModel, details: GridCallbackDetails<any>) => { }
 
   const onPaginationChange = (page: number) => {
     const { setPaginationModel } = props;
-    if(setPaginationModel) {
+    if (setPaginationModel) {
       setPaginationModel({
         page: page,
-        pageSize: paginationModel.pageSize
+        pageSize: paginationModel.pageSize,
       });
     }
   }
 
   const onPageSizeChange = (pageSize: number) => {
-    const {setPaginationModel} = props;
-    if(setPaginationModel) {
+    const { setPaginationModel } = props;
+    if (setPaginationModel) {
       setPaginationModel({
         page: 1,
         pageSize: pageSize
@@ -61,6 +61,26 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
         onChange={(event, page) => { onPaginationChange(page) }}
       />
     )
+  }
+
+  const labelDisplayedRows = ({ from, to, count, page }: LabelDisplayedRowsArgs) => {
+    return `${(paginationModel.page * paginationModel.pageSize) - paginationModel.pageSize + from}-${(paginationModel.page * paginationModel.pageSize) - paginationModel.pageSize + to} of ${totalItems}`;
+  }
+
+  const renderNotFound = () => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          width: '100%'
+        }}
+      >
+        <div className='text-[25px] text-red-500'>ไม่มีข้อมูล</div>
+      </div>
+    );
   }
 
   return (
@@ -101,9 +121,15 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
       onFilterModelChange={onFilterChange}
       onSortModelChange={onSortChange}
       autoHeight
-      //autoPageSize  
+      //autoPageSize
       loading={props.isLoading}
       slots={{
+        noResultsOverlay() {
+          return renderNotFound();
+        },
+        noRowsOverlay(props, deprecatedLegacyContext) {
+          return renderNotFound();
+        },
         pagination: (props) => (
           <GridPagination
             {...props}
@@ -111,6 +137,7 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
             rowsPerPageOptions={pageSizeOptions}
             rowsPerPage={paginationModel.pageSize}
             onRowsPerPageChange={(event) => onPageSizeChange(parseInt(event.target.value))}
+            labelDisplayedRows={labelDisplayedRows}
           />
         )
       }}
