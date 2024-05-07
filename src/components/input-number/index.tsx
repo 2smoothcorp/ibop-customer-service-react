@@ -23,6 +23,11 @@ import type {
 import styles from './styles.module.css';
 
 export const InputNumber = (props: InputNumberProps): ReactElement => {
+  const {
+    name, errorMessage, onChange, register, registerOption,
+    ...numericInputProps
+  } = props;
+
   useEffect(() => {}, []);
 
   const onChangeText = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +65,7 @@ export const InputNumber = (props: InputNumberProps): ReactElement => {
         decimalSeparator={'.'}
         thousandSeparator={','}
         inputMode={'numeric'}
-        { ...props }
+        { ...numericInputProps }
         
         className={[ styles['number-input'], (props.errorMessage) ? styles['number-input-error'] : '', props.className ].join(' ')}
 
