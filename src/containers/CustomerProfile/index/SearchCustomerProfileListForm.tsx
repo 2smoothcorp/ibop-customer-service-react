@@ -48,6 +48,7 @@ const SearchCustomerProfileListForm = () => {
         <input
           type="text"
           id="emailNumber"
+          name="emailNumber"
           className={`w-full px-3 py-2 h-10 bg-[#D9D9D9] border border-slate-300 rounded-md text-xl shadow-sm placeholder-slate-400`}
         />
       ),
