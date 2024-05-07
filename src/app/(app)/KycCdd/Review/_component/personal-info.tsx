@@ -118,7 +118,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
 
   const onSubmitForm = (fieldsData: StoreTypeKycCdd.PersonalInfoFormFields) => {
     reduxDispatcher(savePersonalInfo(fieldsData));
-    setIsEditing(false);
+    toggleFormMode();
   }
 
   const renderFormPersonal = () => {

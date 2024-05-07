@@ -214,7 +214,7 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
 
     const refinedFieldsData: StoreTypeKycCdd.AddressFields = removeObjectKeyPrefix({ obj: fieldsData, prefix: 'currentAddr_' });
     reduxDispatcher(saveCurrentAddressInfo(refinedFieldsData));
-    setIsEditingCurrentAddr(false);
+    toggleCurrentAddrFormMode();
   }
 
   const onSubmitWorkAddrForm = (fieldsData: StoreTypeKycCdd.WorkAddrFormFields) => {
@@ -223,7 +223,7 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
 
     const refinedFieldsData: StoreTypeKycCdd.AddressFields = removeObjectKeyPrefix({ obj: fieldsData, prefix: 'workAddr_' });
     reduxDispatcher(saveWorkAddressInfo(refinedFieldsData));
-    setIsEditingWorkAddr(false);
+    toggleWorkAddrFormMode();
   }
 
   const renderFormCurrentAddress = () => {

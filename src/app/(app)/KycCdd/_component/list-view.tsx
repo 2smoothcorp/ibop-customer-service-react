@@ -92,13 +92,9 @@ export const ListView = ({}: ListViewProps): ReactElement => {
 
     return ({
       items: tableDs,
-      totalItems: tableDs.length,
-      totalPages: Math.ceil(tableDs.length / pageSize)
+      totalItems: data.totalRecords || 0,
+      totalPages: data.totalPages
     });
-
-    // setTableDatasource(tableDs);
-    // setTableTotalItem(tableDs.length);
-    // setTableTotalPage(Math.ceil(tableDs.length / pageSize));
   }
 
   const fetchGetRevaluateTableData = async () => {
@@ -137,8 +133,8 @@ export const ListView = ({}: ListViewProps): ReactElement => {
 
     return ({
       items: tableDs,
-      totalItems: tableDs.length,
-      totalPages: Math.ceil(tableDs.length / pageSize)
+      totalItems: data.totalRecords || 0,
+      totalPages: data.totalPages || 0
     });
 
     // setTableDatasource(tableDs);

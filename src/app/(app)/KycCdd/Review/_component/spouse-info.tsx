@@ -88,21 +88,11 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
 
   const onSubmitForm = (fieldsData: StoreTypeKycCdd.SpouseFormFields) => {
     reduxDispatcher(saveSpouseInfo(fieldsData));
-    setIsEditing(false);
+    toggleFormMode();
   }
 
   const renderFormSpouse = () => {
     const { errors } = formState;
-    const _maritalStatusText = spouseInfo?.familyStatus || '-';
-    const _refTypeText = spouseInfo?.spouseReferenceType || '-';
-    const _refTypeInitValue = spouseInfo?.spouseReferenceType || undefined;
-    const _refIdText = spouseInfo?.spouseIdentityId || '-';
-    const _refIdInitValue = spouseInfo?.spouseIdentityId || undefined;
-    const _titleText = (spouseInfo?.spouseTitleOther) ? spouseInfo.spouseTitleOther : spouseInfo?.spouseTitleName || '';
-    const _firstnameText = spouseInfo?.spouseFirstName || '-';
-    const _firstnameInitValue = spouseInfo?.spouseFirstName || undefined;
-    const _lastnameText = spouseInfo?.spouseLastName || '-';
-    const _lastnameInitValue = spouseInfo?.spouseLastName || undefined;
     return (
       <Form<StoreTypeKycCdd.SpouseFormFields>
         isEditing={isEditing}
