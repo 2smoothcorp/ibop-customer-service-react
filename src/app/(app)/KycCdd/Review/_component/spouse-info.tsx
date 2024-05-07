@@ -29,7 +29,18 @@ import { FormSchemaSpouseInfo } from './_form-schema';
 export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps): ReactElement => {
   const [ maritalStatus, setMaritalStatus ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit, formState, watch: watchFormValue, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
+  const {
+    register, handleSubmit, formState,
+    watch: watchFormValue, getValues: getFormValue, setValue: setFormValue
+  } = useForm<StoreTypeKycCdd.SpouseFormFields>({
+    defaultValues: {
+      maritalStatus: '',
+      refType: '',
+      refId: '',
+      title: '',
+      firstname: '',
+      lastname: ''
+    },
     mode: 'onSubmit',
     resolver: zodResolver(FormSchemaSpouseInfo)
   });

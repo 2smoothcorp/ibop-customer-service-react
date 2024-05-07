@@ -41,11 +41,45 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
   const thaiAddrInfo = useThailandAddress();
 
   const currentAddrHookForm = useForm<StoreTypeKycCdd.CurrentAddrFormFields>({
+    defaultValues: {
+      currentAddr_addressNo: '',
+      currentAddr_moo: '',
+      currentAddr_buildingOrVillage: '',
+      currentAddr_roomNo: '',
+      currentAddr_floor: '',
+      currentAddr_soi: '',
+      currentAddr_street: '',
+      currentAddr_countryCode: '',
+      currentAddr_zipCode: '',
+      currentAddr_provinceCode: '',
+      currentAddr_districtCode: '',
+      currentAddr_subDistrictCode: '',
+      currentAddr_customAddress1: '',
+      currentAddr_customAddress2: '',
+      currentAddr_customAddress3: ''
+    },
     mode: 'onSubmit',
     resolver: zodResolver(FormSchemaCurrentAddress)
   });
 
   const workAddrHookForm = useForm<StoreTypeKycCdd.WorkAddrFormFields>({
+    defaultValues: {
+      workAddr_addressNo: '',
+      workAddr_moo: '',
+      workAddr_buildingOrVillage: '',
+      workAddr_roomNo: '',
+      workAddr_floor: '',
+      workAddr_soi: '',
+      workAddr_street: '',
+      workAddr_countryCode: '',
+      workAddr_zipCode: '',
+      workAddr_provinceCode: '',
+      workAddr_districtCode: '',
+      workAddr_subDistrictCode: '',
+      workAddr_customAddress1: '',
+      workAddr_customAddress2: '',
+      workAddr_customAddress3: ''
+    },
     mode: 'onSubmit',
     resolver: zodResolver(FormSchemaWorkAddress)
   });
