@@ -61,7 +61,8 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
 
   return (
     <Fragment>
-      <Autocomplete disablePortal
+      <Autocomplete
+        disableClearable disablePortal
         renderInput={(inputProps) => (<TextField { ...inputProps } />)}
         options={ inputOptions }
         value={ props.selectedOption }
@@ -74,7 +75,7 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
         
         { ...(registerHookForm() || { onChange: (_, selected: any) => { onSelectOption(selected); } }) }
       />
-      {/* <div className={'text-danger-500'}>{ props.errorMessage }</div> */}
+      <div className={'text-danger-500'}>{ props.errorMessage }</div>
     </Fragment>
   );
 }

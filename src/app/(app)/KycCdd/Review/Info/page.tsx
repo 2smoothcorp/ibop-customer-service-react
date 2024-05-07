@@ -31,7 +31,8 @@ import { actionRevaluation } from './actions';
 const Page = (): ReactElement => {
   const [ inputCorp, setInputCorp ] = useState('');
   const [ corporateId, setCorporateId ] = useState('');
-  const [ stepIndex, setStepIndex ] = useState(0);
+  const [ stepIndex, setStepIndex ] = useState(-1);
+  const [ isStepEditing, setIsStepEditing ] = useState(false);
   const [ isTruthConfirm, setIsTruthConfirm ] = useState(false);
   const router = useRouter();
   const stepData = ['ข้อมูลส่วนตัว', 'ข้อมูลที่อยู่', 'ข้อมูลคู่สมรส', 'ข้อมูลบุคคลที่เกี่ยวข้อง'];
@@ -46,8 +47,9 @@ const Page = (): ReactElement => {
   }
 
   const onChangeCorporateId = (changedText: string) => { setInputCorp(changedText); }
-  const onClickSearch = () => { setCorporateId(inputCorp || ''); }
+  const onClickSearch = () => { setCorporateId(inputCorp || ''); setStepIndex(0); }
   const onClickClear = () => { setInputCorp(''); setCorporateId(''); }
+  const onClickStepEdit = (isEdit: boolean) => { setIsStepEditing(isEdit); }
   const onCheckTruthConfirm = (checked: boolean) => { setIsTruthConfirm(checked); }
 
   const onClickPrevStep = () => {
@@ -105,7 +107,7 @@ const Page = (): ReactElement => {
             <Grid item>
               <InputText
                 name={'corporateId'}
-                disabled={ stepIndex !== 0 }
+                disabled={ stepIndex > 0 }
                 onChange={ onChangeCorporateId }
               />
             </Grid>
@@ -135,10 +137,10 @@ const Page = (): ReactElement => {
 
   const renderStepperView = (): ReactElement => {
     switch(stepIndex) {
-      case 0: return (<ReviewPersonalInfo corporateId={ corporateId } />);
-      case 1: return (<ReviewAddrInfo corporateId={ corporateId } />);
-      case 2: return (<ReviewSpouseInfo corporateId={ corporateId } />);
-      case 3: return (<ReviewRelativeInfo corporateId={ corporateId } />);
+      case 0: return (<ReviewPersonalInfo corporateId={ corporateId } onToggleEdit={ onClickStepEdit } />);
+      case 1: return (<ReviewAddrInfo corporateId={ corporateId } onToggleEdit={ onClickStepEdit } />);
+      case 2: return (<ReviewSpouseInfo corporateId={ corporateId } onToggleEdit={ onClickStepEdit } />);
+      case 3: return (<ReviewRelativeInfo corporateId={ corporateId } onToggleEdit={ onClickStepEdit } />);
       default: return (<div></div>);
     }
   }
@@ -160,6 +162,8 @@ const Page = (): ReactElement => {
   }
 
   const renderStepperControlButtons = (): ReactElement => {
+    if(stepIndex < 0) { return (<div></div>); }
+    if(isStepEditing) { return (<div></div>); }
     return (
       <div className={'flex items-center justify-end gap-x-4 mt-4 p-4'}>
         <Button
