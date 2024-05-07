@@ -12,7 +12,7 @@ export const swal = async (props: SweetAlertInputProps): Promise<SweetAlertResul
     confirmButton, cancelButton, denyButton
   } = props;
 
-  const result = await SweetAlert.fire({
+  return await SweetAlert.fire({
     titleText: title,
     text: description,
     icon: icon,
@@ -32,8 +32,6 @@ export const swal = async (props: SweetAlertInputProps): Promise<SweetAlertResul
     //   cancelButton: ''
     // }
   });
-
-  return result;
 }
 
 interface SweetAlertInputProps {

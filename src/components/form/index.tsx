@@ -21,8 +21,6 @@ import { InputCheckbox } from '@/components/input-checkbox';
 import { InputAutoComplete } from '@/components/input-autocomplete';
 
 export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): ReactElement => {
-  //
-
   useEffect(() => {}, []);
 
   const generateFields = () => {
@@ -85,19 +83,38 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
       case 'text': {
         const {} = info;
         return (
-          <InputText name={ name } defaultValue={ value } disabled={ disabled } register={ register } errorMessage={ errorMsg } />
+          <InputText
+            name={ name }
+            defaultValue={ value }
+            disabled={ disabled }
+            register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'number': {
         const {} = info;
         return (
-          <InputNumber name={ name } defaultValue={ value } readOnly={ disabled } register={ register } errorMessage={ errorMsg } />
+          <InputNumber
+            name={ name }
+            defaultValue={ value }
+            readOnly={ disabled }
+            register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'select': {
         const { options } = info;
         return (
-          <InputSelect name={ name } options={ options } defaultValue={ value } disabled={ disabled } register={ register } />
+          <InputSelect
+            name={ name }
+            options={ options }
+            defaultValue={ value }
+            disabled={ disabled }
+            register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'radio': {
@@ -115,7 +132,14 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
       case 'checkbox': {
         const { options } = info;
         return (
-          <InputCheckbox name={ name } options={ options } defaultValue={ value } disabled={ disabled } register={ register } errorMessage={ errorMsg } />
+          <InputCheckbox
+            name={ name }
+            options={ options }
+            defaultValue={ value }
+            disabled={ disabled }
+            register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'autocomplete': {
@@ -152,12 +176,20 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
           (props.isEditing) && (
             <Grid container className={'mt-4'}>
               <Grid item xs={ 12 }>
-                <div className={'flex items-center justify-center gap-x-4'}>
-                  <Button type={'reset'}
+                <div className={'flex items-center justify-end gap-x-4'}>
+                  {/* <Button type={'reset'}
                     variant={'contained'}
                     className={'bg-neutral-200 hover:bg-neutral-200 hover:brightness-95 text-xl text-black py-0 w-25 h-10'}
                   >
                     ล้างค่า
+                  </Button> */}
+                  <Button type={'reset'}
+                    variant={'contained'}
+                    className={'py-0 w-25 h-10'}
+                    color={'error'}
+                    onClick={ props.onCancel }
+                  >
+                    ยกเลิก
                   </Button>
                   <Button type={'submit'} variant={'contained'} className={'text-xl py-0 w-25 h-10'}>
                     บันทึก
@@ -188,6 +220,7 @@ interface FormProps<DynamicField extends {}> {
   },
 
   action?: (formData: FormData) => void;
+  onCancel?: () => void;
   onSubmit?: FormEventHandler<HTMLFormElement>;
 }
 
