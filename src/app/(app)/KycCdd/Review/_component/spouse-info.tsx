@@ -42,6 +42,7 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
       lastname: ''
     },
     mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
     resolver: zodResolver(FormSchemaSpouseInfo)
   });
 

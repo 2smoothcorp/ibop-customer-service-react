@@ -59,6 +59,7 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
       currentAddr_customAddress3: ''
     },
     mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
     resolver: zodResolver(FormSchemaCurrentAddress)
   });
 
@@ -81,6 +82,7 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
       workAddr_customAddress3: ''
     },
     mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
     resolver: zodResolver(FormSchemaWorkAddress)
   });
 
