@@ -63,6 +63,33 @@ export const useThailandAddress = () => {
   return addressInfo;
 }
 
+export const getSingleThailandAddress = (input: AddrJsonOutput): ThaiAddrInfo => {
+  const addrIdx = thAddrJson.findIndex((addr) => {
+    const { p, d, s, po } = addr;
+    if(!input.p || !input.d || !input.s || !input.po) { return false; }
+    return (p.includes(input.p) && d.includes(input.d) && s.includes(input.s) && po.includes(input.po));
+  });
+  
+  if(addrIdx >= 0) {
+    const { p, d, s, po } = thAddrJson[addrIdx];
+    const [ pName, pCode ] = p.split('|');
+    const [ dName, dCode ] = d.split('|');
+    const [ sName, sCode ] = s.split('|');
+    const _addrLabel = `${ pName || '' } » ${ dName || '' } » ${ sName || '' } » ${ po }`;
+    const _addrValue = `${ pCode || '' }|${ dCode || '' }|${ sCode || '' }|${ po }`;
+    return ({
+      p, pName, pCode,
+      d, dName, dCode,
+      s, sName, sCode,
+      po,
+      label: _addrLabel,
+      value: _addrValue
+    });
+  }
+
+  return addressEmptyOption;
+}
+
 interface AddrJsonOutput {
   p: string;
   d: string;

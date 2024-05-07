@@ -20,7 +20,7 @@ const Postcode = {
   foreign: '99999'
 }
 
-const MaritaiStatus = {
+const MaritalStatus = {
   /** @return 'SINGLE' */
   single: 'SINGLE',
 
@@ -32,5 +32,5 @@ export const Codex = {
   AddressType,
   Country,
   Postcode,
-  MaritaiStatus
+  MaritalStatus
 }

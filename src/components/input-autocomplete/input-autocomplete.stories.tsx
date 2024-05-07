@@ -27,6 +27,7 @@ export const Basic: Story = {
       { label: '0x00', value: '0x00', disabled: false }
     ],
     selectedOption: { label: 'c12345', value: 'c12345' },
+    errorMessage: '',
     optionSearchKey: 'label',
     disabled: false,
     getOptionKey: (item) => item.value,

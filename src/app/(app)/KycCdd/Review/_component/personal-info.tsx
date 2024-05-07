@@ -12,8 +12,10 @@ import {
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AppLoader } from '@/components/app-loader';
+import { Form } from '@/components/form';
 import { SectionSeparator } from '@/components/section-separator';
 import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
 import { useMasterDataTitlesCustom } from '@/hooks/master-data-titles';
@@ -29,15 +31,18 @@ import {
 import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
 
-import { Form } from '@/components/form';
+import { FormSchemaPersonalInfo } from './_form-schema';
 
 export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactElement => {
   const [ selectedOccupation, setSelectedOccupation ] = useState<ComboBoxWrapperOption>();
   const [ selectedIncomeCountry, setSelectedIncomeCountry ] = useState<ComboBoxWrapperOption>();
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit, watch: watchFormValue, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
+  const {
+    register, handleSubmit, formState,
+    watch: watchFormValue, getValues: getFormValue, setValue: setFormValue
+  } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
     mode: 'onSubmit',
-    resolver: undefined
+    resolver: zodResolver(FormSchemaPersonalInfo)
   });
 
   const reduxDispatcher = useAppDispatch();
@@ -99,6 +104,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
   }
 
   const renderFormPersonal = () => {
+    const { errors } = formState;
     const _titleTh = `${ personalData?.titleCode || '' } - ${ personalData?.titleNameTh || '' }`.trim();
     const _firstNameTh = personalData?.firstNameTh || '-';
     const _lastNameTh = personalData?.lastNameTh || '-';
@@ -116,7 +122,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
       <Form<StoreTypeKycCdd.PersonalInfoFormFields>
         isEditing={ isEditing }
         baseColSpan={4}
-        register={ register }
+        hookForm={{ register, errors }}
         onSubmit={ handleSubmit(onSubmitForm) }
         fields={[
           {
