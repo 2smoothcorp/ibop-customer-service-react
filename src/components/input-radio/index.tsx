@@ -18,6 +18,11 @@ import type {
 } from 'react-hook-form';
 
 export const InputRadio = (props: InputRadioProps): ReactElement => {
+  const {
+    name, options, errorMessage, loading, onSelectOption, register, registerOption,
+    ...radioGroupProps
+  } = props;
+
   useEffect(() => {}, []);
 
   const onChangeSelection = (_: any, selected: string) => {
@@ -55,7 +60,7 @@ export const InputRadio = (props: InputRadioProps): ReactElement => {
 
   return (
     <Fragment>
-      <RadioGroup { ...props } { ...(registerHookForm() || { onChange: onChangeSelection }) }>
+      <RadioGroup { ...radioGroupProps } { ...(registerHookForm() || { onChange: onChangeSelection }) }>
         { generateRadio() }
       </RadioGroup>
       { (props.errorMessage) && (<div className={'text-danger-500'}>{ props.errorMessage }</div>) }
