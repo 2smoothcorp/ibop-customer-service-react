@@ -23,6 +23,7 @@ import { useAppDispatch } from '@/libs/redux/hook';
 import { type StoreTypeKycCdd, saveSpouseInfo } from '@/libs/redux/store/kyc-cdd';
 import type { KycSpouseInfoOutputDataResponse } from '@/services/rest-api/customer-service';
 import { Codex } from '@/utils/codex';
+import { getSingleLabelFromValue } from '@/utils/get-label-from-value';
 
 import { FormSchemaSpouseInfo } from './_form-schema';
 
@@ -49,6 +50,11 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
   const reduxDispatcher = useAppDispatch();
   const masterTitleList = useMasterDataTitlesCustom();
   const masterReferenceTypeList = useMasterDataReferenceCustom();
+
+  const choicesMaritalStatus = [
+    { label: 'โสด', value: Codex.MaritalStatus.single },
+    { label: 'สมรส', value: Codex.MaritalStatus.married }
+  ];
 
   const { data: spouseInfo, isLoading } = useQuery({
     queryFn: () => fetchGetSpouse(),
@@ -102,20 +108,14 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
         fields={[
           {
             type: 'radio',
-            label: 'สถานสภาพสมรส', viewText: watchFormValue('maritalStatus') || '-',
+            label: 'สถานสภาพสมรส', viewText: getSingleLabelFromValue({ datasource: choicesMaritalStatus, searchValue: watchFormValue('maritalStatus') }),
             name: 'maritalStatus', value: watchFormValue('maritalStatus'),
-            options: [
-              { label: 'โสด', value: Codex.MaritalStatus.single },
-              { label: 'สมรส', value: Codex.MaritalStatus.married }
-            ],
-            onSelect: (selected) => {
-              setFormValue('maritalStatus', selected);
-              setMaritalStatus(selected);
-            }
+            options: choicesMaritalStatus,
+            onSelect: (selected) => { setFormValue('maritalStatus', selected); setMaritalStatus(selected); }
           },
           {
             type: 'select',
-            label: 'ประเภทหลักฐาน', viewText: (masterReferenceTypeList.data || []).find((_f) => _f.value === watchFormValue('refType'))?.label || '-',
+            label: 'ประเภทหลักฐาน', viewText: getSingleLabelFromValue({ datasource: masterReferenceTypeList.data || [], searchValue: watchFormValue('refType') }),
             name: 'refType', value: watchFormValue('refType'),
             isHidden: maritalStatus !== Codex.MaritalStatus.married,
             options: masterReferenceTypeList.data || []
@@ -128,7 +128,7 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
           },
           {
             type: 'select',
-            label: 'คำนำหน้า', viewText: (masterTitleList.data || []).find((_f) => _f.value === watchFormValue('title'))?.label || '-',
+            label: 'คำนำหน้า', viewText: getSingleLabelFromValue({ datasource: masterTitleList.data || [], searchValue: watchFormValue('title') }),
             name: 'title', value: watchFormValue('title'),
             options: masterTitleList.data || [],
             isHidden: maritalStatus !== Codex.MaritalStatus.married

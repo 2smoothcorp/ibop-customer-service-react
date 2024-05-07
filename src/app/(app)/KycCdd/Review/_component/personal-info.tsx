@@ -30,6 +30,7 @@ import {
 } from '@/libs/redux/store/kyc-cdd';
 import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
+import { getSingleLabelFromValue, getAggregateLabelFromValue } from '@/utils/get-label-from-value';
 
 import { FormSchemaPersonalInfo } from './_form-schema';
 
@@ -132,7 +133,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
         fields={[
           {
             type: 'select',
-            label: 'คำนำหน้า', viewText: (masterTitleList.data || []).find((_f) => _f.value === watchFormValue('titleTh'))?.label || '-',
+            label: 'คำนำหน้า', viewText: getSingleLabelFromValue({ datasource: masterTitleList.data || [], searchValue: watchFormValue('titleTh') }),
             name: 'titleTh', value: watchFormValue('titleTh'),
             options: masterTitleList.data || []
           },
@@ -148,7 +149,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
           },
           {
             type: 'autocomplete',
-            label: 'ประเทศเจ้าของสัญชาติ ', viewText: (masterCountryList.data || []).find((_f) => _f.value === watchFormValue('nationality'))?.label || '-',
+            label: 'ประเทศเจ้าของสัญชาติ ', viewText: getSingleLabelFromValue({ datasource: masterCountryList.data || [], searchValue: watchFormValue('nationality') }),
             name: 'nationality', value: selectedNationality,
             options: masterCountryList.data || [],
             searchMethod: 'contain',
@@ -169,7 +170,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
           },
           {
             type: 'autocomplete',
-            label: 'อาชีพ', viewText: (masterOccupationList.data || []).find((_f) => _f.value === watchFormValue('occupation'))?.label || '-',
+            label: 'อาชีพ', viewText: getSingleLabelFromValue({ datasource: masterOccupationList.data || [], searchValue: watchFormValue('occupation') } ),
             name: 'occupation', value: selectedOccupation,
             options: masterOccupationList.data || [],
             searchMethod: 'contain',
@@ -180,20 +181,20 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
           },
           {
             type: 'select',
-            label: 'รายได้รวมต่อเดือน', viewText: (masterIncomeRateList.data || []).find((_f) => _f.value === watchFormValue('incomeRate'))?.label || '-',
+            label: 'รายได้รวมต่อเดือน', viewText: getSingleLabelFromValue({ datasource: masterIncomeRateList.data || [], searchValue: watchFormValue('incomeRate') } ),
             name: 'incomeRate', value: watchFormValue('incomeRate'),
             options: masterIncomeRateList.data || []
           },
           {
             type: 'checkbox',
-            label: 'แหล่งที่มาของรายได้', viewText: (masterIncomeSourceList.data || []).filter((_f) => (watchFormValue('incomeSource') || []).includes(_f.value)).map((item) => item.label).join(', '),
+            label: 'แหล่งที่มาของรายได้', viewText: getAggregateLabelFromValue({ datasource: masterIncomeSourceList.data || [], searchValue: watchFormValue('incomeSource') || [] }),
             name: 'incomeSource', value: watchFormValue('incomeSource'),
             options: masterIncomeSourceList.data || [],
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {})
           },
           {
             type: 'autocomplete',
-            label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: (masterCountryList.data || []).find((_f) => _f.value === watchFormValue('incomeCountry'))?.label || '-',
+            label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: getSingleLabelFromValue({ datasource: masterCountryList.data || [], searchValue: watchFormValue('incomeCountry') }),
             name: 'incomeCountry', value: selectedIncomeCountry,
             options: masterCountryList.data || [],
             searchMethod: 'contain',
@@ -209,7 +210,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
           },
           {
             type: 'checkbox',
-            label: 'วัตถุประสงค์การลงทุน', viewText: (masterInvestmentPurposeList.data || []).filter((_f) => (watchFormValue('investmentPurpose') || []).includes(_f.value)).map((item) => item.label).join(', '),
+            label: 'วัตถุประสงค์การลงทุน', viewText: getAggregateLabelFromValue({ datasource: masterInvestmentPurposeList.data || [], searchValue: watchFormValue('investmentPurpose') || [] }),
             name: 'investmentPurpose', value: watchFormValue('investmentPurpose'),
             options: masterInvestmentPurposeList.data || [],
             ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {})
