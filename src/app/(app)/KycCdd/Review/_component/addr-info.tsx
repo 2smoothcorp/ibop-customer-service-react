@@ -280,6 +280,7 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
             onSelect: (selectedItem: ComboBoxWrapperOption) => {
               const isForeign = selectedItem.value !== '000';
               setSelectedCurrentAddrCountry(selectedItem);
+              setFormValue('currentAddr_countryCode', selectedItem.value);
               if(isForeign) {
                 setSelectedCurrentThAddr(addressForeignOption);
                 setFormValue('currentAddr_zipCode', addressForeignOption.po);
@@ -298,10 +299,15 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
             getOptionLabel: (item) => item.po,
             onSelect: (selectedItem: ThaiAddrInfo) => {
               setSelectedCurrentThAddr(selectedItem);
+              setSelectedCurrentAddrCountry(undefined);
               setFormValue('currentAddr_zipCode', selectedItem.po);
               setFormValue('currentAddr_provinceCode', selectedItem.p);
               setFormValue('currentAddr_districtCode', selectedItem.d);
               setFormValue('currentAddr_subDistrictCode', selectedItem.s);
+              if(selectedItem.po !== Codex.Postcode.foreign) {
+                const countryThai = (masterCountryList.data || []).find((item) => item.value === '000');
+                setSelectedCurrentAddrCountry(countryThai);
+              }
             }
           },
           {
@@ -429,6 +435,7 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
             onSelect: (selectedItem: ComboBoxWrapperOption) => {
               const isForeign = selectedItem.value !== '000';
               setSelectedWorkAddrCountry(selectedItem);
+              setFormValue('workAddr_countryCode', selectedItem.value);
               if(isForeign) {
                 setSelectedWorkThAddr(addressForeignOption);
                 setFormValue('workAddr_zipCode', addressForeignOption.po);
@@ -447,10 +454,15 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
             getOptionLabel: (item) => item.po,
             onSelect: (selectedItem: ThaiAddrInfo) => {
               setSelectedWorkThAddr(selectedItem);
+              setSelectedWorkAddrCountry(undefined);
               setFormValue('workAddr_zipCode', selectedItem.po);
               setFormValue('workAddr_provinceCode', selectedItem.p);
               setFormValue('workAddr_districtCode', selectedItem.d);
               setFormValue('workAddr_subDistrictCode', selectedItem.s);
+              if(selectedItem.po !== Codex.Postcode.foreign) {
+                const countryThai = (masterCountryList.data || []).find((item) => item.value === '000');
+                setSelectedWorkAddrCountry(countryThai);
+              }
             }
           },
           {
