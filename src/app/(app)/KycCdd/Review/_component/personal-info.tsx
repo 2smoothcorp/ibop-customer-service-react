@@ -103,10 +103,10 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
     setFormValue('nationality', nationalityCode || '');
     setFormValue('occupation', occupationCode || '');
     setFormValue('incomeRate', incomeRateCode || '');
-    setFormValue('incomeSource', (incomeSourceCode || '').split(','));
+    setFormValue('incomeSource', (incomeSourceCode) ? incomeSourceCode.split(',') : []);
     setFormValue('incomeCountry', incomeCountry || '');
     setFormValue('exp', investmentYear || 0);
-    setFormValue('investmentPurpose', (investmentPurposeCode || '').split(','));
+    setFormValue('investmentPurpose', (investmentPurposeCode) ? investmentPurposeCode.split(',') : []);
     reduxDispatcher(savePersonalInfo(getFormValue()));
     return data;
   }
@@ -123,19 +123,6 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
 
   const renderFormPersonal = () => {
     const { errors } = formState;
-    const _titleTh = `${ personalData?.titleCode || '' } - ${ personalData?.titleNameTh || '' }`.trim();
-    const _firstNameTh = personalData?.firstNameTh || '-';
-    const _lastNameTh = personalData?.lastNameTh || '-';
-    const _firstNameEn = personalData?.firstNameEn || '-';
-    const _lastNameEn = personalData?.lastNameEn || '-';
-    // const _nationality = `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
-    // const _occupation = `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
-    const _incomeRate = `${ personalData?.incomeRateCode || '' } - ${ personalData?.incomeRateDesc || '' }`.trim();
-    // const _incomeSource = personalData?.incomeSourceDesc || '-';
-    // const _incomeCountry = personalData?.incomeCountry || '-';
-    const _investmentYear = personalData?.investmentYear || 0;
-    // const _investmentPurpose = (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '-' : personalData?.investmentPurposeDesc || '-';
-
     return (
       <Form<StoreTypeKycCdd.PersonalInfoFormFields>
         isEditing={ isEditing }
@@ -151,12 +138,12 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
           },
           {
             type: 'text',
-            label: 'ชื่อ (ภาษาไทย)', viewText: watchFormValue('firstnameTh') || _firstNameTh,
+            label: 'ชื่อ (ภาษาไทย)', viewText: watchFormValue('firstnameTh'),
             name: 'firstnameTh', value: watchFormValue('firstnameTh'),
           },
           {
             type: 'text',
-            label: 'นามสกุล (ภาษาไทย)', viewText: watchFormValue('lastnameTh') || _lastNameTh,
+            label: 'นามสกุล (ภาษาไทย)', viewText: watchFormValue('lastnameTh'),
             name: 'lastnameTh', value: watchFormValue('lastnameTh'),
           },
           {
@@ -172,12 +159,12 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
           },
           {
             type: 'text',
-            label: 'ชื่อ (ภาษาอังกฤษ)', viewText: watchFormValue('firstnameEn') || _firstNameEn,
+            label: 'ชื่อ (ภาษาอังกฤษ)', viewText: watchFormValue('firstnameEn'),
             name: 'firstnameEn', value: watchFormValue('firstnameEn'),
           },
           {
             type: 'text',
-            label: 'นามสกุล (ภาษาอังกฤษ)', viewText: watchFormValue('lastnameEn') || _lastNameEn,
+            label: 'นามสกุล (ภาษาอังกฤษ)', viewText: watchFormValue('lastnameEn'),
             name: 'lastnameEn', value: watchFormValue('lastnameEn'),
           },
           {
@@ -193,7 +180,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
           },
           {
             type: 'select',
-            label: 'รายได้รวมต่อเดือน', viewText: watchFormValue('incomeRate') || `${ _incomeRate }`,
+            label: 'รายได้รวมต่อเดือน', viewText: (masterIncomeRateList.data || []).find((_f) => _f.value === watchFormValue('incomeRate'))?.label || '-',
             name: 'incomeRate', value: watchFormValue('incomeRate'),
             options: masterIncomeRateList.data || []
           },
@@ -217,7 +204,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
           },
           {
             type: 'number',
-            label: 'ประสบการณ์การลงทุน (ปี)', viewText: `${ _investmentYear }`,
+            label: 'ประสบการณ์การลงทุน (ปี)', viewText: `${ watchFormValue('exp') }`,
             name: 'exp', value: watchFormValue('exp')
           },
           {

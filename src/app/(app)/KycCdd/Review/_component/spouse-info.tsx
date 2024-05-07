@@ -112,7 +112,7 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
         fields={[
           {
             type: 'radio',
-            label: 'สถานสภาพสมรส', viewText: _maritalStatusText,
+            label: 'สถานสภาพสมรส', viewText: watchFormValue('maritalStatus') || '-',
             name: 'maritalStatus', value: watchFormValue('maritalStatus'),
             options: [
               { label: 'โสด', value: Codex.MaritalStatus.single },
@@ -125,34 +125,34 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
           },
           {
             type: 'select',
-            label: 'ประเภทหลักฐาน', viewText: _refTypeText,
-            name: 'refType', value: _refTypeInitValue,
+            label: 'ประเภทหลักฐาน', viewText: (masterReferenceTypeList.data || []).find((_f) => _f.value === watchFormValue('refType'))?.label || '-',
+            name: 'refType', value: watchFormValue('refType'),
             isHidden: maritalStatus !== Codex.MaritalStatus.married,
             options: masterReferenceTypeList.data || []
           },
           {
             type: 'text',
-            label: 'เลขทีบัตร', viewText: _refIdText,
-            name: 'refId', value: _refIdInitValue,
+            label: 'เลขทีบัตร', viewText: watchFormValue('refId') || '-',
+            name: 'refId', value: watchFormValue('refId'),
             isHidden: maritalStatus !== Codex.MaritalStatus.married
           },
           {
             type: 'select',
-            label: 'คำนำหน้า', viewText: _titleText,
+            label: 'คำนำหน้า', viewText: (masterTitleList.data || []).find((_f) => _f.value === watchFormValue('title'))?.label || '-',
             name: 'title', value: watchFormValue('title'),
             options: masterTitleList.data || [],
             isHidden: maritalStatus !== Codex.MaritalStatus.married
           },
           {
             type: 'text',
-            label: 'ชื่อ', viewText: _firstnameText,
-            name: 'firstname', value: _firstnameInitValue,
+            label: 'ชื่อ', viewText: watchFormValue('firstname') || '-',
+            name: 'firstname', value: watchFormValue('firstname'),
             isHidden: maritalStatus !== Codex.MaritalStatus.married
           },
           {
             type: 'text',
-            label: 'นามสกุล', viewText: _lastnameText,
-            name: 'lastname', value: _lastnameInitValue,
+            label: 'นามสกุล', viewText: watchFormValue('lastname') || '-',
+            name: 'lastname', value: watchFormValue('lastname'),
             isHidden: maritalStatus !== Codex.MaritalStatus.married
           }
         ]}
