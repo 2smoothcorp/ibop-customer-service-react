@@ -424,4 +424,5 @@ export const ReviewRelativeInfo = ({ corporateId }: RelativeInfoProps): ReactEle
 
 interface RelativeInfoProps {
   corporateId: string;
+  onToggleEdit?: (isEditing: boolean) => void;
 }

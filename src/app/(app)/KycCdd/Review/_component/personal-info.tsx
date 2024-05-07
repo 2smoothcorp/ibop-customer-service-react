@@ -33,7 +33,7 @@ import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer
 
 import { FormSchemaPersonalInfo } from './_form-schema';
 
-export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactElement => {
+export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoProps): ReactElement => {
   const [ selectedNationality, setSelectedNationality ] = useState<ComboBoxWrapperOption>();
   const [ selectedOccupation, setSelectedOccupation ] = useState<ComboBoxWrapperOption>();
   const [ selectedIncomeCountry, setSelectedIncomeCountry ] = useState<ComboBoxWrapperOption>();
@@ -111,7 +111,10 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
     return data;
   }
 
-  const toggleFormMode = () => { setIsEditing((current) => !current); }
+  const toggleFormMode = () => {
+    if(onToggleEdit) { onToggleEdit(!isEditing); }
+    setIsEditing((current) => !current);
+  }
 
   const onSubmitForm = (fieldsData: StoreTypeKycCdd.PersonalInfoFormFields) => {
     reduxDispatcher(savePersonalInfo(fieldsData));
@@ -244,4 +247,5 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
 interface PersonalInfoProps {
   corporateId: string;
+  onToggleEdit?: (isEditing: boolean) => void;
 }

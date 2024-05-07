@@ -26,7 +26,7 @@ import { Codex } from '@/utils/codex';
 
 import { FormSchemaSpouseInfo } from './_form-schema';
 
-export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement => {
+export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps): ReactElement => {
   const [ maritalStatus, setMaritalStatus ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
   const { register, handleSubmit, formState, watch: watchFormValue, getValues: getFormValue, setValue: setFormValue } = useForm<StoreTypeKycCdd.SpouseFormFields>({
@@ -69,7 +69,10 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
     return data;
   }
 
-  const toggleFormMode = () => { setIsEditing((current) => !current); }
+  const toggleFormMode = () => {
+    if(onToggleEdit) { onToggleEdit(!isEditing); }
+    setIsEditing((current) => !current);
+  }
 
   const onSubmitForm = (fieldsData: StoreTypeKycCdd.SpouseFormFields) => {
     reduxDispatcher(saveSpouseInfo(fieldsData));
@@ -160,4 +163,5 @@ export const ReviewSpouseInfo = ({ corporateId }: SpouseInfoProps): ReactElement
 
 interface SpouseInfoProps {
   corporateId: string;
+  onToggleEdit?: (isEditing: boolean) => void;
 }

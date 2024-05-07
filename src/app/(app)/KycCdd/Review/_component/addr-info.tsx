@@ -28,7 +28,7 @@ import { removeObjectKeyPrefix } from '@/utils/remove-object-key-prefix';
 
 import { FormSchemaCurrentAddress, FormSchemaWorkAddress } from './_form-schema';
 
-export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => {
+export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): ReactElement => {
   const [ isEditingCurrentAddr, setIsEditingCurrentAddr ] = useState(false);
   const [ isEditingWorkAddr, setIsEditingWorkAddr ] = useState(false);
   const [ selectedCurrentAddrCountry, setSelectedCurrentAddrCountry ] = useState<ComboBoxWrapperOption>();
@@ -162,8 +162,15 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
     return ({ currentAddr: currentAddr || {}, workAddr: workAddr || {} });
   }
 
-  const toggleCurrentAddrFormMode = () => { setIsEditingCurrentAddr((current) => !current); }
-  const toggleWorkAddrFormMode = () => { setIsEditingWorkAddr((current) => !current); }
+  const toggleCurrentAddrFormMode = () => {
+    if(onToggleEdit) { onToggleEdit(!isEditingCurrentAddr || !isEditingCurrentAddr); }
+    setIsEditingCurrentAddr((current) => !current);
+  }
+
+  const toggleWorkAddrFormMode = () => {
+    if(onToggleEdit) { onToggleEdit(!isEditingWorkAddr || !isEditingWorkAddr); }
+    setIsEditingWorkAddr((current) => !current);
+  }
 
   const onSubmitCurrentAddrForm = (fieldsData: StoreTypeKycCdd.CurrentAddrFormFields) => {
     if(!selectedCurrentAddrCountry) { return; }
@@ -535,4 +542,5 @@ export const ReviewAddrInfo = ({ corporateId }: AddrInfoProps): ReactElement => 
 
 interface AddrInfoProps {
   corporateId: string;
+  onToggleEdit?: (isEditing: boolean) => void;
 }
