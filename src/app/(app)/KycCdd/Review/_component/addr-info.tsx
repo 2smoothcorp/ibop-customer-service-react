@@ -19,7 +19,8 @@ import { Form } from '@/components/form';
 import { SectionSeparator } from '@/components/section-separator';
 import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
 import { useThailandAddress, getSingleThailandAddress, addressEmptyOption, addressForeignOption, type ThaiAddrInfo } from '@/hooks/thailand-address';
-import { useAppDispatch } from '@/libs/redux/hook';
+import { swal } from '@/libs/sweetalert';
+import { useAppDispatch, useAppSelector } from '@/libs/redux/hook';
 import { type StoreTypeKycCdd, saveCurrentAddressInfo, saveWorkAddressInfo } from '@/libs/redux/store/kyc-cdd';
 import type { ComboBoxWrapperOption } from '@/type/api';
 import type { KycAddressOutputListDataResponse } from '@/services/rest-api/customer-service';
@@ -37,6 +38,7 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
   const [ selectedWorkThAddr, setSelectedWorkThAddr ] = useState<ThaiAddrInfo>(addressEmptyOption);
 
   const reduxDispatcher = useAppDispatch();
+  const kyccddStored = useAppSelector((selector) => selector.kyccdd);
   const masterCountryList = useMasterDataCountriesCustom();
   const thaiAddrInfo = useThailandAddress();
 
@@ -103,6 +105,53 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
 
     const currentAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.current);
     const workAddr = data.find((_f) => _f.addressTypeCode === Codex.AddressType.work);
+
+    if(kyccddStored) {
+      const { currentAddrInfo, workAddrInfo } = kyccddStored;
+
+      currentAddrHookForm.setValue('currentAddr_addressNo', currentAddrInfo.addressNo || '');
+      currentAddrHookForm.setValue('currentAddr_moo', currentAddrInfo.moo || '');
+      currentAddrHookForm.setValue('currentAddr_buildingOrVillage', currentAddrInfo.buildingOrVillage || '');
+      currentAddrHookForm.setValue('currentAddr_roomNo', currentAddrInfo.roomNo || '');
+      currentAddrHookForm.setValue('currentAddr_floor', currentAddrInfo.floor || '');
+      currentAddrHookForm.setValue('currentAddr_soi', currentAddrInfo.soi || '');
+      currentAddrHookForm.setValue('currentAddr_street', currentAddrInfo.street || '');
+      currentAddrHookForm.setValue('currentAddr_countryCode', currentAddrInfo.countryCode || '');
+      currentAddrHookForm.setValue('currentAddr_zipCode', currentAddrInfo.zipCode || '');
+      currentAddrHookForm.setValue('currentAddr_provinceCode', currentAddrInfo.provinceCode || '');
+      currentAddrHookForm.setValue('currentAddr_districtCode', currentAddrInfo.districtCode || '');
+      currentAddrHookForm.setValue('currentAddr_subDistrictCode', currentAddrInfo.subDistrictCode || '');
+      currentAddrHookForm.setValue('currentAddr_customAddress1', currentAddrInfo.customAddress1 || '');
+      currentAddrHookForm.setValue('currentAddr_customAddress2', currentAddrInfo.customAddress2 || '');
+      currentAddrHookForm.setValue('currentAddr_customAddress3', currentAddrInfo.customAddress3 || '');
+
+      workAddrHookForm.setValue('workAddr_addressNo', workAddrInfo.addressNo || '');
+      workAddrHookForm.setValue('workAddr_moo', workAddrInfo.moo || '');
+      workAddrHookForm.setValue('workAddr_buildingOrVillage', workAddrInfo.buildingOrVillage || '');
+      workAddrHookForm.setValue('workAddr_roomNo', workAddrInfo.roomNo || '');
+      workAddrHookForm.setValue('workAddr_floor', workAddrInfo.floor || '');
+      workAddrHookForm.setValue('workAddr_soi', workAddrInfo.soi || '');
+      workAddrHookForm.setValue('workAddr_street', workAddrInfo.street || '');
+      workAddrHookForm.setValue('workAddr_countryCode', workAddrInfo.countryCode || '');
+      workAddrHookForm.setValue('workAddr_zipCode', workAddrInfo.zipCode || '');
+      workAddrHookForm.setValue('workAddr_provinceCode', workAddrInfo.provinceCode || '');
+      workAddrHookForm.setValue('workAddr_districtCode', workAddrInfo.districtCode || '');
+      workAddrHookForm.setValue('workAddr_subDistrictCode', workAddrInfo.subDistrictCode || '');
+      workAddrHookForm.setValue('workAddr_customAddress1', workAddrInfo.customAddress1 || '');
+      workAddrHookForm.setValue('workAddr_customAddress2', workAddrInfo.customAddress2 || '');
+      workAddrHookForm.setValue('workAddr_customAddress3', workAddrInfo.customAddress3 || '');
+
+      if(currentAddrInfo.countryCode === '000') { setSelectedCurrentAddrCountry({ label: '000 - ไทย', value: '000' }); }
+      if(workAddrInfo.countryCode === '000') { setSelectedWorkAddrCountry({ label: '000 - ไทย', value: '000' }); }
+
+      const _curAddr = getSingleThailandAddress({ po: currentAddrInfo.zipCode || '', p: currentAddrInfo.provinceCode || '', d: currentAddrInfo.districtCode || '', s: currentAddrInfo.subDistrictCode || '' });
+      const _workAddr = getSingleThailandAddress({ po: workAddrInfo.zipCode || '', p: workAddrInfo.provinceCode || '', d: workAddrInfo.districtCode || '', s: workAddrInfo.subDistrictCode || '' });
+      setSelectedCurrentThAddr(_curAddr);
+      setSelectedCurrentThAddr(_workAddr);
+
+      return ({ currentAddr: {}, workAddr: {} });
+    }
+
     if(currentAddr) {
       const { getValues: getFormValue, setValue: setFormValue } = currentAddrHookForm;
       const {
@@ -208,21 +257,37 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
     setIsEditingWorkAddr((current) => !current);
   }
 
-  const onSubmitCurrentAddrForm = (fieldsData: StoreTypeKycCdd.CurrentAddrFormFields) => {
+  const onSubmitCurrentAddrForm = async (fieldsData: StoreTypeKycCdd.CurrentAddrFormFields) => {
     if(!selectedCurrentAddrCountry) { return; }
     if(!selectedCurrentThAddr) { return; }
 
     const refinedFieldsData: StoreTypeKycCdd.AddressFields = removeObjectKeyPrefix({ obj: fieldsData, prefix: 'currentAddr_' });
     reduxDispatcher(saveCurrentAddressInfo(refinedFieldsData));
+
+    await swal({
+      title: 'ยืนยันข้อมูลสำเร็จ',
+      description: 'ระบบได้ทำการบันทึกข้อมูลของคุณเรียบร้อย',
+      icon: 'success',
+      confirmButton: { text: 'เสร็จสิ้น' }
+    });
+
     toggleCurrentAddrFormMode();
   }
 
-  const onSubmitWorkAddrForm = (fieldsData: StoreTypeKycCdd.WorkAddrFormFields) => {
+  const onSubmitWorkAddrForm = async (fieldsData: StoreTypeKycCdd.WorkAddrFormFields) => {
     if(!selectedWorkAddrCountry) { return; }
     if(!selectedWorkThAddr) { return; }
 
     const refinedFieldsData: StoreTypeKycCdd.AddressFields = removeObjectKeyPrefix({ obj: fieldsData, prefix: 'workAddr_' });
     reduxDispatcher(saveWorkAddressInfo(refinedFieldsData));
+
+    await swal({
+      title: 'ยืนยันข้อมูลสำเร็จ',
+      description: 'ระบบได้ทำการบันทึกข้อมูลของคุณเรียบร้อย',
+      icon: 'success',
+      confirmButton: { text: 'เสร็จสิ้น' }
+    });
+
     toggleWorkAddrFormMode();
   }
 
