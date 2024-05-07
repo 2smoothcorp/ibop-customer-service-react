@@ -57,7 +57,6 @@ export const ListView = ({}: ListViewProps): ReactElement => {
   });
 
   const fetchGetKycTableData = async () => {
-    const { pageSize } = tablePaginator;
     const response = await searchKyc({ ...tableFilter, ...tablePaginator });
 
     const { data } = response;
@@ -75,7 +74,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         name,
         kycRiskLevel, kycRiskLevelDescription,
         kycScore,
-        logUser
+        logUserDesc
       } = item;
 
       tableDs.push({
@@ -86,7 +85,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         fullname: name || '',
         riskGroup: `${kycRiskLevel} - ${kycRiskLevelDescription}`,
         riskScore: kycScore || 0,
-        createdBy: logUser || ''
+        createdBy: logUserDesc || ''
       });
     }
 
@@ -98,7 +97,6 @@ export const ListView = ({}: ListViewProps): ReactElement => {
   }
 
   const fetchGetRevaluateTableData = async () => {
-    const { pageSize } = tablePaginator;
     const response = await searchRevaluate({ ...tableFilter, ...tablePaginator });
 
     const { data } = response;
@@ -116,7 +114,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         name,
         kycRiskLevel, kycRiskLevelDescription,
         kycScore,
-        logUser
+        logUserDesc
       } = item;
 
       tableDs.push({
@@ -127,7 +125,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         fullname: name || '',
         riskGroup: `${kycRiskLevel} - ${kycRiskLevelDescription}`,
         riskScore: kycScore || 0,
-        createdBy: logUser || ''
+        createdBy: logUserDesc || ''
       });
     }
 
