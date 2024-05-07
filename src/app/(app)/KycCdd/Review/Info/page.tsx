@@ -107,7 +107,7 @@ const Page = (): ReactElement => {
             <Grid item>
               <InputText
                 name={'corporateId'}
-                disabled={ stepIndex !== 0 }
+                disabled={ stepIndex > 0 }
                 onChange={ onChangeCorporateId }
               />
             </Grid>
@@ -162,6 +162,7 @@ const Page = (): ReactElement => {
   }
 
   const renderStepperControlButtons = (): ReactElement => {
+    if(stepIndex < 0) { return (<div></div>); }
     if(isStepEditing) { return (<div></div>); }
     return (
       <div className={'flex items-center justify-end gap-x-4 mt-4 p-4'}>
