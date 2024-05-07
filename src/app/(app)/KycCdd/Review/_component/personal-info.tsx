@@ -172,6 +172,7 @@ export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoPr
         baseColSpan={4}
         hookForm={{ register, errors }}
         onSubmit={ handleSubmit(onSubmitForm) }
+        onCancel={ toggleFormMode }
         fields={[
           {
             type: 'select',

@@ -299,7 +299,8 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
         isEditing={isEditingCurrentAddr}
         baseColSpan={4}
         hookForm={{ register, errors }}
-        onSubmit={handleSubmit(onSubmitCurrentAddrForm)}
+        onSubmit={ handleSubmit(onSubmitCurrentAddrForm) }
+        onCancel={ toggleCurrentAddrFormMode }
         fields={[
           {
             type: 'text',
@@ -454,7 +455,8 @@ export const ReviewAddrInfo = ({ corporateId, onToggleEdit }: AddrInfoProps): Re
         isEditing={isEditingWorkAddr}
         baseColSpan={4}
         hookForm={{ register, errors }}
-        onSubmit={handleSubmit(onSubmitWorkAddrForm)}
+        onSubmit={ handleSubmit(onSubmitWorkAddrForm) }
+        onCancel={ toggleWorkAddrFormMode }
         fields={[
           {
             type: 'text',

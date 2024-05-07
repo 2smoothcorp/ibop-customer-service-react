@@ -125,7 +125,8 @@ export const ReviewSpouseInfo = ({ corporateId, onToggleEdit }: SpouseInfoProps)
         isEditing={isEditing}
         baseColSpan={4}
         hookForm={{ register, errors }}
-        onSubmit={handleSubmit(onSubmitForm)}
+        onSubmit={ handleSubmit(onSubmitForm) }
+        onCancel={ toggleFormMode }
         fields={[
           {
             type: 'radio',
