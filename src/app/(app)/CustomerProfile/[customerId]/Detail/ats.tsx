@@ -3,7 +3,7 @@
 import HeaderTitle from "@/components/navbar/header-title";
 import Table from "@/components/table/table";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { setDataCustomerAts, setIsMainCustomerAts } from "@/libs/redux/store/customer-ats-e-dividend-slice";
+import { setDataCustomerAts, setMainIdCustomerAts } from "@/libs/redux/store/customer-ats-e-dividend-slice";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { BankInfoModel, BankInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { Button, Checkbox } from "@mui/material";
@@ -19,7 +19,7 @@ export default function ATS() {
     const params = useParams()
     const dispatch = useAppDispatch()
 
-    const idRowsMain = useAppSelector(state => state.customerAtsEDividend.idRowsMain)
+    const idRowsMainAts = useAppSelector(state => state.customerAtsEDividend.idRowsMainAts)
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['ats', params.customerId],
@@ -35,7 +35,7 @@ export default function ATS() {
                 if (response.status == 200) {
                     const { data } = response;
 
-                    if (data && data.bankInfoModel) {
+                    if (data && data.bankInfoModel && data.bankInfoModel.length > 0) {
                         // console.log(data.bankInfoModel)
                         // setDefaultData(data.bankInfoModel)
                         const result = data.bankInfoModel.map((item, index) => {
@@ -45,7 +45,7 @@ export default function ATS() {
                             });
                         });
                         const rusultIsMain = result.find((item) => item.isDefault)
-                        dispatch(setIsMainCustomerAts(rusultIsMain?.id || 0))
+                        dispatch(setMainIdCustomerAts(rusultIsMain?.id || 0))
                         return result
                         // return [{
                         //     accountName: "",
@@ -75,6 +75,7 @@ export default function ATS() {
                         //     registerMethod: "-"
                         // }]
                     }
+                    return [];
                 }
             } catch (error) {
                 console.error('error', error)
@@ -87,9 +88,10 @@ export default function ATS() {
     const saveData = () => {
         if (data) {
             const indexOld = data.findIndex((item) => item.isDefault)
-            const indexNew = data.findIndex((_, index) => index == idRowsMain)
-            if (indexOld !== -1 && indexNew !== -1) {
+            const indexNew = data.findIndex((_, index) => index == idRowsMainAts)
+            if (data.length > 1 && indexOld !== -1 && indexNew !== -1) {
                 const newData = [...data]
+                console.log('newData', newData)
                 newData[indexOld].isDefault = false
                 newData[indexNew].isDefault = true
                 const result = newData.filter((_, index) => index === indexOld || index === indexNew)
@@ -133,15 +135,15 @@ export default function ATS() {
 function RenderCheckBox(props: GridRenderCellParams<any, boolean>) {
 
     const dispatch = useAppDispatch();
-    const isRowMain = useAppSelector(state => state.customerAtsEDividend.idRowsMain)
+    const isRowMain = useAppSelector(state => state.customerAtsEDividend.idRowsMainAts)
     const [checked, setChecked] = useState(props.value);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (checked) {
-            dispatch(setIsMainCustomerAts(props.row.id))
+            dispatch(setMainIdCustomerAts(props.row.id))
         }
         if (!checked) {
-            dispatch(setIsMainCustomerAts(props.row.id))
+            dispatch(setMainIdCustomerAts(props.row.id))
             setChecked(event.target.checked);
         }
     };
@@ -203,6 +205,7 @@ const columns: GridColDef[] = [
         width: 120,
         headerAlign: 'center',
         align: 'center',
+        valueGetter: (value) => `${value + 1}`,
     },
     {
         field: 'bank',
