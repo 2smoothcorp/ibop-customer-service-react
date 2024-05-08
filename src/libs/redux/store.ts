@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import attorneySlice from './store/attorney';
 import beneficiarySlice from './store/beneficiary';
 import customerAtsEDividendSlice from './store/customer-ats-e-dividend-slice';
 import customerContractSlice from './store/customer-contract-slice';
@@ -17,6 +18,7 @@ export const makeStore = () => {
             kyccdd: reducerKycCdd,
             financialInfomation: financialInfomationSlice,
             beneficiary: beneficiarySlice,
+            attorney: attorneySlice
         }
     })
 }

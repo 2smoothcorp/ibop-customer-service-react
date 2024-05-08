@@ -14,7 +14,6 @@ export const beneficiarySlice = createSlice({
     initialState,
     reducers: {
         setBeneficiaryData: (state, action: PayloadAction<BeneficiaryInfoModel>) => {
-            console.log(`action.payload`, action.payload)
             state.data = { ...action.payload }
         }
     }

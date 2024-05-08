@@ -21,7 +21,7 @@ const useMasterDataCountries = () => {
 
 export const useMasterDataCountriesCustom = () => {
     const MasterDataCountries = useQuery({
-        queryKey: ['countries'],
+        queryKey: ['countries-custom'],
         queryFn: async function () {
             try {
                 const request = await fetch(`/api/master-data/countries`)

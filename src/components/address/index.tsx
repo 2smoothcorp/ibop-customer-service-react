@@ -33,7 +33,7 @@ export interface AddressComponentReturn {
     ZipCode: ReactElement
 }
 
-const AddressComponent = (props: AddressComponentProps): AddressComponentReturn => {
+const AddressComponent = (props: AddressComponentProps): Array<ReactElement> => {
 
     const { isEditable, province, district, subDistrict, country, zipCode, onAddressChange, addressValues } = props
 
@@ -167,13 +167,13 @@ const AddressComponent = (props: AddressComponentProps): AddressComponentReturn 
         />
     )
 
-    return {
+    return [
         Country,
+        ZipCode,
         Province,
         District,
         SubDistrict,
-        ZipCode
-    }
+    ]
 
 }
 
