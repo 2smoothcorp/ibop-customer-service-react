@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import customerAtsEDividendSlice from './store/customer-ats-e-dividend-slice';
 import customerContractSlice from './store/customer-contract-slice';
+import customerFatcaSlice from './store/customer-fatca-slice';
 import customerInformationSlice from './store/customer-information-slice';
 import customerProfileSlice from './store/customer-profile-slice';
 import { reducerKycCdd } from './store/kyc-cdd';
@@ -13,6 +14,7 @@ export const makeStore = () => {
             customerInformation: customerInformationSlice,
             customerContract: customerContractSlice,
             customerAtsEDividend: customerAtsEDividendSlice,
+            cusomterFatca: customerFatcaSlice,
             kyccdd: reducerKycCdd
         }
     })
