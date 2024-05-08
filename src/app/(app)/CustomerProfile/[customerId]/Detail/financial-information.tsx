@@ -29,7 +29,7 @@ const FinancialInformation = () => {
     console.log(`financialInfomation`, financialInfomation)
 
     const financialInfomationForm = useForm<FinancialInfoModel>({
-        defaultValues: {}
+        defaultValues: { ...financialInfomation }
     })
     const form = financialInfomationForm;
 
