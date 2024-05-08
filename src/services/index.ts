@@ -65,9 +65,9 @@ export default class Services {
         const vaultCustomerService = await this.getCustomerServiceVault()
         const jwtInfoData: JWTInfoData = { BaseUrl: '', ...(vaultCustomerService?._vaultInfo?.data.data || {}) };
 
-        return  new Configuration({
-            accessToken: `Bearer ${ jwtToken }`,
-            apiKey: `Bearer ${ jwtToken }`,
+        return new Configuration({
+            accessToken: `Bearer ${jwtToken}`,
+            apiKey: `Bearer ${jwtToken}`,
             basePath: jwtInfoData.BaseUrl || '',
         });
         /*

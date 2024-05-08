@@ -4,6 +4,7 @@ import { UseFormRegister } from "react-hook-form";
 
 export default function InputAutoComplete({
     name,
+    value,
     defaultValue,
     placeholder,
     className,
@@ -48,6 +49,7 @@ export type InputAutoCompleteValue = {
 interface InputAutoCompleteProps {
     required?: boolean;
     name: string;
+    value?: string;
     defaultValue?: string;
     placeholder?: string;
     className?: string;

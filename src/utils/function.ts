@@ -13,19 +13,21 @@ export const isEmptyStringFormApi = (value: string | undefined | null): boolean 
 }
 
 export interface AddressBySearchProps {
-    value: {
-        postCode: string;
-        province: string;
-        provinceCode: string;
-        district: string;
-        districtCode: string;
-        subDistrict: string;
-        subDistrictCode: string;
-    };
+    value: AddressValues;
     label: string;
 }
 
-export const getAddressBySearch = (search: string, mode: 'postCode' | 'province' | 'district' | 'subDistrict'): AddressBySearchProps[] => {
+export interface AddressValues {
+    postCode: string;
+    province: string;
+    provinceCode: string;
+    district: string;
+    districtCode: string;
+    subDistrict: string;
+    subDistrictCode: string;
+}
+
+export const getAddressBySearch = (search: string, mode: AddressBySearchModeProps): AddressBySearchProps[] => {
     let result = [];
     switch (mode) {
         case 'postCode':

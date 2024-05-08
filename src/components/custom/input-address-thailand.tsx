@@ -5,6 +5,7 @@ import { UseFormRegister } from "react-hook-form";
 
 export default function InputAddressThailand({
     name,
+    value,
     defaultValue,
     placeholder,
     className,
@@ -44,6 +45,7 @@ export default function InputAddressThailand({
 
     return (
         <Autocomplete
+            value={value || defaultValue}
             fullWidth
             // value={data}
             // onChange={(_, item) => setData(item)}
@@ -64,7 +66,8 @@ export default function InputAddressThailand({
 interface InputAddressThailandProps {
     required?: boolean;
     name: string;
-    defaultValue?: string;
+    value?: AddressBySearchProps;
+    defaultValue?: AddressBySearchProps;
     placeholder?: string;
     className?: string;
     register?: UseFormRegister<any>;

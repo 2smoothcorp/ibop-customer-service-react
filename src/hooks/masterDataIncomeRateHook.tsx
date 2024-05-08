@@ -21,7 +21,7 @@ const useMasterDataIncomeRate = () => {
 
 export const useMasterDataIncomeRateCustom = () => {
     const MasterDataIncomeRate = useQuery({
-        queryKey: ['countries'],
+        queryKey: ['incomeRate'],
         queryFn: async function () {
             try {
                 const request = await fetch(`/api/master-data/income-rate`)

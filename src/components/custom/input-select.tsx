@@ -3,6 +3,7 @@ import { UseFormRegister } from "react-hook-form";
 
 export default function InputSelect({
     name,
+    value,
     defaultValue,
     placeholder,
     className,
@@ -44,6 +45,7 @@ export type InputSelectValue = {
 interface InputSelectProps {
     required?: boolean;
     name: string;
+    value?: string;
     defaultValue?: string;
     placeholder?: string;
     className?: string;

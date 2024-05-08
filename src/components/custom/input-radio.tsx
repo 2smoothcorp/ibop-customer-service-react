@@ -17,6 +17,7 @@ import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 export default function InputRadio({
     name, // ชื่อของ input
+    value,
     defaultValue, // ค่าเริ่มต้น
     required = false,
     disabled = false,
@@ -32,6 +33,7 @@ export default function InputRadio({
             aria-required={required}
             row={isRow}
             name={name}
+            value={value || defaultValue}
             defaultValue={defaultValue}
             onChange={(e) => onChange && onChange((e.target as HTMLInputElement).value)}
         >
@@ -65,6 +67,7 @@ export type InputRadioValue = {
 
 interface InputRadioProps {
     name: string;
+    value?: string;
     defaultValue?: string;
     onChange?: (value: string) => void;
     disabled?: boolean;
