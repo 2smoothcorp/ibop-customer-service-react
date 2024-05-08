@@ -20,6 +20,7 @@ export default function InputHorizontal({
     name,
     labelWidth,
     defaultValue,
+    value,
     textShow,
     isRequired = false,
     isLableCols1,
@@ -64,6 +65,7 @@ export default function InputHorizontal({
             case "number":
                 return <InputNumber
                     name={name}
+                    value={value}
                     defaultValue={defaultValue}
                     onChange={onChangeNumber}
                     disabled={disabled}
@@ -73,6 +75,7 @@ export default function InputHorizontal({
                 return <InputSelect
                     onChange={onChange}
                     name={name}
+                    value={value}
                     defaultValue={defaultValue}
                     list={list}
                     disabled={disabled}
@@ -83,6 +86,7 @@ export default function InputHorizontal({
                     isFlex
                     onChange={onChange}
                     name={name}
+                    value={value}
                     defaultValue={defaultValue}
                     list={list}
                     disabled={disabled}
@@ -93,6 +97,7 @@ export default function InputHorizontal({
                 return <InputAutoComplete
                     placeholder={placeholder}
                     name={name}
+                    value={value}
                     defaultValue={defaultValue}
                     list={list}
                     disabled={disabled}
@@ -178,6 +183,7 @@ interface InputHorizontalProps {
     inputCol?: string;
     isLableCols1?: boolean;
     allGridCols?: string;
+    value?: string;
     defaultValue?: string;
     textShow?: string;
     placeholder?: string;

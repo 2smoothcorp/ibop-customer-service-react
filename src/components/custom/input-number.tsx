@@ -2,6 +2,7 @@ import { NumericFormat } from 'react-number-format';
 
 export default function InputNumber({
     name, // ชื่อของ input
+    value,
     defaultValue, // ค่าเริ่มต้น
     placeholder, // ข้อความ placeholder
     className,
@@ -31,6 +32,7 @@ export default function InputNumber({
 interface InputNumberProps {
     required?: boolean;
     name: string;
+    value?: string;
     defaultValue?: string;
     placeholder?: string;
     className?: string;

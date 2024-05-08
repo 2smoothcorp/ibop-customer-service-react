@@ -38,5 +38,5 @@ interface InputCheckboxProps {
     disabled?: boolean;
     required?: boolean;
     label?: string;
-    width?: number;
+    width?: number | string;
 }

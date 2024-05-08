@@ -1,35 +1,51 @@
 import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
-import useMasterDataCountries from "@/hooks/masterDataCountries";
-import useMasterDataIncomeRate from "@/hooks/masterDataIncomeRateHook";
-import useMasterDataIncomeSource from "@/hooks/masterDataIncomeSourceHook";
-import useMasterDataInvestmentPurpose from "@/hooks/masterDataInvestmentPurpose";
-import { FinancialInfoResponseDataResponse } from "@/services/rest-api/customer-service";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
+import { nextStep } from "@/libs/redux/store/customer-profile-slice";
+import { setFinancialInfoData } from "@/libs/redux/store/financial-infomation";
+import { FinancialInfoModel, FinancialInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { ApiResponse } from "@/type/api";
+import { Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useSearchParams } from "next/navigation";
-import React from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import AssetForm from "./financial-information/asset-form";
+import IncomeRateForm from "./financial-information/income-rate-form";
+import IncomeSourceForm from "./financial-information/income-source-form";
+import InvestmentSection from "./financial-information/investment-form";
+import PurposeForm from "./financial-information/investment-purpose-form";
+import InvestmentYearForm from "./financial-information/investment-year-form";
 
 const FinancialInformation = () => {
-    const search = useSearchParams()
+
+    const searchParams = useSearchParams()
     const params = useParams()
+    const router = useRouter()
+    const dispatch = useAppDispatch()
 
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
+    const isEditable = searchParams.get('edit') === 'true';
 
-    const isRequired = () => {
-        if (isEditable) {
-            return <span className="text-red-500">*</span>
-        }
-        return <></>
-    }
+    const financialInfomation = useAppSelector(state => state.financialInfomation)
+    console.log(`financialInfomation`, financialInfomation)
 
-    const { data, isLoading, error } = useQuery({
+    const financialInfomationForm = useForm<FinancialInfoModel>({
+        defaultValues: { ...financialInfomation }
+    })
+    const form = financialInfomationForm;
+
+    const { data, isLoading, error, refetch } = useQuery({
         queryKey: ['financialInfo', params.customerId],
         queryFn: async function () {
+            console.log('aaaa')
             try {
+
                 const request = await fetch(`/api/customer-profile/financial-info/${params.customerId}`)
                 const response: ApiResponse<FinancialInfoResponseDataResponse> = await request.json();
-                // console.log(`response`, response)
+
+                for (let key in response.data?.data?.financialInfo) {
+                    form.setValue(key as any, response.data?.data?.financialInfo[key as keyof FinancialInfoModel])
+                }
+
                 return response.data
             } catch (e) {
             } finally {
@@ -37,30 +53,27 @@ const FinancialInformation = () => {
         }
     })
 
-    const masterDataIncomeRate = useMasterDataIncomeRate();
-    const masterDataIncomeSource = useMasterDataIncomeSource();
-    const masterDataInvestmentPurpose = useMasterDataInvestmentPurpose();
-    const masterDataCountries = useMasterDataCountries();
-
-    // console.log(`MasterDataIncomeRate`, masterDataIncomeRate.data)
-    // console.log(`MasterDataIncomeSource`, masterDataIncomeSource.data)
-
-    const getCountryText = (countryCode: string) => {
-        let _text = '-'
-        const foundCountry = masterDataCountries?.data?.filter((d) => d.rValue === countryCode);
-        if (foundCountry && foundCountry.length > 0) {
-            _text = `${countryCode} - ${foundCountry[0]?.rText}`
+    const toggleValueFromCheckBox = (fieldName: string, value: string, isChecked: boolean) => {
+        const _vaules = form.getValues(fieldName as any) || [];
+        let _newValues = []
+        if (isChecked) {
+            _newValues = [..._vaules, value]
+        } else {
+            _newValues = _vaules.filter((v: any) => v !== value)
         }
-        return _text
+        form.setValue(fieldName as any, _newValues);
     }
 
-    const getIncomeRateText = (incomeRateCode: string | number) => {
-        let _text = '-'
-        const foundIncomeRate = masterDataIncomeRate?.data?.filter((d) => d.rValue === incomeRateCode.toString());
-        if (foundIncomeRate && foundIncomeRate.length > 0) {
-            _text = `${foundIncomeRate[0]?.rText}`
-        }
-        return _text
+    const onBack = (e: any) => {
+        router.push('/CustomerProfile/Edit/Offline')
+    }
+
+    const onSubmit = (e: any) => {
+        const { getValues } = form
+        console.log(`getValues()`, getValues())
+
+        dispatch(setFinancialInfoData(getValues()))
+        dispatch(nextStep())
     }
 
     return (
@@ -71,48 +84,30 @@ const FinancialInformation = () => {
                 className="gap-0"
                 title="ข้อมูลทางการเงิน"
             />
-            <div className="text-lg px-4 font-semibold tracking-wide">วัตถุประสงค์การลงทุน (เลือกได้มากกว่า 1 ข้อ) Investment Objective (You can select more than 1 item) {isRequired()}</div>
-            {
-                (data?.data?.financialInfo?.investmentPurposeCode || []).map((purpose: string, idx: number) => {
-                    const _purpose = masterDataInvestmentPurpose?.data?.filter((d) => d.rValue === purpose)[0]?.rText
-                        || purpose
-                    return <div className="text-lg px-10 tracking-wide" key={`purpose${idx}`}>{_purpose}</div>
-                })
-            }
-            {
-                data?.data?.financialInfo?.investmentPurposeOther ?
-                    <div className="text-lg px-10 tracking-wide">{data?.data?.financialInfo?.investmentPurposeOther}</div> : null
-            }
-            {
-                (data?.data?.financialInfo?.investmentPurposeCode || []).length === 0 && !data?.data?.financialInfo?.investmentPurposeOther ?
-                    <div className="text-lg px-10 tracking-wide">-</div> : null
-            }
-            <div className="text-lg px-4 font-semibold tracking-wide">ประเทศของแหล่งที่มาของรายได้/เงินลงทุน Country's Source of income / Investment Fund {isRequired()}</div>
-            <div className="text-lg px-10 tracking-wide" >{getCountryText(data?.data?.financialInfo?.investmentFundCode || '-')}</div>
-            <div className="text-lg px-4 font-semibold tracking-wide">แหล่งที่มาของรายได้ (เลือกได้มากกว่า 1 ข้อ) Source of income (You can select more than 1 item) {isRequired()}</div>
-            {
-                (data?.data?.financialInfo?.incomeSourceCode || []).map((incomeSource: string, idx: number) => {
-                    const _incomeSource = masterDataIncomeSource?.data?.filter((d) => d.rValue === incomeSource)[0]?.rText
-                        || incomeSource
-                    return <div className="text-lg px-10 tracking-wide" key={`incomeSource${idx}`}>{_incomeSource}</div>
-                })
-            }
-            {
-                data?.data?.financialInfo?.incomeSourceOther ?
-                    <div className="text-lg px-10 tracking-wide">{data?.data?.financialInfo?.incomeSourceOther}</div> : null
-            }
-            {
-                (data?.data?.financialInfo?.incomeSourceCode || []).length === 0 && !data?.data?.financialInfo?.incomeSourceOther ?
-                    <div className="text-lg px-10 tracking-wide">-</div> : null
-            }
-            <div className="text-lg px-4 font-semibold tracking-wide">รายได้ต่อเดือน (บาท) Monthly Income (Baht) {isRequired()}</div>
-            <div className="text-lg px-10 tracking-wide" >{getIncomeRateText(data?.data?.financialInfo?.incomeRateCode || '-')}</div>
-            <div className="text-lg px-4 font-semibold tracking-wide">ประสบการณ์การลงทุน (ปี) Experience in Investment (Year) {isRequired()}</div>
-            <div className="text-lg px-10 tracking-wide" >{data?.data?.financialInfo?.investmentYear || 'ไม่มีประสบการณ์'}</div>
-            <div className="text-lg px-4 font-semibold tracking-wide">มูลค่าทรัพย์สิน (บาท) Asset Value (Baht) {isRequired()}</div>
-            <div className="text-lg px-10 tracking-wide">
-                {data?.data?.financialInfo?.assetValue?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") || '-'}
+            <div className="my-4">
+                <PurposeForm data={data} isEditable={isEditable} form={form} onChangeCheckBox={toggleValueFromCheckBox} />
             </div>
+            <div className="my-4">
+                <InvestmentSection data={data} isEditable={isEditable} form={form} />
+            </div>
+            <div className="my-4">
+                <IncomeSourceForm data={data} isEditable={isEditable} form={form} onChangeCheckBox={toggleValueFromCheckBox} />
+            </div>
+            <div className="my-4">
+                <IncomeRateForm data={data} isEditable={isEditable} form={form} />
+            </div>
+            <div className="my-4">
+                <InvestmentYearForm data={data} isEditable={isEditable} form={form} />
+            </div>
+            <div className="my-4">
+                <AssetForm data={data} isEditable={isEditable} form={form} />
+            </div>
+            {
+                isEditable && <div className="flex justify-end gap-4">
+                    <Button variant="contained" color="error" onClick={onBack}>ย้อนกลับ</Button>
+                    <Button variant="contained" onClick={onSubmit}>ถัดไป</Button>
+                </div>
+            }
         </ContentLoading>
     )
 }
