@@ -218,7 +218,7 @@ const columns: GridColDef[] = [
         sortable: false,
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        minWidth: 200,
         valueGetter: (value, row) => `${row.isDefault ? '✅' : '❌'}`,
     },
 ];
