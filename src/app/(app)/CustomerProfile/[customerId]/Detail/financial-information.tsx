@@ -1,7 +1,7 @@
 import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { nextStep } from "@/libs/redux/store/customer-profile-slice";
+import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { setFinancialInfoData } from "@/libs/redux/store/financial-infomation";
 import { FinancialInfoModel, FinancialInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { ApiResponse } from "@/type/api";
@@ -63,7 +63,7 @@ const FinancialInformation = () => {
     }
 
     const onBack = (e: any) => {
-        router.push('/CustomerProfile/Edit/Offline')
+        dispatch(prevStep())
     }
 
     const onSubmit = (e: any) => {

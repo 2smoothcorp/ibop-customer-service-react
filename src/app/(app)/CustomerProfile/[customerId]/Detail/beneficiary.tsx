@@ -7,7 +7,7 @@ import HeaderTitle from "@/components/navbar/header-title";
 import HeaderTitleSub from "@/components/navbar/header-title-sub";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
 import { setBeneficiaryData } from "@/libs/redux/store/beneficiary";
-import { nextStep } from "@/libs/redux/store/customer-profile-slice";
+import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { BeneficiaryInfoModel, BeneficiaryInfoResponseDataResponse } from "@/services/rest-api/customer-service/models";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { Button } from "@mui/material";
@@ -210,7 +210,7 @@ const BeneficiaryPage = () => {
     })
 
     const onBack = (e: any) => {
-        router.push('/CustomerProfile/Edit/Offline')
+        dispatch(prevStep())
     }
 
     const onSubmit = () => {

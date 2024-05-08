@@ -12,7 +12,7 @@ import HeaderTitle from "@/components/navbar/header-title";
 import useMasterDataProduct from "@/hooks/masterDataProduct";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
 import { setAttorneyData } from "@/libs/redux/store/attorney";
-import { nextStep } from "@/libs/redux/store/customer-profile-slice";
+import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { AttorneyInfoModel, AttorneyInfoResponse, AttorneyInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { ApiResponse } from "@/type/api";
 import { handleEmptyStringFormApi } from "@/utils/function";
@@ -314,7 +314,7 @@ const AttorneySection = () => {
     }
 
     const onBack = (e: any) => {
-        router.push('/CustomerProfile/Edit/Offline')
+        dispatch(prevStep())
     }
 
     const onSubmit = (e: any) => {
