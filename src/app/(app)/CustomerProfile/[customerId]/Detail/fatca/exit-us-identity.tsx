@@ -3,24 +3,20 @@
 import ContentLoading from "@/components/content/content-loading";
 import InputSwitch from "@/components/custom/input-switch";
 import HeaderTitle from "@/components/navbar/header-title";
+import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice";
 import { TinInfoOutput } from "@/services/rest-api/customer-service";
 import { Button } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import React from "react";
-import { useForm } from "react-hook-form";
+import { useParams, useSearchParams } from "next/navigation";
+import { UseFormReturn } from "react-hook-form";
 
-export default function ExitUSIndentity() {
+export default function ExitUSIndentity({ useForm }: { useForm: UseFormReturn<CustomerFatcaState, any, undefined> }) {
+  const { watch, setValue } = useForm;
+  const searchParams = useSearchParams()
+  const isEditable = searchParams.get('edit') === 'true';
   const params = useParams()
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-    setValue,
-  } = useForm<SubmitInput>()
-  const [isEditable, setIsEditable] = React.useState<boolean>(false);
+
   const isFATCA = watch('isFatcaIndividualSelfCert');
 
   const { data, isLoading, error } = useQuery({
@@ -34,7 +30,7 @@ export default function ExitUSIndentity() {
       try {
         const request = await fetch(`/api/customer-profile/fatca/tins/${customerId}`, { method: 'GET' });
         const response: TinInfoOutput = await request.json();
-        console.log('response', response)
+        // console.log('response', response)
         const { isFatcaIndividualSelfCert } = response;
         if (response) {
           setValue('isFatcaIndividualSelfCert', isFatcaIndividualSelfCert || false)
