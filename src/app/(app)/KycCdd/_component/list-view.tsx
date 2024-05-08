@@ -19,20 +19,21 @@ import type { GridPaginationModel } from '@mui/x-data-grid';
 import { InputText } from '@/components/input-text';
 import Table from '@/components/table/table';
 
-import { search } from './list-action';
+import { searchKyc, searchRevaluate } from './list-action';
 
 export const ListView = ({}: ListViewProps): ReactElement => {
   const [ tablePaginator, setTablePaginator ] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
   const [ tableFilter, setTableFilter ] = useState<TableFilter>({});
   const router = useRouter();
   const pathName = usePathname();
+  const isRevaluatePage = pathName.toLowerCase() === '/KycCdd/Review'.toLowerCase();
 
   useEffect(() => {}, []);
 
-  const { data: tableData, isLoading } = useQuery({
-    queryFn: () => fetchGetTableData(),
+  const kycInfo = useQuery({
+    queryFn: () => fetchGetKycTableData(),
     queryKey: [
-      'kyccdd-table-data',
+      'kyccdd-kyc-table-data',
       tablePaginator.page, tablePaginator.pageSize,
       tableFilter.corporateId,
       tableFilter.refId,
@@ -40,17 +41,31 @@ export const ListView = ({}: ListViewProps): ReactElement => {
       tableFilter.dateStart,
       tableFilter.dateEnd
     ],
-  })
+  });
 
-  const fetchGetTableData = async () => {
-    const { pageSize } = tablePaginator;
-    const response = await search({ ...tableFilter, ...tablePaginator });
+  const revaluateInfo = useQuery({
+    queryFn: () => fetchGetRevaluateTableData(),
+    queryKey: [
+      'kyccdd-revaluate-table-data',
+      tablePaginator.page, tablePaginator.pageSize,
+      tableFilter.corporateId,
+      tableFilter.refId,
+      tableFilter.fullname,
+      tableFilter.dateStart,
+      tableFilter.dateEnd
+    ],
+  });
+
+  const fetchGetKycTableData = async () => {
+    const response = await searchKyc({ ...tableFilter, ...tablePaginator });
 
     const { data } = response;
-    if (!data) { return ({ items: [], totalItems: 0, totalPages: 0 }); }
+    if(!data) { return ({ items: [], totalItems: 0, totalPages: 0 }); }
+    if(!data.data) { return ({ items: [], totalItems: 0, totalPages: 0 }); }
 
+    const datasource = data.data;
     const tableDs: Array<TableDataModel> = [];
-    for (const item of data) {
+    for (const item of datasource) {
       const {
         logTimestamp,
         corporateId,
@@ -59,7 +74,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         name,
         kycRiskLevel, kycRiskLevelDescription,
         kycScore,
-        logUser
+        logUserDesc
       } = item;
 
       tableDs.push({
@@ -70,14 +85,54 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         fullname: name || '',
         riskGroup: `${kycRiskLevel} - ${kycRiskLevelDescription}`,
         riskScore: kycScore || 0,
-        createdBy: logUser || ''
+        createdBy: logUserDesc || ''
       });
     }
 
     return ({
       items: tableDs,
-      totalItems: tableDs.length,
-      totalPages: Math.ceil(tableDs.length / pageSize)
+      totalItems: data.totalRecords || 0,
+      totalPages: data.totalPages
+    });
+  }
+
+  const fetchGetRevaluateTableData = async () => {
+    const response = await searchRevaluate({ ...tableFilter, ...tablePaginator });
+
+    const { data } = response;
+    if(!data) { return ({ items: [], totalItems: 0, totalPages: 0 }); }
+    if(!data.data) { return ({ items: [], totalItems: 0, totalPages: 0 }); }
+
+    const datasource = data.data;
+    const tableDs: Array<TableDataModel> = [];
+    for (const item of datasource) {
+      const {
+        logTimestamp,
+        corporateId,
+        referenceType,
+        referenceId,
+        name,
+        kycRiskLevel, kycRiskLevelDescription,
+        kycScore,
+        logUserDesc
+      } = item;
+
+      tableDs.push({
+        createdDate: dayjs(logTimestamp).format('DD/MM/YYYY'),
+        corporateId: corporateId || '',
+        referenceType: referenceType || '',
+        referenceId: referenceId || '',
+        fullname: name || '',
+        riskGroup: `${kycRiskLevel} - ${kycRiskLevelDescription}`,
+        riskScore: kycScore || 0,
+        createdBy: logUserDesc || ''
+      });
+    }
+
+    return ({
+      items: tableDs,
+      totalItems: data.totalRecords || 0,
+      totalPages: data.totalPages || 0
     });
 
     // setTableDatasource(tableDs);
@@ -163,10 +218,56 @@ export const ListView = ({}: ListViewProps): ReactElement => {
     );
   }
 
-  const renderTable = () => {
+  const renderKycTable = () => {
     return (
       <div className={'p-4'}>
         <Table<TableDataModel>
+          disableAutosize disableColumnMenu
+          columns={[
+            {
+              field: 'action',
+              type: 'actions',
+              headerName: 'Action',
+              minWidth: 150,
+              renderCell: ({ id, hasFocus }) => {
+                return (
+                  <Button
+                    variant={'contained'}
+                    size={'small'}
+                    tabIndex={hasFocus ? 0 : -1}
+                    onClick={() => { router.push(`/KycCdd/CustomerInfo/${id}`) }}
+                  >
+                    <strong>ดูรายละเอียด</strong>
+                  </Button>
+                );
+              }
+            },
+            { field: 'createdDate', headerName: 'วันที่ทำรายการ', minWidth: 150 },
+            { field: 'corporateId', headerName: 'Corporate ID', minWidth: 200, flex: 1 },
+            { field: 'referenceType', headerName: 'ประเภทหลักฐาน', minWidth: 200 },
+            { field: 'referenceId', headerName: 'เลขที่หลักฐาน', minWidth: 200 },
+            { field: 'fullname', headerName: 'ชื่อ - นามสกุล', minWidth: 300, flex: 1 },
+            { field: 'riskGroup', headerName: 'กลุ่มความเสี่ยง', type: 'number', minWidth: 200, flex: 1 },
+            { field: 'riskScore', headerName: 'คะแนน', type: 'number', minWidth: 100 },
+            { field: 'createdBy', headerName: 'ผู้ทำรายการ', minWidth: 250 }
+          ]}
+          rows={ kycInfo.data?.items || [] }
+          totalItems={ kycInfo.data?.totalItems || 0 }
+          totalPages={ kycInfo.data?.totalPages || 0 }
+          getRowId={(row) => row.corporateId}
+          paginationModel={ tablePaginator }
+          setPaginationModel={ setTablePaginator }
+          isLoading={ kycInfo.isLoading }
+        />
+      </div>
+    );
+  }
+
+  const renderRevaluateTable = () => {
+    return (
+      <div className={'p-4'}>
+        <Table<TableDataModel>
+          disableAutosize disableColumnMenu
           columns={[
             {
               field: 'action',
@@ -186,22 +287,22 @@ export const ListView = ({}: ListViewProps): ReactElement => {
                 );
               }
             },
-            { field: 'createdDate', headerName: 'วันที่ทำรายการ', flex: 1 },
-            { field: 'corporateId', headerName: 'Corporate ID', flex: 1 },
-            { field: 'referenceType', headerName: 'ประเภทหลักฐาน', flex: 1 },
-            { field: 'referenceId', headerName: 'เลขที่หลักฐาน', flex: 1 },
-            { field: 'fullname', headerName: 'ชื่อ - นามสกุล', flex: 1 },
-            { field: 'riskGroup', headerName: 'กลุ่มความเสี่ยง', type: 'number', width: 100 },
-            { field: 'riskScore', headerName: 'คะแนน', type: 'number', width: 100 },
-            { field: 'createdBy', headerName: 'ผู้ทำรายการ', flex: 1 }
+            { field: 'createdDate', headerName: 'วันที่ทำรายการ', minWidth: 150 },
+            { field: 'corporateId', headerName: 'Corporate ID', minWidth: 200, flex: 1 },
+            { field: 'referenceType', headerName: 'ประเภทหลักฐาน', minWidth: 200 },
+            { field: 'referenceId', headerName: 'เลขที่หลักฐาน', minWidth: 200 },
+            { field: 'fullname', headerName: 'ชื่อ - นามสกุล', minWidth: 300, flex: 1 },
+            { field: 'riskGroup', headerName: 'กลุ่มความเสี่ยง', type: 'number', minWidth: 200, flex: 1 },
+            { field: 'riskScore', headerName: 'คะแนน', type: 'number', minWidth: 100 },
+            { field: 'createdBy', headerName: 'ผู้ทำรายการ', minWidth: 250 }
           ]}
-          rows={tableData?.items || []}
-          totalItems={tableData?.totalItems || 0}
-          totalPages={tableData?.totalPages || 0}
+          rows={ revaluateInfo.data?.items || [] }
+          totalItems={ revaluateInfo.data?.totalItems || 0 }
+          totalPages={ revaluateInfo.data?.totalPages || 0 }
           getRowId={(row) => row.corporateId}
-          paginationModel={tablePaginator}
-          setPaginationModel={setTablePaginator}
-          isLoading={isLoading}
+          paginationModel={ tablePaginator }
+          setPaginationModel={ setTablePaginator }
+          isLoading={ revaluateInfo.isLoading }
         />
       </div>
     );
@@ -212,7 +313,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
       { renderSearchPanel() }
 
       {
-        (pathName === '/KycCdd/Review') && (
+        (isRevaluatePage) && (
           <div className={'px-4 mt-4 flex justify-end'}>
             <Button variant={'contained'} onClick={ onClickReviewButton }>
               ทบทวนกลุ่มความเสี่ยง
@@ -221,7 +322,7 @@ export const ListView = ({}: ListViewProps): ReactElement => {
         )
       }
 
-      { renderTable() }
+      { (isRevaluatePage) ? renderRevaluateTable() : renderKycTable() }
     </Fragment>
   );
 }

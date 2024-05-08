@@ -4,7 +4,12 @@
 
 .select-input {
   @apply min-w-40 w-full px-3 py-2 h-10
-    bg-neutral-100 border border-slate-300 rounded-md
+    bg-white border border-slate-300 rounded-md
     text-xl shadow-sm placeholder-slate-400
-    disabled:bg-neutral-400 disabled:cursor-default;
+    disabled:bg-neutral-300 disabled:cursor-default;
+}
+
+.select-input-error {
+  outline: unset !important;
+  @apply border-danger-500 !important;
 }

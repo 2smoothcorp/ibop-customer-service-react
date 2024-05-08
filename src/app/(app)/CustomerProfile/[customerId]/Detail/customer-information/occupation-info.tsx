@@ -2,42 +2,60 @@
 
 import ContentLoading from "@/components/content/content-loading";
 import InputHorizontal from "@/components/custom/input-horizontal";
+import InputRadio from "@/components/custom/input-radio";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataOccupationCustom } from "@/hooks/master-data-occupation";
+import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
+import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel, AddressInfoResponseDataResponse, ComboBox, ComboBoxListDataResponse, OccupationInfoModel, OccupationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { AddressBySearchModeProps, AddressBySearchProps, getAddressBySearch, handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { UseFormReturn } from "react-hook-form";
 
-export default function OccupationInfo() {
+export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
+    const { setValue, watch, register } = useForm;
+    const [thailandAddress, setThailandAddress] = useState<AddressBySearchProps[]>([]);
+    const [address, setAddress] = useState<AddressBySearchProps | undefined>();
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
 
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors },
-        setValue,
-        getValues,
-    } = useForm<SubmitInput>()
+    const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
 
-    const { data: occupation, isLoading: isLoadingOccupation } = useMasterDataOccupationCustom();
+    const { data: occupationList, isLoading: isLoadingOccupation } = useMasterDataOccupationCustom();
+
+    const getAddress = async (search: string, mode: AddressBySearchModeProps) => {
+        const list = getAddressBySearch(search, mode);
+        setThailandAddress(list);
+    }
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['occupationInfo', params.customerId], queryFn: async () => {
+            if (!watch('occupationInfo.address.addressNo')) {
+                const list = getAddressBySearch('', 'postCode');
+                if (list.length > 0)
+                    setAddress(list[0])
+            }
             if (data) {
                 setDefaultData(data);
             }
             const { customerId } = params
-            const requestMasterData = await fetch(`/api/master-data/occupation`, { method: 'GET' });
-            const responseMasterData: ComboBoxListDataResponse = await requestMasterData.json();
-            const requestOccupation = await fetch(`/api/customer-profile/occupation/${customerId}`, { method: 'GET' });
-            const responseOccupation: OccupationInfoResponseDataResponse = await requestOccupation.json();
-            const requestAddress = await fetch(`/api/customer-profile/address-info/${customerId}/03`, { method: 'GET' });
-            const responseAddress: AddressInfoResponseDataResponse = await requestAddress.json();
+            const [
+                responseMasterData,
+                responseOccupation,
+                responseAddress
+            ]: [
+                    ComboBoxListDataResponse,
+                    OccupationInfoResponseDataResponse,
+                    AddressInfoResponseDataResponse
+                ] = await Promise.all([
+                    fetch(`/api/master-data/occupation`, { method: 'GET' }).then(x => x.json()),
+                    fetch(`/api/customer-profile/occupation/${customerId}`, { method: 'GET' }).then(x => x.json()),
+                    fetch(`/api/customer-profile/address-info/${customerId}/03`, { method: 'GET' }).then(x => x.json())
+                ]);
+            // console.log(responseOccupation, responseAddress)
             let response: OccupationInfoProps = { occupationInfo: null, addressInfoModel: null, masterDataOccupations: null };
             if (responseOccupation.status === 200) {
                 response = {
@@ -117,38 +135,67 @@ export default function OccupationInfo() {
     }
 
     const setDefaultData = (occupation: OccupationInfoProps) => {
+        const zipCode = watch('occupationInfo.address.zipCode') === undefined;
+        if (zipCode) {
+            const list = getAddressBySearch('', 'postCode');
+            const defaultAddress = list[0];
+            if (defaultAddress) {
+                setAddress(defaultAddress)
+            }
+        }
         if (occupation.occupationInfo && occupation.masterDataOccupations) {
             const result = occupation.masterDataOccupations.find((item) => item.rValue === occupation.occupationInfo?.occupationCode);
             if (result) {
-                setValue('occupation', `${result.rValue} - ${result.rText}`);
+                setValue('occupationInfo.occupation.occupation', `${result.rValue} - ${result.rText}`);
             } else {
-                setValue('occupation', normalizationData('occupation', occupation));
+                setValue('occupationInfo.occupation.occupation', normalizationData('occupation', occupation));
             }
-            setValue('occupationCode', normalizationData('occupationCode', occupation));
-            setValue('jobWorkPlace', normalizationData('jobWorkPlace', occupation));
-            setValue('jobPosition', normalizationData('jobPosition', occupation));
-            setValue('jobDepartment', normalizationData('jobDepartment', occupation));
+            if (occupation.occupationInfo.occupationCode !== '-') {
+                setValue('occupationInfo.occupation.occupationCode', normalizationData('occupationCode', occupation));
+            }
+            setValue('occupationInfo.occupation.jobWorkPlace', normalizationData('jobWorkPlace', occupation));
+            setValue('occupationInfo.occupation.jobPosition', normalizationData('jobPosition', occupation));
+            setValue('occupationInfo.occupation.jobDepartment', normalizationData('jobDepartment', occupation));
         }
         if (occupation.addressInfoModel) {
-            setValue('addressNo', normalizationData('addressNo', occupation));
-            setValue('moo', normalizationData('moo', occupation));
-            setValue('buildingOrVillage', normalizationData('buildingOrVillage', occupation));
-            setValue('roomNo', normalizationData('roomNo', occupation));
-            setValue('floor', normalizationData('floor', occupation));
-            setValue('soi', normalizationData('soi', occupation));
-            setValue('street', normalizationData('street', occupation));
-            setValue('country', normalizationData('country', occupation));
-            setValue('zipCode', normalizationData('zipCode', occupation));
-            setValue('province', normalizationData('province', occupation));
-            setValue('district', normalizationData('district', occupation));
-            setValue('subDistrict', normalizationData('subDistrict', occupation));
-            setValue('customAddress1', normalizationData('customAddress1', occupation));
-            setValue('customAddress2', normalizationData('customAddress2', occupation));
-            setValue('customAddress3', normalizationData('customAddress3', occupation));
+            setValue('occupationInfo.address.addressType', '03');
+            setValue('occupationInfo.address.addressNo', normalizationData('addressNo', occupation));
+            setValue('occupationInfo.address.moo', normalizationData('moo', occupation));
+            setValue('occupationInfo.address.buildingOrVillage', normalizationData('buildingOrVillage', occupation));
+            setValue('occupationInfo.address.roomNo', normalizationData('roomNo', occupation));
+            setValue('occupationInfo.address.floor', normalizationData('floor', occupation));
+            setValue('occupationInfo.address.soi', normalizationData('soi', occupation));
+            setValue('occupationInfo.address.street', normalizationData('street', occupation));
+            setValue('occupationInfo.address.country', normalizationData('country', occupation));
+            setValue('occupationInfo.address.zipCode', normalizationData('zipCode', occupation));
+            setValue('occupationInfo.address.provinceCode', normalizationData('province', occupation));
+            setValue('occupationInfo.address.districtCode', normalizationData('district', occupation));
+            setValue('occupationInfo.address.subDistrictCode', normalizationData('subDistrict', occupation));
+            setValue('occupationInfo.address.customAddress1', normalizationData('customAddress1', occupation));
+            setValue('occupationInfo.address.customAddress2', normalizationData('customAddress2', occupation));
+            setValue('occupationInfo.address.customAddress3', normalizationData('customAddress3', occupation));
+            // console.log(occupation.addressInfoModel)
+            setAddress({
+                value: {
+                    postCode: occupation.addressInfoModel.zipCode || '',
+                    province: occupation.addressInfoModel.provinceNameTh || '',
+                    provinceCode: occupation.addressInfoModel.provinceCode || '',
+                    district: occupation.addressInfoModel.districtNameTh || '',
+                    districtCode: occupation.addressInfoModel.districtCode || '',
+                    subDistrict: occupation.addressInfoModel.subDistrictNameTh || '',
+                    subDistrictCode: occupation.addressInfoModel.subDistrictCode || '',
+                },
+                label: `${occupation.addressInfoModel.subDistrictNameTh} > ${occupation.addressInfoModel.districtNameTh} > ${occupation.addressInfoModel.provinceNameTh} > ${occupation.addressInfoModel.zipCode}`
+            })
         }
     }
 
-    // console.log(occupation)
+    const setAddresHook = (address: AddressBySearchProps) => {
+        setValue('occupationInfo.address.zipCode', address.value.postCode, { "shouldDirty": true });
+        setValue('occupationInfo.address.provinceCode', address.value.provinceCode, { "shouldDirty": true });
+        setValue('occupationInfo.address.districtCode', address.value.districtCode, { "shouldDirty": true });
+        setValue('occupationInfo.address.subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
+    }
 
     return (
         <>
@@ -157,172 +204,275 @@ export default function OccupationInfo() {
                 title="อาชีพ"
             />
             <ContentLoading
-                isLoading={isLoading}
+                isLoading={isLoading || isLoadingCountries || isLoadingOccupation}
                 error={error && error.message || undefined}
                 hight={200}
             >
                 <div className="grid grid-cols-3">
                     <InputHorizontal
                         label="อาชีพ"
-                        defaultValue={data && normalizationData('occupationCode', data) || "-"}
+                        defaultValue={watch('occupationInfo.occupation.occupationCode')}
                         textShow={data && normalizationData('occupation', data) || "-"}
                         isEditable={isEditable}
-                        register={register}
                         name="occupationCode"
-                    // type="autocomplete"
-                    // list={occupation}
-                    // onChange={(value) => setValue('occupationCode', value)}
-                    // placeholder="โปรดเลือกอาชีพ"
-                    // isRequired
+                        type="autocomplete"
+                        list={occupationList}
+                        onChange={(value) => {
+                            setValue('occupationInfo.occupation.occupationCode', value, { shouldDirty: true })
+                        }}
+                        placeholder="โปรดเลือกอาชีพ"
+                        isRequired
                     />
+                    {
+                        ["28", "44", "60", "76"].includes(watch('occupationInfo.occupation.occupationCode')) && (
+                            <InputHorizontal
+                                label="อาชีพโปรดระบุ"
+                                defaultValue={watch('occupationInfo.occupation.occupationDescOther')}
+                                textShow={data && normalizationData('occupationDescOther', data) || "-"}
+                                isEditable={isEditable}
+                                name="occupationDescOther"
+                                onChange={(value) => setValue('occupationInfo.occupation.occupationDescOther', value, { shouldDirty: true })}
+                                isRequired
+                            />
+                        )
+                    }
                 </div>
                 {
-                    !["01", "02", "03", "04", "05", "06"].includes(watch('occupationCode')) && watch('occupationCode') !== '-' && (
-                        <div className="grid grid-cols-3">
-                            <InputHorizontal
-                                label="ชื่อสถานที่ทำงาน / สถานศึกษา"
-                                defaultValue={data && normalizationData('jobWorkPlace', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="jobWorkPlace"
-
-                            />
-                            <InputHorizontal
-                                label="ตำแหน่งงาน"
-                                defaultValue={data && normalizationData('jobPosition', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="jobPosition"
-                            />
-                            <InputHorizontal
-                                label="ฝ่าย"
-                                defaultValue={data && normalizationData('jobDepartment', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="jobDepartment"
-                            />
-                            <InputHorizontal
-                                label="เลขที่"
-                                defaultValue={data && normalizationData('addressNo', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="addressNo"
-                            />
-                            <InputHorizontal
-                                label="หมู่ที่"
-                                defaultValue={data && normalizationData('moo', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="moo"
-                            />
-                            <InputHorizontal
-                                label="หมู่บ้าน / อาคาร"
-                                defaultValue={data && normalizationData('buildingOrVillage', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="buildingOrVillage"
-                            />
-                            <InputHorizontal
-                                label="เลขที่ห้อง"
-                                defaultValue={data && normalizationData('roomNo', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="roomNo"
-                            />
-                            <InputHorizontal
-                                label="ชั้น"
-                                defaultValue={data && normalizationData('floor', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="floor"
-                            />
-                            <InputHorizontal
-                                label="ตรอก / ซอย"
-                                defaultValue={data && normalizationData('soi', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="soi"
-                            />
-                            <InputHorizontal
-                                label="ถนน"
-                                defaultValue={data && normalizationData('street', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="street"
-                            />
-                            <InputHorizontal
-                                label="ประเทศ"
-                                defaultValue={data && normalizationData('country', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="country"
-                                isRequired
-                            />
-                            <InputHorizontal
-                                label="รหัสไปรษณีย์"
-                                defaultValue={data && normalizationData('zipCode', data) || "-"}
-                                isEditable={isEditable}
-                                register={register}
-                                name="zipCode"
-                                isRequired
-                            />
+                    !["01", "02", "03", "04", "05", "06"].includes(watch('occupationInfo.occupation.occupationCode')) && watch('occupationInfo.occupation.occupationCode') !== '-' && (
+                        <>
+                            <div className="grid grid-cols-3">
+                                <InputHorizontal
+                                    label="ชื่อสถานที่ทำงาน / สถานศึกษา"
+                                    defaultValue={watch("occupationInfo.occupation.jobWorkPlace")}
+                                    textShow={data && normalizationData('jobWorkPlace', data) || "-"}
+                                    isEditable={isEditable}
+                                    name="jobWorkPlace"
+                                    onChange={(value) => setValue('occupationInfo.occupation.jobWorkPlace', value, { shouldDirty: true })}
+                                />
+                                <InputHorizontal
+                                    label="ตำแหน่งงาน"
+                                    defaultValue={watch("occupationInfo.occupation.jobPosition")}
+                                    textShow={data && normalizationData('jobPosition', data) || "-"}
+                                    isEditable={isEditable}
+                                    name="jobPosition"
+                                    onChange={(value) => setValue('occupationInfo.occupation.jobPosition', value, { shouldDirty: true })}
+                                />
+                                <InputHorizontal
+                                    label="ฝ่าย"
+                                    defaultValue={watch("occupationInfo.occupation.jobDepartment")}
+                                    textShow={data && normalizationData('jobDepartment', data) || "-"}
+                                    isEditable={isEditable}
+                                    name="jobDepartment"
+                                    onChange={(value) => setValue('occupationInfo.occupation.jobDepartment', value, { shouldDirty: true })}
+                                />
+                            </div>
+                            <div className="w-full flex flex-rows h-[60px]">
+                                <div className="w-[16.66%] text-right align-middle my-auto">
+                                    <div className="text-[18px] px-4 font-semibold tracking-wide">ที่อยู่สถานที่ทำงาน</div>
+                                </div>
+                                <InputRadio
+                                    disabled={!isEditable}
+                                    name="addressType"
+                                    defaultValue={watch('occupationInfo.address.addressType')}
+                                    onChange={(value) => setValue('occupationInfo.address.addressType', value as "01" | "02" | "03", { shouldDirty: true })}
+                                    list={[
+                                        { value: "01", label: "ตามประเภทหลักฐาน" },
+                                        { value: "02", label: "ตามที่อยู่ปัจจุบัน" },
+                                        { value: "03", label: "อื่นๆ (โปรดระบุข้อมูลด้านล่างนี้)" }
+                                    ]}
+                                />
+                            </div>
                             {
-                                data && data.addressInfoModel?.countryCode !== '000'
-                                    ? <>
+                                watch('occupationInfo.address.addressType') === '03' && (
+                                    <div className="grid grid-cols-3">
                                         <InputHorizontal
-                                            label="ที่อยู่ 1"
-                                            defaultValue={data && normalizationData('customAddress1', data) || "-"}
+                                            label="เลขที่"
+                                            defaultValue={watch("occupationInfo.address.addressNo")}
+                                            textShow={data && normalizationData('addressNo', data) || "-"}
                                             isEditable={isEditable}
-                                            register={register}
-                                            name="customAddress1"
-                                            isRequired
+                                            name="addressNo"
+                                            onChange={(value) => setValue('occupationInfo.address.addressNo', value, { shouldDirty: true })}
                                         />
                                         <InputHorizontal
-                                            label="ที่อยู่ 2"
-                                            defaultValue={data && normalizationData('customAddress2', data) || "-"}
+                                            label="หมู่ที่"
+                                            defaultValue={watch("occupationInfo.address.moo")}
+                                            textShow={data && normalizationData('moo', data) || "-"}
                                             isEditable={isEditable}
-                                            register={register}
-                                            name="customAddress2"
-                                            isRequired
+                                            name="moo"
+                                            onChange={(value) => setValue('occupationInfo.address.moo', value, { shouldDirty: true })}
                                         />
                                         <InputHorizontal
-                                            label="ที่อยู่ 3"
-                                            defaultValue={data && normalizationData('customAddress3', data) || "-"}
+                                            label="หมู่บ้าน / อาคาร"
+                                            defaultValue={watch("occupationInfo.address.buildingOrVillage")}
+                                            textShow={data && normalizationData('buildingOrVillage', data) || "-"}
                                             isEditable={isEditable}
-                                            register={register}
-                                            name="customAddress3"
-                                            isRequired
-                                        />
-                                    </>
-                                    : <>
-                                        <InputHorizontal
-                                            label="จังหวัด"
-                                            defaultValue={data && normalizationData('province', data) || "-"}
-                                            isEditable={isEditable}
-                                            register={register}
-                                            name="province"
-                                            isRequired
+                                            name="buildingOrVillage"
+                                            onChange={(value) => setValue('occupationInfo.address.buildingOrVillage', value, { shouldDirty: true })}
                                         />
                                         <InputHorizontal
-                                            label="อำเภอ / เขต"
-                                            defaultValue={data && normalizationData('district', data) || "-"}
+                                            label="เลขที่ห้อง"
+                                            defaultValue={watch("occupationInfo.address.roomNo")}
+                                            textShow={data && normalizationData('roomNo', data) || "-"}
                                             isEditable={isEditable}
-                                            register={register}
-                                            name="district"
-                                            isRequired
+                                            name="roomNo"
+                                            onChange={(value) => setValue('occupationInfo.address.roomNo', value, { shouldDirty: true })}
                                         />
                                         <InputHorizontal
-                                            label="ตำบล / แขวง"
-                                            defaultValue={data && normalizationData('subDistrict', data) || "-"}
+                                            label="ชั้น"
+                                            defaultValue={watch("occupationInfo.address.floor")}
+                                            textShow={data && normalizationData('floor', data) || "-"}
+                                            isEditable={isEditable}
+                                            name="floor"
+                                            onChange={(value) => setValue('occupationInfo.address.floor', value, { shouldDirty: true })}
+                                        />
+                                        <InputHorizontal
+                                            label="ตรอก / ซอย"
+                                            defaultValue={watch("occupationInfo.address.soi")}
+                                            textShow={data && normalizationData('soi', data) || "-"}
+                                            isEditable={isEditable}
+                                            name="soi"
+                                            onChange={(value) => setValue('occupationInfo.address.soi', value, { shouldDirty: true })}
+                                        />
+                                        <InputHorizontal
+                                            label="ถนน"
+                                            defaultValue={watch("occupationInfo.address.street")}
+                                            textShow={data && normalizationData('street', data) || "-"}
+                                            isEditable={isEditable}
+                                            name="street"
+                                            onChange={(value) => setValue('occupationInfo.address.street', value, { shouldDirty: true })}
+                                        />
+                                        <InputHorizontal
+                                            label="ประเทศ"
+                                            defaultValue={watch('occupationInfo.address.countryCode')}
+                                            textShow={data && normalizationData('country', data) || "-"}
                                             isEditable={isEditable}
                                             register={register}
-                                            name="subDistrict"
+                                            name="countryCode"
                                             isRequired
+                                            type="autocomplete"
+                                            list={countries}
+                                            onChange={(value) => {
+                                                if (value !== watch("occupationInfo.address.countryCode")) {
+                                                    setValue('occupationInfo.address.countryCode', value, { shouldDirty: true });
+                                                }
+                                            }}
+                                            placeholder="โปรดเลือกประเทศ"
                                         />
-                                    </>
+                                        <InputHorizontal
+                                            label="รหัสไปรษณีย์"
+                                            defaultValueAddress={address}
+                                            textShow={data && normalizationData('zipCode', data) || "-"}
+                                            isEditable={isEditable}
+                                            name="zipCode"
+                                            isRequired
+                                            type="addressThailand"
+                                            addressList={thailandAddress}
+                                            placeholder="โปรดเลือกประเทศ"
+                                            addressOptionType="postCode"
+                                            onChangeAddress={(item) => {
+                                                setAddress(item)
+                                                setAddresHook(item)
+                                            }}
+                                            onChange={(text) => {
+                                                getAddress(text, 'postCode')
+                                            }}
+                                        />
+                                        {
+                                            watch("occupationInfo.address.countryCode") !== '000'
+                                                ?
+                                                <>
+                                                    <InputHorizontal
+                                                        label="ที่อยู่ 1"
+                                                        defaultValue={data && normalizationData('customAddress1', data) || ""}
+                                                        textShow={data && normalizationData('customAddress1', data) || "-"}
+                                                        onChange={(value) => setValue('occupationInfo.address.customAddress1', value, { shouldDirty: true })}
+                                                        isEditable={isEditable}
+                                                        name="customAddress1"
+                                                        isRequired
+                                                    />
+                                                    <InputHorizontal
+                                                        label="ที่อยู่ 2"
+                                                        defaultValue={data && normalizationData('customAddress2', data) || ""}
+                                                        textShow={data && normalizationData('customAddress2', data) || "-"}
+                                                        onChange={(value) => setValue('occupationInfo.address.customAddress2', value, { shouldDirty: true })}
+                                                        isEditable={isEditable}
+                                                        name="customAddress2"
+                                                        isRequired
+                                                    />
+                                                    <InputHorizontal
+                                                        label="ที่อยู่ 3"
+                                                        defaultValue={data && normalizationData('customAddress3', data) || "-"}
+                                                        textShow={data && normalizationData('customAddress3', data) || "-"}
+                                                        onChange={(value) => setValue('occupationInfo.address.customAddress3', value, { shouldDirty: true })}
+                                                        isEditable={isEditable}
+                                                        name="customAddress3"
+                                                        isRequired
+                                                    />
+                                                </>
+                                                : <>
+                                                    <InputHorizontal
+                                                        label="จังหวัด"
+                                                        defaultValueAddress={address}
+                                                        textShow={data && normalizationData('province', data) || "-"}
+                                                        isEditable={isEditable}
+                                                        name="provinceCode"
+                                                        isRequired
+                                                        type="addressThailand"
+                                                        addressList={thailandAddress}
+                                                        placeholder="โปรดเลือกจังหวัด"
+                                                        addressOptionType="province"
+                                                        onChangeAddress={(item) => {
+                                                            setAddress(item)
+                                                            setAddresHook(item)
+                                                        }}
+                                                        onChange={(text) => {
+                                                            getAddress(text, 'province')
+                                                        }}
+                                                    />
+                                                    <InputHorizontal
+                                                        label="อำเภอ / เขต"
+                                                        defaultValueAddress={address}
+                                                        textShow={data && normalizationData('district', data) || "-"}
+                                                        isEditable={isEditable}
+                                                        name="districtCode"
+                                                        isRequired
+                                                        type="addressThailand"
+                                                        addressList={thailandAddress}
+                                                        placeholder="โปรดเลือกอำเภอ / เขต"
+                                                        addressOptionType="district"
+                                                        onChangeAddress={(item) => {
+                                                            setAddress(item)
+                                                            setAddresHook(item)
+                                                        }}
+                                                        onChange={(text) => {
+                                                            getAddress(text, 'district')
+                                                        }}
+                                                    />
+                                                    <InputHorizontal
+                                                        label="ตำบล / แขวง"
+                                                        defaultValueAddress={address}
+                                                        textShow={data && normalizationData('subDistrict', data) || "-"}
+                                                        isEditable={isEditable}
+                                                        name="subDistrictCode"
+                                                        isRequired
+                                                        type="addressThailand"
+                                                        addressList={thailandAddress}
+                                                        placeholder="โปรดเลือกตำบล / แขวง"
+                                                        addressOptionType="subDistrict"
+                                                        onChangeAddress={(item) => {
+                                                            setAddress(item)
+                                                            setAddresHook(item)
+                                                        }}
+                                                        onChange={(text) => {
+                                                            getAddress(text, 'subDistrict')
+                                                        }}
+                                                    />
+                                                </>
+                                        }
+                                    </div>
+                                )
                             }
-
-                        </div>
+                        </>
                     )
                 }
             </ContentLoading>
@@ -331,28 +481,6 @@ export default function OccupationInfo() {
     )
 }
 
-interface SubmitInput {
-    occupationCode: string;
-    occupation: string;
-    jobWorkPlace: string;
-    jobPosition: string;
-    jobDepartment: string;
-    addressNo: string;
-    moo: string;
-    buildingOrVillage: string;
-    roomNo: string;
-    floor: string;
-    soi: string;
-    street: string;
-    country: string;
-    zipCode: string;
-    province: string;
-    district: string;
-    subDistrict: string;
-    customAddress1: string;
-    customAddress2: string;
-    customAddress3: string;
-}
 
 interface OccupationInfoProps {
     masterDataOccupations: ComboBox[] | null | undefined,

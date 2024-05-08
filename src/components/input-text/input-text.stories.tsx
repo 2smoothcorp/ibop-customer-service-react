@@ -18,6 +18,9 @@ type Story = StoryObj<typeof meta>;
 export const Basic: Story = {
   args: {
     //👇 The args you need here will depend on your component
-    name: 'storybook_text'
+    name: 'storybook_text',
+    disabled: false,
+    errorMessage: '',
+    onChange: (text) => { console.log('[Storybook::InputText] Changed text', text); }
   }
 };

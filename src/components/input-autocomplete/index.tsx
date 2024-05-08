@@ -4,7 +4,7 @@
 
 'use client'
 
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, Fragment, useEffect, useState } from 'react';
 import {
   Autocomplete,
   TextField
@@ -19,7 +19,10 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
   const [ inputOptions, setInputOptions ] = useState<Array<any>>([]);
   const [ isLoading, setIsLoading ] = useState(false);
 
-  useEffect(() => {}, [ props.selectedOption ]);
+  useEffect(() => {
+    const { options, selectedOption } = props;
+    setInputOptions(options.slice(0, 20));
+  }, [ props ]);
 
   const registerHookForm = (): UseFormRegisterReturn | undefined => {
     const { name, register, registerOption } = props;
@@ -29,15 +32,23 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
   }
 
   const onChangeSearchText = (text: string) => {
-    const { options, optionSearchKey = 'label', onSearch } = props;
+    const { options, optionSearchKey = 'label', searchMethod, onSearch } = props;
     setIsLoading(true);
     if(!text || text.length < 2) {
-      setInputOptions([]);
+      setInputOptions(options.slice(0, 20));
       setIsLoading(false);
       return;
     }
 
-    const _filtered = options.filter((_f) => _f[optionSearchKey].startsWith(text));
+    const _filtered = options.filter((_f) => {
+      switch(searchMethod) {
+        case 'contain': return _f[optionSearchKey].includes(text);
+        case 'endWith': return _f[optionSearchKey].endsWith(text);
+      }
+
+      return _f[optionSearchKey].startsWith(text);
+    });
+
     setInputOptions(_filtered);
     setIsLoading(false);
     if(onSearch) { onSearch(text); }
@@ -49,19 +60,23 @@ export const InputAutoComplete = (props: InputAutocompleteProps): ReactElement =
   }
 
   return (
-    <Autocomplete disablePortal
-      renderInput={(inputProps) => (<TextField { ...inputProps } />)}
-      options={ inputOptions }
-      value={ props.selectedOption }
-      loading={ isLoading }
-      disabled={ props.disabled }
-      getOptionKey={ props.getOptionKey }
-      getOptionLabel={ props.getOptionLabel }
-      onInputChange={(_, text) => { onChangeSearchText(text); }}
-      renderOption={ (props.isAddress) ? (liProps, item) => (<li {...liProps}>{ item.label }</li>) : undefined }
-      
-      { ...(registerHookForm() || { onChange: (_, selected: any) => { onSelectOption(selected); } }) }
-    />
+    <Fragment>
+      <Autocomplete
+        disableClearable disablePortal
+        renderInput={(inputProps) => (<TextField { ...inputProps } />)}
+        options={ inputOptions }
+        value={ props.selectedOption }
+        loading={ props.loading || isLoading }
+        disabled={ props.disabled }
+        getOptionKey={ props.getOptionKey }
+        getOptionLabel={ props.getOptionLabel }
+        onInputChange={(_, text) => { onChangeSearchText(text); }}
+        renderOption={ (props.isAddress) ? (liProps, item) => (<li {...liProps}>{ item.label }</li>) : undefined }
+        
+        { ...(registerHookForm() || { onChange: (_, selected: any) => { onSelectOption(selected); } }) }
+      />
+      <div className={'text-danger-500'}>{ props.errorMessage }</div>
+    </Fragment>
   );
 }
 
@@ -69,11 +84,16 @@ interface InputAutocompleteProps {
   isAddress?: boolean;
   name: string;
   options: Array<AutoCompleteOption>;
+  errorMessage?: string;
   selectedOption?: any;
   disabled?: boolean;
+  loading?: boolean
 
   /** @default 'label' */
   optionSearchKey?: string;
+
+  /** @default 'startWith' */
+  searchMethod?: 'startWith' | 'contain' | 'endWith',
 
   getOptionKey?: (item: any) => string;
   getOptionLabel?: (item: any) => string;

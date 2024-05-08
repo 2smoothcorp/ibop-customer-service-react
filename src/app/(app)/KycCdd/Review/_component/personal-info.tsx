@@ -12,25 +12,73 @@ import {
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AppLoader } from '@/components/app-loader';
-import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
-
 import { Form } from '@/components/form';
+import { SectionSeparator } from '@/components/section-separator';
+import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
+import { useMasterDataTitlesCustom } from '@/hooks/master-data-titles';
+import { useMasterDataOccupationCustom } from '@/hooks/master-data-occupation';
+import { useMasterDataIncomeRate } from '@/hooks/master-data-income-rate';
+import { useMasterDataIncomeSource } from '@/hooks/master-data-income-source';
+import { useMasterDataInvestmentPurpose } from '@/hooks/master-data-investment-purpose';
+import { useAppSelector, useAppDispatch } from '@/libs/redux/hook';
+import {
+  type StoreTypeKycCdd,
+  savePersonalInfo
+} from '@/libs/redux/store/kyc-cdd';
+import type { ComboBoxWrapperOption } from '@/type/api';
+import type { KycPersonalOutputDataResponse } from '@/services/rest-api/customer-service';
+import { swal } from '@/libs/sweetalert';
+import { getSingleLabelFromValue, getAggregateLabelFromValue } from '@/utils/get-label-from-value';
+import { hasTruthyValueFromObject } from '@/utils/has-truthy-value-from-object';
 
-export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactElement => {
+import { FormSchemaPersonalInfo } from './_form-schema';
+
+export const ReviewPersonalInfo = ({ corporateId, onToggleEdit }: PersonalInfoProps): ReactElement => {
+  const [ selectedNationality, setSelectedNationality ] = useState<ComboBoxWrapperOption>();
+  const [ selectedOccupation, setSelectedOccupation ] = useState<ComboBoxWrapperOption>();
+  const [ selectedIncomeCountry, setSelectedIncomeCountry ] = useState<ComboBoxWrapperOption>();
   const [ isEditing, setIsEditing ] = useState(false);
-  const { register, handleSubmit } = useForm<FormFields>({
+  const {
+    register, handleSubmit, formState,
+    watch: watchFormValue, getValues: getFormValue, setValue: setFormValue
+  } = useForm<StoreTypeKycCdd.PersonalInfoFormFields>({
+    defaultValues: {
+      titleTh: '',
+      firstnameTh: '',
+      lastnameTh: '',
+      firstnameEn: '',
+      lastnameEn: '',
+      nationality: '',
+      occupation: '',
+      incomeRate: '',
+      incomeSource: [],
+      incomeCountry: '',
+      exp: 0,
+      investmentPurpose: []
+    },
     mode: 'onSubmit',
-    resolver: undefined
+    resolver: zodResolver(FormSchemaPersonalInfo)
   });
 
-  useEffect(() => {}, []);
+  const reduxDispatcher = useAppDispatch();
+  const kyccddStored = useAppSelector((selector) => selector.kyccdd);
+  const masterTitleList = useMasterDataTitlesCustom();
+  const masterCountryList = useMasterDataCountriesCustom();
+  const masterOccupationList = useMasterDataOccupationCustom();
+  const masterIncomeRateList = useMasterDataIncomeRate();
+  const masterIncomeSourceList = useMasterDataIncomeSource();
+  const masterInvestmentPurposeList = useMasterDataInvestmentPurpose();
 
   const { data: personalData, isLoading } = useQuery({
     queryFn: () => fetchGetPersonalInfo(),
-    queryKey: ['kyccdd-personal-info', corporateId]
+    queryKey: ['kyccdd-personal-info', corporateId],
+    enabled: !!corporateId
   });
+
+  useEffect(() => {}, []);
 
   const fetchGetPersonalInfo = async () => {
     const request = await fetch(`/api/kyc/get-personal/${ corporateId }`, { method: 'GET' });
@@ -38,121 +86,178 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
     const { data } = response;
     if(!data) { return {}; }
+
+    if(hasTruthyValueFromObject(kyccddStored.personalInfo)) {
+      const { personalInfo } = kyccddStored;
+      const {
+        titleTh,
+        firstnameTh,
+        lastnameTh,
+        firstnameEn,
+        lastnameEn,
+        nationality,
+        occupation,
+        incomeRate,
+        incomeSource,
+        incomeCountry,
+        exp,
+        investmentPurpose
+      } = personalInfo;
+
+      setFormValue('titleTh', titleTh || '');
+      setFormValue('firstnameTh', firstnameTh || '');
+      setFormValue('lastnameTh', lastnameTh || '');
+      setFormValue('firstnameEn', firstnameEn || '');
+      setFormValue('lastnameEn', lastnameEn || '');
+      setFormValue('nationality', nationality || '');
+      setFormValue('occupation', occupation || '');
+      setFormValue('incomeRate', incomeRate || '');
+      setFormValue('incomeSource', incomeSource || []);
+      setFormValue('incomeCountry', incomeCountry || '');
+      setFormValue('exp', exp || 0);
+      setFormValue('investmentPurpose', investmentPurpose || []);
+      return data;
+    }
+
+    const {
+      titleCode,
+      firstNameTh, lastNameTh,
+      firstNameEn, lastNameEn,
+      nationalityCode,
+      occupationCode,
+      incomeRateCode,
+      incomeSourceCode,
+      incomeCountry,
+      investmentYear,
+      investmentPurposeCode
+    } = data;
+    setFormValue('titleTh', titleCode || '');
+    setFormValue('firstnameTh', firstNameTh || '');
+    setFormValue('lastnameTh', lastNameTh || '');
+    setFormValue('firstnameEn', firstNameEn || '');
+    setFormValue('lastnameEn', lastNameEn || '');
+    setFormValue('nationality', nationalityCode || '');
+    setFormValue('occupation', occupationCode || '');
+    setFormValue('incomeRate', incomeRateCode || '');
+    setFormValue('incomeSource', (incomeSourceCode) ? incomeSourceCode.split(',') : []);
+    setFormValue('incomeCountry', incomeCountry || '');
+    setFormValue('exp', investmentYear || 0);
+    setFormValue('investmentPurpose', (investmentPurposeCode) ? investmentPurposeCode.split(',') : []);
+    reduxDispatcher(savePersonalInfo(getFormValue()));
     return data;
   }
 
-  const onSubmitForm = (fieldsData: FormFields) => {
-    console.log('onSubmitForm', fieldsData)
+  const toggleFormMode = () => {
+    if(onToggleEdit) { onToggleEdit(!isEditing); }
+    setIsEditing((current) => !current);
+  }
+
+  const onSubmitForm = async (fieldsData: StoreTypeKycCdd.PersonalInfoFormFields) => {
+    reduxDispatcher(savePersonalInfo(fieldsData));
+
+    await swal({
+      title: 'ยืนยันข้อมูลสำเร็จ',
+      description: 'ระบบได้ทำการบันทึกข้อมูลของคุณเรียบร้อย',
+      icon: 'success',
+      confirmButton: { text: 'เสร็จสิ้น' }
+    });
+
+    toggleFormMode();
   }
 
   const renderFormPersonal = () => {
-    const _titleTh = `${ personalData?.titleCodeTh || '' } - ${ personalData?.titleNameTh || '' }`.trim();
-    const _firstNameTh = personalData?.firstNameTh || '-';
-    const _lastNameTh = personalData?.lastNameTh || '-';
-    const _firstNameEn = personalData?.firstNameEn || '-';
-    const _lastNameEn = personalData?.lastNameEn || '-';
-    const _nationality = `${ personalData?.nationalityCode || '' } - ${ personalData?.nationalityDesc || '' }`.trim();
-    const _occupation = `${ personalData?.occupationCode || '' } - ${ personalData?.occupationDesc || '' }`.trim();
-    const _monthlyIncome = personalData?.monthlyIncome || 0;
-    const _incomeSource = personalData?.incomeSourceDesc || '-';
-    const _incomeCountry = personalData?.incomeCountry || '-';
-    const _investmentYear = personalData?.investmentYear || 0;
-    const _investmentPurpose = (personalData?.investmentPurposeOther) ? personalData?.investmentPurposeOther || '-' : personalData?.investmentPurposeDesc || '-';
-
+    const { errors } = formState;
     return (
-      <Form<FormFields>
+      <Form<StoreTypeKycCdd.PersonalInfoFormFields>
         isEditing={ isEditing }
         baseColSpan={4}
-        register={ register }
+        hookForm={{ register, errors }}
         onSubmit={ handleSubmit(onSubmitForm) }
+        onCancel={ toggleFormMode }
         fields={[
           {
             type: 'select',
-            label: 'คำนำหน้า', viewText: _titleTh,
-            name: 'titleTh',
-            options: [
-              { label: 'aaa', value: 'aaa' },
-              { label: 'bbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' }
-            ]
+            label: 'คำนำหน้า', viewText: getSingleLabelFromValue({ datasource: masterTitleList.data || [], searchValue: watchFormValue('titleTh') }),
+            name: 'titleTh', value: watchFormValue('titleTh'),
+            options: masterTitleList.data || []
           },
           {
             type: 'text',
-            label: 'ชื่อ (ภาษาไทย)', viewText: _firstNameTh,
-            name: 'firstnameTh'
+            label: 'ชื่อ (ภาษาไทย)', viewText: watchFormValue('firstnameTh'),
+            name: 'firstnameTh', value: watchFormValue('firstnameTh'),
           },
           {
             type: 'text',
-            label: 'นามสกุล (ภาษาไทย)', viewText: _lastNameTh,
-            name: 'lastnameTh'
+            label: 'นามสกุล (ภาษาไทย)', viewText: watchFormValue('lastnameTh'),
+            name: 'lastnameTh', value: watchFormValue('lastnameTh'),
+          },
+          {
+            type: 'autocomplete',
+            label: 'ประเทศเจ้าของสัญชาติ ', viewText: getSingleLabelFromValue({ datasource: masterCountryList.data || [], searchValue: watchFormValue('nationality') }),
+            name: 'nationality', value: selectedNationality,
+            options: masterCountryList.data || [],
+            searchMethod: 'contain',
+            onSelect: (selectedItem: ComboBoxWrapperOption) => {
+              setSelectedNationality(selectedItem);
+              setFormValue('nationality', selectedItem.value);
+            }
           },
           {
             type: 'text',
-            label: 'ประเทศเจ้าของสัญชาติ ', viewText: _nationality,
-            name: 'nationality'
+            label: 'ชื่อ (ภาษาอังกฤษ)', viewText: watchFormValue('firstnameEn'),
+            name: 'firstnameEn', value: watchFormValue('firstnameEn'),
           },
           {
             type: 'text',
-            label: 'ชื่อ (ภาษาอังกฤษ)', viewText: _firstNameEn,
-            name: 'firstnameEn'
+            label: 'นามสกุล (ภาษาอังกฤษ)', viewText: watchFormValue('lastnameEn'),
+            name: 'lastnameEn', value: watchFormValue('lastnameEn'),
           },
           {
-            type: 'text',
-            label: 'นามสกุล (ภาษาอังกฤษ)', viewText: _lastNameEn,
-            name: 'lastnameEn'
-          },
-          {
-            type: 'text',
-            label: 'อาชีพ', viewText: _occupation,
-            name: 'occupation'
-          },
-          {
-            type: 'number',
-            label: 'รายได้รวมต่อเดือน', viewText: `${ _monthlyIncome }`,
-            name: 'monthlyIncome'
-          },
-          {
-            type: 'checkbox',
-            label: 'แหล่งที่มาของรายได้', viewText: _incomeSource,
-            ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {}),
-            name: 'incomeSource',
-            options: [
-              { label: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', value: 'aaa' },
-              { label: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' },
-              { label: 'ddd', value: 'ddd' },
-              { label: 'eee', value: 'eee' },
-              { label: 'fff', value: 'fff' },
-              { label: 'ggg', value: 'ggg' },
-              { label: 'hhh', value: 'hhh' },
-              { label: 'iii', value: 'iii' }
-            ]
+            type: 'autocomplete',
+            label: 'อาชีพ', viewText: getSingleLabelFromValue({ datasource: masterOccupationList.data || [], searchValue: watchFormValue('occupation') } ),
+            name: 'occupation', value: selectedOccupation,
+            options: masterOccupationList.data || [],
+            searchMethod: 'contain',
+            onSelect: (selectedItem: ComboBoxWrapperOption) => {
+              setSelectedOccupation(selectedItem);
+              setFormValue('occupation', selectedItem.value);
+            }
           },
           {
             type: 'select',
-            label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: _incomeCountry,
-            name: 'incomeCountry',
-            options: [
-              { label: 'aaa', value: 'aaa' },
-              { label: 'bbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' }
-            ]
-          },
-          {
-            type: 'number',
-            label: 'ประสบการณ์การลงทุน (ปี)', viewText: `${ _investmentYear }`,
-            name: 'exp'
+            label: 'รายได้รวมต่อเดือน', viewText: getSingleLabelFromValue({ datasource: masterIncomeRateList.data || [], searchValue: watchFormValue('incomeRate') } ),
+            name: 'incomeRate', value: watchFormValue('incomeRate'),
+            options: masterIncomeRateList.data || []
           },
           {
             type: 'checkbox',
-            label: 'วัตถุประสงค์การลงทุน', viewText: _investmentPurpose,
-            ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {}),
-            name: 'investmentPurpose',
-            options: [
-              { label: 'aaa', value: 'aaa' },
-              { label: 'bbb', value: 'bbb' },
-              { label: 'ccc', value: 'ccc' }
-            ]
+            label: 'แหล่งที่มาของรายได้', viewText: getAggregateLabelFromValue({ datasource: masterIncomeSourceList.data || [], searchValue: watchFormValue('incomeSource') || [] }),
+            name: 'incomeSource', value: watchFormValue('incomeSource'),
+            options: masterIncomeSourceList.data || [],
+            ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {})
+          },
+          {
+            type: 'autocomplete',
+            label: 'ประเทศของแหล่งที่มาของรายได้/เงินลงทุน', viewText: getSingleLabelFromValue({ datasource: masterCountryList.data || [], searchValue: watchFormValue('incomeCountry') }),
+            name: 'incomeCountry', value: selectedIncomeCountry,
+            options: masterCountryList.data || [],
+            searchMethod: 'contain',
+            onSelect: (selectedItem: ComboBoxWrapperOption) => {
+              setSelectedIncomeCountry(selectedItem);
+              setFormValue('incomeCountry', selectedItem.value);
+            }
+          },
+          {
+            type: 'number',
+            label: 'ประสบการณ์การลงทุน (ปี)', viewText: `${ watchFormValue('exp') }`,
+            name: 'exp', value: watchFormValue('exp')
+          },
+          {
+            type: 'checkbox',
+            label: 'วัตถุประสงค์การลงทุน', viewText: getAggregateLabelFromValue({ datasource: masterInvestmentPurposeList.data || [], searchValue: watchFormValue('investmentPurpose') || [] }),
+            name: 'investmentPurpose', value: watchFormValue('investmentPurpose'),
+            options: masterInvestmentPurposeList.data || [],
+            ...((isEditing) ? { colSpan: 12, labelCol: 2, inputCol: 10 } : {})
           }
         ]}
       />
@@ -161,9 +266,7 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
   return (
     <Fragment>
-      <div className={'my-4 border-b-2 border-b-slate-500'}>
-        <strong className={'text-xl text-success-500'}>ข้อมูลส่วนตัว</strong>
-      </div>
+      <SectionSeparator title={'ข้อมูลส่วนตัว'} hasEditAction={ !isEditing } onClickEdit={ toggleFormMode } />
 
       {
         (isLoading)
@@ -176,18 +279,5 @@ export const ReviewPersonalInfo = ({ corporateId }: PersonalInfoProps): ReactEle
 
 interface PersonalInfoProps {
   corporateId: string;
-}
-
-interface FormFields {
-  firstnameTh: string;
-  lastnameTh: string;
-  firstnameEn: string;
-  lastnameEn: string;
-  nationality: string;
-  occupation: string;
-  monthlyIncome: number;
-  incomeSource: Array<string>;
-  incomeCountry: string;
-  exp: number;
-  investmentPurpose: Array<string>;
+  onToggleEdit?: (isEditing: boolean) => void;
 }

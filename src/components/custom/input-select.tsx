@@ -1,5 +1,4 @@
-import { FormControl, MenuItem, Select } from "@mui/material";
-import { UseFormRegister } from "react-hook-form";
+import { MenuItem, Select } from "@mui/material";
 
 export default function InputSelect({
     name,
@@ -11,6 +10,7 @@ export default function InputSelect({
     list = [],
     readonly = false,
     disabled = false,
+    onChange
 }: InputSelectProps) {
     return (
         <Select
@@ -21,6 +21,7 @@ export default function InputSelect({
             required={required}
             readOnly={readonly}
             disabled={disabled}
+            onChange={(event) => onChange && onChange(event.target.value)}
         >
             {
                 list.map((item, index) => (
@@ -52,4 +53,5 @@ interface InputSelectProps {
     list?: InputSelectValue[];
     readonly?: boolean;
     disabled?: boolean;
+    onChange?: (value: string) => void;
 }

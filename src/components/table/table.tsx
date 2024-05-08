@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Pagination as MuiPagination } from '@mui/material';
+import {
+  Box,
+  LabelDisplayedRowsArgs,
+  Pagination as MuiPagination
+} from '@mui/material';
 import {
   DataGrid,
   GridCallbackDetails,
@@ -12,38 +15,39 @@ import {
   GridSortModel,
   type GridRowIdGetter
 } from '@mui/x-data-grid';
+import { useMemo, useState } from 'react';
 
 const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
   const { totalItems, totalPages, paginationModel } = props
   const [filterModel, setFilterModel] = useState<GridFilterModel>({ items: [] });
-  const pageSizeOptions = [1, 5, 10, 25];
+  const pageSizeOptions = [10, 25, 50, 100];
 
   const gridWidth = useMemo(() => {
     const { columns } = props;
     return (columns || []).reduce((acc, column) => {
       return acc + ((column?.headerName?.length || 0) * 8);
     }, 0);
-  }, [ props ]);
+  }, [props]);
 
   const onFilterChange = (model: GridFilterModel, details: GridCallbackDetails<'filter'>) => {
     setFilterModel(model);
   }
 
-  const onSortChange = (model: GridSortModel, details: GridCallbackDetails<any>) => {}
+  const onSortChange = (model: GridSortModel, details: GridCallbackDetails<any>) => { }
 
   const onPaginationChange = (page: number) => {
     const { setPaginationModel } = props;
-    if(setPaginationModel) {
+    if (setPaginationModel) {
       setPaginationModel({
         page: page,
-        pageSize: paginationModel.pageSize
+        pageSize: paginationModel.pageSize,
       });
     }
   }
 
   const onPageSizeChange = (pageSize: number) => {
-    const {setPaginationModel} = props;
-    if(setPaginationModel) {
+    const { setPaginationModel } = props;
+    if (setPaginationModel) {
       setPaginationModel({
         page: 1,
         pageSize: pageSize
@@ -63,73 +67,126 @@ const Table = <DynamicType extends {}>(props: TableProps<DynamicType>) => {
     )
   }
 
-  return (
-    <DataGrid<DynamicType>
-      sx={{
-        '& .MuiDataGrid-columnHeader': {
-          backgroundColor: '#F0F0F0',
-          border: '1px solid #B9B9B9',
-        },
-        '& .MuiDataGrid-filler': {
-          backgroundColor: '#F0F0F0',
-          border: '1px solid #B9B9B9',
-        },
-        '& .MuiDataGrid-columnHeaderTitle': {
-          color: '#000000',
-          fontWeight: 'bold',
-        },
-        '& .MuiDataGrid-topContainer': {
-          borderBottom: '1px solid #B9B9B9',
-        },
-        '.MuiDataGrid-footerContainer': { justifyContent: 'unset' },
-        '.MuiTablePagination-root': { width: '100%', display: 'flex', justifyContent: 'flex-end' },
-        '.MuiTablePagination-spacer': { display: 'none' }
-      }}
+  const labelDisplayedRows = ({ from, to, count, page }: LabelDisplayedRowsArgs) => {
+    return `${(paginationModel.page * paginationModel.pageSize) - paginationModel.pageSize + from}-${(paginationModel.page * paginationModel.pageSize) - paginationModel.pageSize + to} of ${totalItems}`;
+  }
 
-      getRowId={props?.getRowId}
-      rows={props.rows || []}
-      columns={(props.columns || []).map(column => ({
-        ...column,
-        width: gridWidth > 1000 ? 150 : undefined // Adjust the threshold based on your layout
-      }))}
-      //pageSizeOptions={pageSizeOptions}
-      //paginationModel={props.paginationModel}
-      filterModel={filterModel}
-      hideFooter={props.hideFooter}
-      //disableColumnFilter={true}
-      //onPaginationModelChange={onPageChange}
-      onFilterModelChange={onFilterChange}
-      onSortModelChange={onSortChange}
-      autoHeight
-      //autoPageSize  
-      loading={props.isLoading}
-      slots={{
-        pagination: (props) => (
-          <GridPagination
-            {...props}
-            ActionsComponent={CustomMuiPagination}
-            rowsPerPageOptions={pageSizeOptions}
-            rowsPerPage={paginationModel.pageSize}
-            onRowsPerPageChange={(event) => onPageSizeChange(parseInt(event.target.value))}
-          />
-        )
-      }}
-    />
+  const renderNotFound = () => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          width: '100%'
+        }}
+      >
+        <div className='text-[25px] text-red-500'>ไม่มีข้อมูล</div>
+      </div>
+    );
+  }
+
+  return (
+    <Box sx={{ height: props.height || 'auto' }}>
+      <DataGrid<DynamicType>
+        sx={{
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: '#F0F0F0',
+            border: '1px solid #B9B9B9',
+          },
+          '& .MuiDataGrid-filler': {
+            backgroundColor: '#F0F0F0',
+            border: '1px solid #B9B9B9',
+          },
+          '& .MuiDataGrid-columnHeaderTitle': {
+            color: '#000000',
+            fontWeight: 'bold',
+          },
+          '& .MuiDataGrid-topContainer': {
+            borderBottom: '1px solid #B9B9B9',
+          },
+          '.MuiDataGrid-footerContainer': { justifyContent: 'unset' },
+          '.MuiTablePagination-root': { width: '100%', display: 'flex', justifyContent: 'flex-end' },
+          '.MuiTablePagination-spacer': { display: 'none' }
+        }}
+
+        disableAutosize={ props.disableAutosize }
+        disableColumnResize={ (props.disableColumnResize) ? props.disableColumnResize : true }
+        disableColumnSorting={ props.disableColumnSorting }
+        disableColumnFilter={ props.disableColumnFilter }
+        disableColumnMenu={ props.disableColumnMenu }
+        getRowId={props?.getRowId}
+        rows={props.rows || []}
+        columns={(props.columns || []).map(column => ({
+          ...column,
+          width: gridWidth > 1000 ? 150 : undefined // Adjust the threshold based on your layout
+        }))}
+        //pageSizeOptions={pageSizeOptions}
+        //paginationModel={props.paginationModel}
+        filterModel={filterModel}
+        hideFooter={props.hideFooter}
+        //disableColumnFilter={true}
+        //onPaginationModelChange={onPageChange}
+        onFilterModelChange={onFilterChange}
+        onSortModelChange={onSortChange}
+        autoHeight
+        //autoPageSize
+        loading={props.isLoading}
+        slots={{
+          noResultsOverlay() {
+            return renderNotFound();
+          },
+          noRowsOverlay(props, deprecatedLegacyContext) {
+            return renderNotFound();
+          },
+          pagination: (props) => (
+            <GridPagination
+              {...props}
+              ActionsComponent={CustomMuiPagination}
+              rowsPerPageOptions={pageSizeOptions}
+              rowsPerPage={paginationModel.pageSize}
+              onRowsPerPageChange={(event) => onPageSizeChange(parseInt(event.target.value))}
+              labelDisplayedRows={labelDisplayedRows}
+            />
+          )
+        }}
+      />
+    </Box>
   );
 }
 
 export interface TableProps<T extends {}> {
-  onPageChange?: (model: GridPaginationModel) => void;
-  rows?: Array<T>
-  columns?: GridColDef[]
-  hideFooter?: boolean
+  /** @default 'auto' */
+  height?: number | string;
+
+  rows?: Array<T>;
+  columns?: GridColDef[];
+  hideFooter?: boolean;
+  totalItems?: number;
+  totalPages?: number;
+  paginationModel: GridPaginationModel;
+  isLoading?: boolean;
+
+  /** @default false */
+  disableAutosize?: boolean;
+
+  /** @default true */
+  disableColumnResize?: boolean;
+
+  /** @default false */
+  disableColumnSorting?: boolean;
+
+  /** @default false */
+  disableColumnFilter?: boolean;
+
+  /** @default false */
+  disableColumnMenu?: boolean;
+
   getRowId?: GridRowIdGetter<T>
-  totalItems?: number
-  totalPages?: number
-  paginationModel: GridPaginationModel
+  onPageChange?: (model: GridPaginationModel) => void;
   setPaginationModel: (model: GridPaginationModel) => void
   setPageSizenModel?: (model: GridPaginationModel) => void
-  isLoading?: boolean
 }
 
 export interface ColProps {

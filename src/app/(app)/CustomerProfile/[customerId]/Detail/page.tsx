@@ -4,6 +4,9 @@
 import BreadcrumbsNavbar from "@/components/navbar/breadcrumbs-navbar"
 import HeaderNavbar from "@/components/navbar/header-navbar"
 import TabNavbar from "@/components/navbar/tab-navbar"
+import { useAppDispatch, useAppSelector } from "@/libs/redux/hook"
+import { jumpToStep } from "@/libs/redux/store/customer-profile-slice"
+import { useSearchParams } from "next/navigation"
 import React from "react"
 import Consent from "../Consent/page"
 import AccountInformation from "./account-information"
@@ -17,6 +20,8 @@ import FATCA from "./fatca"
 import FinancialInformation from "./financial-information"
 
 export default function DetailPage() {
+    const searchParams = useSearchParams()
+    const isEditable = searchParams.get('edit') === 'true';
     const stepper = [
         {
             title: "ข้อมูลส่วนตัว",
@@ -55,32 +60,39 @@ export default function DetailPage() {
             component: <FATCA />
         },
         {
-            title: "ข้อมูลบัญชี",
-            component: <AccountInformation />
+            title: isEditable ? "สรุปรายละเอียดที่แก้ไข" : "ข้อมูลบัญชี",
+            component: isEditable ? <></> : <AccountInformation />
         }
     ]
-    const [stepIndex, setStepIndex] = React.useState(0)
+
+    const step = useAppSelector((state) => state.customerProfile.step)
+    const dispatch = useAppDispatch()
+
     return (
         <div className="">
             <BreadcrumbsNavbar
                 className="px-10"
                 data={[
-                    { title: "ข้อมูลลูกค้า", link: "/CustomerProfile" },
+                    {
+                        title: isEditable ? "แก้ไขข้อมูล" : "ข้อมูลลูกค้า",
+                        link: isEditable ? "/CustomerProfile/Edit/Offline" : "/CustomerProfile"
+                    },
                     { title: "รายละเอียดลูกค้า" }
                 ]}
             />
             <HeaderNavbar
-                title={stepper[stepIndex].title}
+                title={stepper[step - 1].title}
             />
             <div className="px-[44px]">
                 <TabNavbar
+                    value={step - 1}
                     list={stepper.map((item) => item.title)}
-                    onChange={(index) => setStepIndex(index)}
+                    onChange={(index) => dispatch(jumpToStep(index + 1))}
                 />
                 <div className="border border-b-[1px] h-[1px]" />
                 <div className="h-[calc(100vh-300px)] overflow-y-auto">
                     {
-                        stepper[stepIndex].component
+                        stepper[step - 1].component
                     }
                 </div>
             </div>

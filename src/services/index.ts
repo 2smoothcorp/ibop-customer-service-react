@@ -20,13 +20,13 @@ export default class Services {
         return refinedUrl;
     }
 
-    private async getVaultService(){
-        if(!this.vaultService) { this.vaultService = new VaultService(); }
+    private async getVaultService() {
+        if (!this.vaultService) { this.vaultService = new VaultService(); }
         return this.vaultService
     }
 
-    public async getPortalApi(){
-        if(!this.portalService) { this.portalService = new PortalService(`${Constants.PortalUrl}`) }
+    public async getPortalApi() {
+        if (!this.portalService) { this.portalService = new PortalService(`${Constants.PortalUrl}`) }
         return this.portalService;
     }
 
@@ -38,23 +38,23 @@ export default class Services {
             isJsonMime: () => false,
             accessToken: token,
             basePath
-        };  
+        };
 
         const _config = new Configuration({
             accessToken: token,
             basePath: basePath
         });
-        if(!this.authApi) { this.authApi = new AuthApi(_config); }
+        if (!this.authApi) { this.authApi = new AuthApi(_config); }
         return this.authApi;
     }
 
-    private async getCustomerServiceVault(){
-        if(!this.vaultCustomerService) {
+    private async getCustomerServiceVault() {
+        if (!this.vaultCustomerService) {
             const _vaultInfo = new VaultService<JWTInfoData>({ serviceUrl: 'customer-service-jwt' });
             await _vaultInfo.getVaultInfoByService();
             this.vaultCustomerService = _vaultInfo;
         }
-        
+
         return this.vaultCustomerService;
     }
 
@@ -82,7 +82,7 @@ export default class Services {
 
     public async getCustomerServiceApi(): Promise<ApiCustomerService> {
         const config = await this.getCustomerServiceConfig();
-        if(!this.apiService) { this.apiService = new ApiCustomerService(config); }
+        if (!this.apiService) { this.apiService = new ApiCustomerService(config); }
         return this.apiService;
     }
 }

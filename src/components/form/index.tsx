@@ -11,7 +11,7 @@ import {
   useEffect
 } from 'react';
 import { Button, Grid } from '@mui/material';
-import type { UseFormRegister } from 'react-hook-form';
+import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 
 import { InputText } from '@/components/input-text';
 import { InputNumber } from '@/components/input-number';
@@ -21,8 +21,6 @@ import { InputCheckbox } from '@/components/input-checkbox';
 import { InputAutoComplete } from '@/components/input-autocomplete';
 
 export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): ReactElement => {
-  //
-
   useEffect(() => {}, []);
 
   const generateFields = () => {
@@ -33,7 +31,8 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
         type, disabled,
         label,
         viewText,
-        colSpan = baseColSpan || 6, labelCol = 6, viewCol = 6, // inputCol = 6
+        colSpan = baseColSpan || 6, labelCol = 6, viewCol = 6, inputCol = 6,
+        isHidden
       } = item;
 
       // if(type === 'address') {
@@ -52,9 +51,11 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
       //   );
       // }
 
+      if(isHidden) { return(<div key={`empty-space-${ idx }`}></div>); }
+
       return (
         <Grid container item spacing={2}
-          key={idx} xs={ colSpan }
+          key={`field-item-${ idx }`} xs={ colSpan }
           // className={'flex items-center gap-x-2'}
         >
           <Grid item
@@ -66,7 +67,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
           
           {
             (isEditing)
-            ? (renderInput(item))
+            ? (<Grid item xs={ inputCol }>{ renderInput(item) }</Grid>)
             : (<Grid item xs={ viewCol }>{ viewText }</Grid>)
           }
         </Grid>
@@ -74,75 +75,96 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
     });
   }
 
-  const renderInput = (info: InputField): ReactElement => {
-    const { register } = props;
-    const { inputCol = 6, type, name, value, disabled } = info;
+  const renderInput = (info: FormInternalTypeDef.InputField<DynamicField>): ReactElement => {
+    const { hookForm: { register, errors } } = props;
+    const { type, name, value, disabled } = info;
+    const errorMsg = (errors) ? `${ errors[name]?.message || '' }` : '';
     switch(type) {
       case 'text': {
         const {} = info;
         return (
-          <Grid item xs={ inputCol }>
-            <InputText name={ name } defaultValue={ value } disabled={ disabled } register={ register } />
-          </Grid>
+          <InputText
+            name={ name }
+            defaultValue={ value }
+            disabled={ disabled }
+            register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'number': {
         const {} = info;
         return (
-          <Grid item xs={ inputCol }>
-            <InputNumber name={ name } defaultValue={ value } readOnly={ disabled } register={ register } />
-          </Grid>
+          <InputNumber
+            name={ name }
+            defaultValue={ value }
+            readOnly={ disabled }
+            register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'select': {
         const { options } = info;
         return (
-          <Grid item xs={ inputCol }>
-            <InputSelect name={ name } options={ options } defaultValue={ value } disabled={ disabled } register={ register } />
-          </Grid>
+          <InputSelect
+            name={ name }
+            options={ options }
+            defaultValue={ value }
+            disabled={ disabled }
+            register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'radio': {
-        const { options } = info;
+        const { options, onSelect } = info;
         return (
-          <Grid item xs={ inputCol }>
-            <InputRadio row name={ name } options={ options } defaultValue={ value } register={ register } />
-          </Grid>
+          <InputRadio row name={ name }
+            options={ options }
+            defaultValue={ value }
+            // register={ register }
+            onSelectOption={ onSelect }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'checkbox': {
         const { options } = info;
         return (
-          <Grid item xs={ inputCol }>
-            <InputCheckbox name={ name } options={ options } defaultValue={ value } disabled={ disabled } register={ register } />
-          </Grid>
+          <InputCheckbox
+            name={ name }
+            options={ options }
+            defaultValue={ value }
+            disabled={ disabled }
+            register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
       case 'autocomplete': {
-        const { options, value, optionSearchKey, asAddress, getOptionKey, getOptionLabel, onSearch, onSelect } = info;
+        const { options, value, optionSearchKey, searchMethod, isAddress, getOptionKey, getOptionLabel, onSearch, onSelect } = info;
         return (
-          <Grid item xs={ inputCol }>
-            <InputAutoComplete
-              { ...((asAddress) ? { mode: 'address' } : {}) }
-              name={ name }
-              options={ options }
-              selectedOption={ value }
-              optionSearchKey={ optionSearchKey }
-              disabled={ disabled }
-              getOptionKey={ getOptionKey }
-              getOptionLabel={ getOptionLabel }
-              onSearch={ onSearch }
-              onSelect={ onSelect }
-              // register={ register }
-            />
-          </Grid>
+          <InputAutoComplete
+            isAddress={ isAddress }
+            name={ name }
+            options={ options }
+            selectedOption={ value }
+            optionSearchKey={ optionSearchKey }
+            searchMethod={ searchMethod }
+            disabled={ disabled }
+            getOptionKey={ getOptionKey }
+            getOptionLabel={ getOptionLabel }
+            onSearch={ onSearch }
+            onSelect={ onSelect }
+            // register={ register }
+            errorMessage={ errorMsg }
+          />
         );
       }
     }
 
-    return (
-      <Grid item xs={ inputCol }></Grid>
-    );
+    return (<div></div>);
   }
 
   return (
@@ -154,12 +176,20 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
           (props.isEditing) && (
             <Grid container className={'mt-4'}>
               <Grid item xs={ 12 }>
-                <div className={'flex items-center justify-center gap-x-4'}>
-                  <Button type={'reset'}
+                <div className={'flex items-center justify-end gap-x-4'}>
+                  {/* <Button type={'reset'}
                     variant={'contained'}
                     className={'bg-neutral-200 hover:bg-neutral-200 hover:brightness-95 text-xl text-black py-0 w-25 h-10'}
                   >
-                    ย้อนกลับ
+                    ล้างค่า
+                  </Button> */}
+                  <Button type={'reset'}
+                    variant={'contained'}
+                    className={'py-0 w-25 h-10'}
+                    color={'error'}
+                    onClick={ props.onCancel }
+                  >
+                    ยกเลิก
                   </Button>
                   <Button type={'submit'} variant={'contained'} className={'text-xl py-0 w-25 h-10'}>
                     บันทึก
@@ -175,7 +205,7 @@ export const Form = <DynamicField extends {}>(props: FormProps<DynamicField>): R
 }
 
 interface FormProps<DynamicField extends {}> {
-  fields: Array<InputField>;
+  fields: Array<FormInternalTypeDef.InputField<DynamicField>>;
   isEditing?: boolean;
 
   /**
@@ -184,77 +214,102 @@ interface FormProps<DynamicField extends {}> {
    */
   baseColSpan?: ColumnSize;
 
-  register?: UseFormRegister<DynamicField>;
+  hookForm: {
+    register?: UseFormRegister<DynamicField>;
+    errors?: FieldErrors<DynamicField>;
+  },
+
   action?: (formData: FormData) => void;
+  onCancel?: () => void;
   onSubmit?: FormEventHandler<HTMLFormElement>;
 }
 
-type InputField = EmptySpaceField
-  | TextInputField
-  | NumberInputField
-  | AutoCompleteInputField
-  | SelectInputField
-  | CheckboxInputField
-  | RadioInputField;
+export module FormInternalTypeDef {
+  export type InputField<DynamicField> = EmptySpaceField<DynamicField>
+    | TextInputField<DynamicField>
+    | NumberInputField<DynamicField>
+    | AutoCompleteInputField<DynamicField>
+    | SelectInputField<DynamicField>
+    | CheckboxInputField<DynamicField>
+    | RadioInputField<DynamicField>;
 
-interface BaseInputField {
-  label: string;
-  viewText: string;
+  export interface BaseInputField<DynamicField> {
+    label: string;
+    viewText: string;
 
-  /**
-   * Form field grid
-   * @defaut 6
-   */
-  colSpan?: ColumnSize;
+    /**
+     * Form field grid
+     * @defaut 6
+     */
+    colSpan?: ColumnSize;
 
-  /**
-   * Column span for Label part
-   * @defaut 6
-   */
-  labelCol?: ColumnSize;
+    /**
+     * Column span for Label part
+     * @defaut 6
+     */
+    labelCol?: ColumnSize;
 
-  /**
-   * Column span for Text part (view mode)
-   * @default 6
-   */
-  viewCol?: ColumnSize;
+    /**
+     * Column span for Text part (view mode)
+     * @default 6
+     */
+    viewCol?: ColumnSize;
 
-  /**
-   * Column span for input part (edit mode)
-   * @default 6
-   */
-  inputCol?: ColumnSize;
+    /**
+     * Column span for input part (edit mode)
+     * @default 6
+     */
+    inputCol?: ColumnSize;
 
-  type?: 'text' | 'number' | 'select' | 'checkbox' | 'radio' | 'autocomplete' | 'space';
-  name?: string;
-  value?: any;
-  disabled?: boolean;
-}
+    type?: 'text' | 'number' | 'select' | 'checkbox' | 'radio' | 'autocomplete' | 'space';
+    name?: Extract<keyof DynamicField, string>;
+    value?: any;
 
-interface WithInputOption {
-  options: Array<{
+    /** @default false */
+    disabled?: boolean;
+
+    /** @default false */
+    isHidden?: boolean;
+  }
+
+  export interface WithInputOption {
+    options: Array<InputChoiceItem>;
+  }
+
+  export interface InputChoiceItem {
     label: string;
     value: string;
     disabled?: boolean;
     [key: string]: any;
-  }>;
-}
+  }
 
-interface EmptySpaceField extends BaseInputField { type: 'space'; }
-interface TextInputField extends BaseInputField { type: 'text'; name: string; value?: string; }
-interface NumberInputField extends BaseInputField { type: 'number'; name: string; value?: number; }
-interface SelectInputField extends BaseInputField, WithInputOption { type: 'select'; name: string; value?: string; }
-interface CheckboxInputField extends BaseInputField, WithInputOption { type: 'checkbox'; name: string; value?: Array<string>; }
-interface RadioInputField extends BaseInputField, WithInputOption { type: 'radio'; name: string; value?: string; }
-interface AutoCompleteInputField extends BaseInputField, WithInputOption {
-  type: 'autocomplete';
-  name: string;
-  optionSearchKey?: string;
-  asAddress?: boolean;
-  getOptionKey?: (item: any) => string;
-  getOptionLabel?: (item: any) => string;
-  onSearch?: (searchText: string) => void;
-  onSelect?: (selected: any) => void;
+  export interface EmptySpaceField<DynamicField> extends BaseInputField<DynamicField> { type: 'space'; }
+  export interface TextInputField<DynamicField> extends BaseInputField<DynamicField> { type: 'text'; name: Extract<keyof DynamicField, string>; value?: string; }
+  export interface NumberInputField<DynamicField> extends BaseInputField<DynamicField> { type: 'number'; name: Extract<keyof DynamicField, string>; value?: number; }
+  export interface SelectInputField<DynamicField> extends BaseInputField<DynamicField>, WithInputOption { type: 'select'; name: Extract<keyof DynamicField, string>; value?: string; }
+  export interface CheckboxInputField<DynamicField> extends BaseInputField<DynamicField>, WithInputOption { type: 'checkbox'; name: Extract<keyof DynamicField, string>; value?: Array<string>; }
+
+  export interface RadioInputField<DynamicField> extends BaseInputField<DynamicField>, WithInputOption {
+    type: 'radio';
+    name: Extract<keyof DynamicField, string>;
+    value?: string;
+    onSelect?: (selected: string) => void;
+  }
+
+  export interface AutoCompleteInputField<DynamicField> extends BaseInputField<DynamicField>, WithInputOption {
+    type: 'autocomplete';
+    name: Extract<keyof DynamicField, string>;
+    optionSearchKey?: string;
+
+    /** @default 'startWith' */
+    searchMethod?: 'startWith' | 'contain' | 'endWith',
+
+    isAddress?: boolean;
+    getOptionKey?: (item: any) => string;
+    getOptionLabel?: (item: any) => string;
+    onSearch?: (searchText: string) => void;
+    onSelect?: (selected: any) => void;
+  }
 }
 
 type ColumnSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;

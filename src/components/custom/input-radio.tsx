@@ -26,7 +26,6 @@ export default function InputRadio({
     isRow = true,
     isFlex = false,
 }: InputRadioProps) {
-
     return (
         <RadioGroup
             className={isFlex && "w-full flex justify-around" || ""}

@@ -7,7 +7,6 @@ import customerProfileSlice from './store/customer-profile-slice';
 import financialInfomationSlice from './store/financial-infomation';
 import { reducerKycCdd } from './store/kyc-cdd';
 
-
 export const makeStore = () => {
     return configureStore({
         reducer: {
@@ -17,7 +16,7 @@ export const makeStore = () => {
             customerAtsEDividend: customerAtsEDividendSlice,
             kyccdd: reducerKycCdd,
             financialInfomation: financialInfomationSlice,
-            beneficiary: beneficiarySlice
+            beneficiary: beneficiarySlice,
         }
     })
 }

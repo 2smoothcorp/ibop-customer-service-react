@@ -6,7 +6,8 @@ export default function InputText({
     className,
     readonly = false,
     required = false,
-    disabled = false
+    disabled = false,
+    onChange,
 }: InputTextProps) {
     return (
         <input
@@ -18,6 +19,7 @@ export default function InputText({
             required={required}
             readOnly={readonly}
             disabled={disabled}
+            onChange={(event) => onChange && onChange(event.target.value)}
         />
     )
 }
