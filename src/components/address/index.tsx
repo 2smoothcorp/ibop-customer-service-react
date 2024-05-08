@@ -60,12 +60,6 @@ const AddressComponent = (props: AddressComponentProps): AddressComponentReturn 
 
     const setAddresHook = (address: AddressBySearchProps) => {
         onAddressChange?.(address)
-        /*
-        setValue('contractInformation.zipCode', address.value.postCode, { "shouldDirty": true });
-        setValue('contractInformation.provinceCode', address.value.provinceCode, { "shouldDirty": true });
-        setValue('contractInformation.districtCode', address.value.districtCode, { "shouldDirty": true });
-        setValue('contractInformation.subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
-        */
     }
 
     const Country = (

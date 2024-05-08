@@ -15,6 +15,7 @@ export default function InputAddressThailand({
 }: InputAddressThailandProps) {
 
     const getOption = (option: AddressBySearchProps | null | string): string => {
+        console.log(`getOption`, optionType.toString(), option, list)
         if (!option || typeof option === 'string') return '';
         switch (optionType) {
             case 'postCode':

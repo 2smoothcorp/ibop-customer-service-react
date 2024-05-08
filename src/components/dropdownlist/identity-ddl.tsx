@@ -20,6 +20,8 @@ const IdentityDDL = (props: IdentityDDLProps) => {
     const {
         isEditable,
         name,
+        label,
+        placeHolder,
         defaultValue,
         setValue,
         identityNeverExpireName,
@@ -28,18 +30,21 @@ const IdentityDDL = (props: IdentityDDLProps) => {
     } = props;
 
     const [identityExpireDate, setIdentityExpireDate] = useState<string>('')
-    const [identityNeverExpire, setIdentityNeverExpire] = useState<boolean>(false)
+    const [identityNeverExpire, setIdentityNeverExpire] = useState<boolean>(defaultIdentityNeverExpireValue || false)
+
+    const dateTime = defaultValue ? dayjs(defaultValue).format('DD/MM/YYYY') : ''
+    console.log(`dateTime`, dateTime, identityExpireDate)
 
     return (<>
         <InputHorizontal
-            label="วันที่หมดอายุบัตร (ค.ศ.)"
-            placeholder="โปรดระบุวันที่หมดอายุบัตร"
-            defaultValue={defaultValue || identityExpireDate}
-            textShow={'-'}
-            isEditable={isEditable}
-            type="date"
-            minDate={dayjs().format('YYYY-MM-DD')}
             name={name}
+            type="date"
+            label={label || "วันที่หมดอายุบัตร (ค.ศ.)"}
+            placeholder={placeHolder || "โปรดระบุวันที่หมดอายุบัตร"}
+            defaultValue={defaultValue || identityExpireDate}
+            textShow={dateTime}
+            isEditable={isEditable}
+            minDate={dayjs().format('YYYY-MM-DD')}
             isRequired={false}
             disabled={identityNeverExpire}
             onChange={(value) => {

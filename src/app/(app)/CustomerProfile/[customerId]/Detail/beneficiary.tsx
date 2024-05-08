@@ -119,8 +119,6 @@ const normalizationData = (attributeName: string, data: BeneficiaryInfoModel | u
     }
 }
 
-const addressInfo: any = {};
-
 const BeneficiaryPage = () => {
 
     const searchParams = useSearchParams()
@@ -130,8 +128,16 @@ const BeneficiaryPage = () => {
 
     const isEditable = searchParams.get('edit') === 'true';
 
-    const beneficiary = useAppSelector(state => state.beneficiary)
+    const beneficiary = useAppSelector(state => state.beneficiary.data)
     console.log(`beneficiary`, beneficiary)
+
+    const useFormAll = useForm<BeneficiaryInfoModel>({
+        defaultValues: { ...beneficiary }
+    })
+
+    const form = useFormAll;
+    const { setValue, getValues, watch } = form
+
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['financialInfo', params.customerId],
@@ -141,8 +147,14 @@ const BeneficiaryPage = () => {
                 const request = await fetch(`/api/customer-profile/beneficiary/${customerId}`)
                 const response: BeneficiaryInfoResponseDataResponse = await request.json();
                 if (response.status == 200 && response.data && response.data.beneficiaryInfo) {
+
+                    for (let key in response.data?.beneficiaryInfo) {
+                        form.setValue(key as any, response.data?.beneficiaryInfo[key as keyof BeneficiaryInfoModel])
+                    }
+
                     return response.data.beneficiaryInfo
                 }
+
                 return null;
             } catch (e) {
                 return null;
@@ -151,19 +163,17 @@ const BeneficiaryPage = () => {
         }
     })
 
-    const useFormAll = useForm<BeneficiaryInfoModel>({
-        defaultValues: { ...data }
-    })
-
-    const form = useFormAll;
-    const { register, setValue, getValues, watch } = form
-
-    const setValueToForm = (name: keyof BeneficiaryInfoModel, value: any) => {
-        setValue(name, value)
-    }
-
     const Address = AddressComponent({
         isEditable: true,
+        country: {
+            name: 'countryCode',
+            isRequired: true,
+            textShow: form.watch('countryCode') || '',
+            setValue(value) {
+                console.log(`countryCode`, value)
+                form.setValue('countryCode', value)
+            },
+        },
         province: {
             name: 'province',
             isRequired: true,
@@ -174,25 +184,28 @@ const BeneficiaryPage = () => {
         },
         subDistrict: {
             name: 'subDistrict',
-            isRequired: true
+            isRequired: true,
         },
         zipCode: {
             name: 'zipCode',
-            isRequired: true
+            isRequired: true,
         },
         addressValues: {
-            postCode: '10220',
-            province: '',
-            provinceCode: '',
-            district: '',
-            districtCode: '',
-            subDistrict: '',
-            subDistrictCode: '',
+            postCode: form.watch('zipCode') || '',
+            province: normalizationData('province', form.getValues(), ''),
+            provinceCode: form.watch('provinceCode') || '',
+            district: normalizationData('district', form.getValues(), ''),
+            districtCode: form.watch('districtCode') || '',
+            subDistrict: normalizationData('subDistrict', form.getValues(), ''),
+            subDistrictCode: form.watch('subDistrictCode') || '',
         },
         onAddressChange(address) {
             setValue('zipCode', address.value.postCode, { "shouldDirty": true });
+            setValue('provinceNameTh', address.value.province, { "shouldDirty": true });
             setValue('provinceCode', address.value.provinceCode, { "shouldDirty": true });
+            setValue('districtNameTh', address.value.district, { "shouldDirty": true });
             setValue('districtCode', address.value.districtCode, { "shouldDirty": true });
+            setValue('subDistrictNameTh', address.value.subDistrict, { "shouldDirty": true });
             setValue('subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
         },
     })
@@ -240,7 +253,13 @@ const BeneficiaryPage = () => {
                 :
                 <>
                     <div className="grid grid-cols-3">
-                        <PersonForm form={form} dataInfo={data} isEditable={isEditable} getValueFromFieldName={getValueFromFieldName} normalizationData={normalizationData} />
+                        <PersonForm
+                            form={form}
+                            dataInfo={data}
+                            isEditable={isEditable}
+                            getValueFromFieldName={getValueFromFieldName}
+                            normalizationData={normalizationData}
+                        />
                     </div>
                     <HeaderTitle
                         className="gap-0"
@@ -249,8 +268,8 @@ const BeneficiaryPage = () => {
                     <div className="grid grid-cols-3">
                         {
                             fieldList({ form }).map((detail: DetailSection, idx: number) => {
-                                const { name, label, defaultValue, isRequired, normalize } = detail
-                                const _value = getValueFromFieldName(name, addressInfo, normalize);
+                                const { name, label, isRequired, normalize } = detail
+                                const _value = getValueFromFieldName(name, data, normalize);
                                 const textShow = watch(name)?.toString();
                                 return <React.Fragment key={`field-item-${idx}`}>
                                     <InputHorizontal
