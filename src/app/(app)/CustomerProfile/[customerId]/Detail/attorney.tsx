@@ -1,3 +1,4 @@
+import AddressComponent, { AddressComponentReturn } from "@/components/address";
 import ContentLabel from "@/components/content/content-label";
 import ContentLoading from "@/components/content/content-loading";
 import InputCheckbox from "@/components/custom/input-checkbox";
@@ -9,12 +10,16 @@ import RelationShipDDL from "@/components/dropdownlist/relationship-ddl";
 import TitleDDL from "@/components/dropdownlist/title-ddl";
 import HeaderTitle from "@/components/navbar/header-title";
 import useMasterDataProduct from "@/hooks/masterDataProduct";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
+import { setAttorneyData } from "@/libs/redux/store/attorney";
+import { nextStep } from "@/libs/redux/store/customer-profile-slice";
 import { AttorneyInfoModel, AttorneyInfoResponse, AttorneyInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { ApiResponse } from "@/type/api";
+import { handleEmptyStringFormApi } from "@/utils/function";
 import { Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useSearchParams } from "next/navigation";
-import React, { ReactElement } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import React from "react";
 import { UseFormReturn, useFieldArray, useForm } from "react-hook-form";
 
 interface DetailSection {
@@ -25,7 +30,7 @@ interface DetailSection {
     isEditable?: boolean
     normalize?: string
     onChange?: (value: string) => void
-    CustomComponent?: ReactElement
+    CustomComponent?: any
 }
 
 interface SectionList {
@@ -35,7 +40,8 @@ interface SectionList {
     }>
     isEditable?: boolean,
     index: number,
-    fieldName?: string
+    fieldName?: any
+    AddressComponent?: AddressComponentReturn
 }
 
 const attorneySectionList = ({ form, isEditable, index, fieldName }: SectionList): Array<DetailSection> => ([
@@ -115,74 +121,51 @@ const attorneySectionList = ({ form, isEditable, index, fieldName }: SectionList
     },
 ])
 
-const addressAttornetSectionList: Array<DetailSection> = [
-    {
-        name: 'addressNo',
-        label: 'เลขที่',
-        defaultValue: '',
-        isRequired: true
-    },
-    {
-        name: 'moo',
-        label: 'หมู่ที่',
-        defaultValue: '',
-        isRequired: true
-    },
-    {
-        name: 'buildingOrVillage',
-        label: 'หมู่บ้าน / อาคาร',
-        defaultValue: '',
-        isRequired: true
-    },
-    {
-        name: 'roomNo',
-        label: 'ห้อง',
-        defaultValue: '',
-        isRequired: true
-    },
-    {
-        name: 'floor',
-        label: 'ชั้น',
-        defaultValue: '',
-        isRequired: true
-    },
-    {
-        name: 'soi',
-        label: 'ตรอก / ซอย',
-        defaultValue: '',
-    },
-    {
-        name: 'street',
-        label: 'ถนน',
-        defaultValue: '',
-    },
-    {
-        name: 'countryDesc',
-        label: 'ประเทศ',
-        defaultValue: '',
-        normalize: 'country'
-    },
-    {
-        name: 'zipCode',
-        label: 'รหัสไปรษณีย์',
-        defaultValue: '',
-    },
-    {
-        name: 'provinceNameTh',
-        label: 'จังหวัด',
-        defaultValue: '',
-    },
-    {
-        name: 'districtNameTh',
-        label: 'อำเภอ / เขต',
-        defaultValue: '',
-    },
-    {
-        name: 'subDistrictNameTh',
-        label: 'ตำบล / แขวง',
-        defaultValue: '',
-    },
-]
+const addressAttornetSectionList = ({ form, isEditable, index, fieldName }: SectionList): Array<DetailSection> => {
+
+    return [
+        {
+            name: 'addressNo',
+            label: 'เลขที่',
+            defaultValue: '',
+            isRequired: true
+        },
+        {
+            name: 'moo',
+            label: 'หมู่ที่',
+            defaultValue: '',
+            isRequired: true
+        },
+        {
+            name: 'buildingOrVillage',
+            label: 'หมู่บ้าน / อาคาร',
+            defaultValue: '',
+            isRequired: true
+        },
+        {
+            name: 'roomNo',
+            label: 'ห้อง',
+            defaultValue: '',
+            isRequired: true
+        },
+        {
+            name: 'floor',
+            label: 'ชั้น',
+            defaultValue: '',
+            isRequired: true
+        },
+        {
+            name: 'soi',
+            label: 'ตรอก / ซอย',
+            defaultValue: '',
+        },
+        {
+            name: 'street',
+            label: 'ถนน',
+            defaultValue: '',
+        }
+    ]
+}
 
 const getValueFromFieldName = (attributeName: string, data: AttorneyInfoModel | AttorneyInfoResponse | undefined, normalize?: string): string => {
     if (!data) return '-'
@@ -202,6 +185,14 @@ const normalizationData = (attributeName: string, data: AttorneyInfoModel | unde
             return data?.relationCode ? `${data?.relationCode} - ${data?.relationDesc}` : '-';
         case 'title':
             return data?.titleCode ? `${data?.titleCode} - ${data?.titleDesc}` : '-';
+        case 'zipCode':
+            return handleEmptyStringFormApi(data?.zipCode);
+        case 'province':
+            return handleEmptyStringFormApi(data?.provinceNameTh);
+        case 'district':
+            return handleEmptyStringFormApi(data?.districtNameTh);
+        case 'subDistrict':
+            return handleEmptyStringFormApi(data?.subDistrictNameTh);
         default:
             return defaultValue;
     }
@@ -209,31 +200,22 @@ const normalizationData = (attributeName: string, data: AttorneyInfoModel | unde
 
 const AttorneySection = () => {
 
-    const searchParams = useSearchParams();
-    const params = useParams();
-
-    const masterDataProduct = useMasterDataProduct();
+    const searchParams = useSearchParams()
+    const params = useParams()
+    const router = useRouter()
+    const dispatch = useAppDispatch()
 
     const isEditable = searchParams.get('edit') === 'true';
 
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['attorneyInfo', params.customerId],
-        queryFn: async function () {
-            try {
-                const request = await fetch(`/api/customer-profile/attorney/${params.customerId}`)
-                const response: ApiResponse<AttorneyInfoResponseDataResponse> = await request.json();
-                // console.log(`response`, response)
-                return response.data
-            } catch (e) {
-            } finally {
-            }
-        }
-    })
+    const attorney = useAppSelector(state => state.attorney.data)
+
+    const masterDataProduct = useMasterDataProduct();
+
 
     const useFormAll = useForm<{ attorneyInfo: Array<AttorneyInfoModel>, isAttorney?: boolean }>({
         defaultValues: {
-            isAttorney: false,
-            attorneyInfo: data?.data?.attorneyInfo || []
+            isAttorney: attorney.length ? true : false,
+            attorneyInfo: [...attorney] || []
         }
     })
 
@@ -244,10 +226,31 @@ const AttorneySection = () => {
         name: "attorneyInfo"
     })
 
-    const addAttroney = () => {
-        append({
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['attorneyInfo', params.customerId],
+        queryFn: async function () {
+            try {
+                const request = await fetch(`/api/customer-profile/attorney/${params.customerId}`)
+                const response: ApiResponse<AttorneyInfoResponseDataResponse> = await request.json();
+                // console.log(`response`, response)
+                response.data?.data?.attorneyInfo?.forEach((attorneyInfo: AttorneyInfoModel, idx: number) => {
+                    for (let key in attorneyInfo) {
+                        form.setValue(`attorneyInfo.${idx}.${key}` as any, attorneyInfo[key as keyof AttorneyInfoModel])
+                    }
+                })
+                return response.data
+            } catch (e) {
+            } finally {
+            }
+        }
+    })
 
-        })
+    const addAttroney = () => {
+        append({})
+    }
+
+    const isProductCodesExist = (fieldName: string, value: string = '') => {
+        return (form.getValues(fieldName as any) || [])?.filter(p => p == value).length ? true : false
     }
 
     const toggleProductCodes = (fieldName: string, value: string, isChecked: boolean) => {
@@ -262,9 +265,67 @@ const AttorneySection = () => {
         setValue(fieldName as any, _newValues);
     }
 
-    const onSubmit = (e) => {
+    const getAddressSection = ({ fieldName, index }: { fieldName: string, index: number }) => {
+        return <AddressComponent
+            isEditable={true}
+            country={{
+                name: `${fieldName}.${index}.countryCode`,
+                isRequired: true,
+                textShow: form.watch(`${fieldName}.${index}.countryCode` as any) || '',
+                setValue: (value) => {
+                    form.setValue(`${fieldName}.${index}.countryCode` as any, value)
+                },
+            }}
+            province={{
+                name: 'province',
+                isRequired: true,
+            }}
+            district={{
+                name: 'district',
+                isRequired: true,
+            }}
+            subDistrict={{
+                name: 'subDistrict',
+                isRequired: true,
+            }}
+            zipCode={{
+                name: 'zipCode',
+                isRequired: true,
+            }}
+            addressValues={{
+                postCode: form.watch(`${fieldName}.${index}.zipCode` as any) || '',
+                province: normalizationData('province', form.getValues(`${fieldName}.${index}` as any), ''),
+                provinceCode: form.watch(`${fieldName}.${index}.provinceCode` as any) || '',
+                district: normalizationData('district', form.getValues(`${fieldName}.${index}` as any), ''),
+                districtCode: form.watch(`${fieldName}.${index}.districtCode` as any) || '',
+                subDistrict: normalizationData('subDistrict', form.getValues(`${fieldName}.${index}` as any), ''),
+                subDistrictCode: form.watch(`${fieldName}.${index}.subDistrictCode` as any) || '',
+            }}
+            onAddressChange={(address) => {
+                form.setValue(`${fieldName}.${index}.zipCode` as any, address.value.postCode);
+                form.setValue(`${fieldName}.${index}.provinceNameTh` as any, address.value.province);
+                form.setValue(`${fieldName}.${index}.provinceCode` as any, address.value.provinceCode);
+                form.setValue(`${fieldName}.${index}.districtNameTh` as any, address.value.district);
+                form.setValue(`${fieldName}.${index}.districtCode` as any, address.value.districtCode);
+                form.setValue(`${fieldName}.${index}.subDistrictNameTh` as any, address.value.subDistrict);
+                form.setValue(`${fieldName}.${index}.subDistrictCode` as any, address.value.subDistrictCode);
+            }}
+        />
+    }
+
+    const onBack = (e: any) => {
+        router.push('/CustomerProfile/Edit/Offline')
+    }
+
+    const onSubmit = (e: any) => {
         const { getValues } = useFormAll
-        //console.log(`getValues()`, getValues())
+        const { isAttorney, attorneyInfo } = getValues()
+        if (isAttorney) {
+            dispatch(setAttorneyData(attorneyInfo))
+        } else {
+            dispatch(setAttorneyData([]))
+        }
+        dispatch(nextStep())
     }
 
     return (
@@ -297,7 +358,7 @@ const AttorneySection = () => {
             {
                 !isEditable || watch("isAttorney") ?
                     fields?.map((attorneyInfo, index) => {
-                        return <React.Fragment key={`attorney${index}`}>
+                        return <div key={`attorney${index}`} className="border border-[#00000080] p-4 rounded-lg">
 
                             <div>
                                 <HeaderTitle
@@ -306,7 +367,7 @@ const AttorneySection = () => {
                                 />
                                 <div className="grid grid-cols-3">
                                     {
-                                        attorneySectionList({ form, isEditable, index, fieldName: "attorneyInfo" }).map((attorneySection: DetailSection, idx: number) => {
+                                        attorneySectionList({ form, isEditable, index, fieldName: `attorneyInfo` }).map((attorneySection: DetailSection, idx: number) => {
                                             const { name, label, defaultValue, isRequired, normalize, CustomComponent } = attorneySection;
                                             const _dataInfo = (name?.toString() === 'referenceId' ? data?.data : attorneyInfo) || undefined;
                                             const value = getValueFromFieldName(name || '', _dataInfo, normalize)
@@ -335,10 +396,15 @@ const AttorneySection = () => {
                                 />
                                 <div className="grid grid-cols-3">
                                     {
-                                        addressAttornetSectionList.map((attorneySection: DetailSection, idx: number) => {
-                                            const { name = '', label, defaultValue, isRequired, normalize } = attorneySection;
+                                        addressAttornetSectionList({
+                                            form, isEditable, index,
+                                            fieldName: "attorneyInfo"
+                                        }).map((attorneySection: DetailSection, idx: number) => {
+                                            const { name = '', label, defaultValue, isRequired, normalize, CustomComponent } = attorneySection;
                                             const value = getValueFromFieldName(name, attorneyInfo, normalize);
                                             const _fieldName = `attorneyInfo.${index}.${name}`;
+
+                                            if (CustomComponent) return CustomComponent
 
                                             return <React.Fragment key={idx}>
                                                 <InputHorizontal
@@ -353,6 +419,10 @@ const AttorneySection = () => {
                                             </React.Fragment>
                                         })
                                     }
+                                    {
+                                        getAddressSection({ fieldName: 'attorneyInfo', index })
+                                    }
+
                                 </div>
 
                                 <HeaderTitle
@@ -370,7 +440,7 @@ const AttorneySection = () => {
                                                                 <InputCheckbox
                                                                     label={p?.rText || ''}
                                                                     name={`attorneyInfo.${index}.productCode`}
-                                                                    defaultValue={false}
+                                                                    defaultValue={isProductCodesExist(`attorneyInfo.${index}.productCode`, p?.rValue || '')}
                                                                     width={'max-content'}
                                                                     onChange={(value) => toggleProductCodes(`attorneyInfo.${index}.productCode`, p?.rValue || '', value)}
                                                                 />
@@ -390,7 +460,7 @@ const AttorneySection = () => {
                                     }
                                 </div>
                             </div>
-                        </React.Fragment>
+                        </div>
                     })
                     :
                     null
@@ -398,10 +468,15 @@ const AttorneySection = () => {
 
             {
                 isEditable && watch("isAttorney") ?
-                    <Button onClick={addAttroney}>+ เพิ่มผู้รับมอบอำนาจ</Button>
+                    <Button onClick={addAttroney} className="bg-[#403993] text-white min-w-32 mt-4">+ เพิ่มผู้รับมอบอำนาจ</Button>
                     : null
             }
-            <Button onClick={onSubmit}>Submit</Button>
+            {
+                isEditable && <div className="flex justify-end gap-4 mt-4">
+                    <Button variant="contained" color="error" onClick={onBack}>ย้อนกลับ</Button>
+                    <Button variant="contained" onClick={onSubmit}>ถัดไป</Button>
+                </div>
+            }
         </ContentLoading>
     )
 }

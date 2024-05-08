@@ -33,7 +33,6 @@ const IdentityDDL = (props: IdentityDDLProps) => {
     const [identityNeverExpire, setIdentityNeverExpire] = useState<boolean>(defaultIdentityNeverExpireValue || false)
 
     const dateTime = defaultValue ? dayjs(defaultValue).format('DD/MM/YYYY') : ''
-    console.log(`dateTime`, dateTime, identityExpireDate)
 
     return (<>
         <InputHorizontal

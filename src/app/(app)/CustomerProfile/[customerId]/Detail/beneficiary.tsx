@@ -13,7 +13,7 @@ import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function
 import { Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { ReactElement } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import PersonForm from "./beneficiary/person-form";
 
@@ -26,6 +26,7 @@ interface DetailSection {
     normalize?: string
     type?: string
     onChange?: (value: string) => void
+    CustomComponent?: ReactElement
 }
 
 const fieldList = ({ form }: { form: UseFormReturn<BeneficiaryInfoModel> }): Array<DetailSection> => (
@@ -129,7 +130,6 @@ const BeneficiaryPage = () => {
     const isEditable = searchParams.get('edit') === 'true';
 
     const beneficiary = useAppSelector(state => state.beneficiary.data)
-    console.log(`beneficiary`, beneficiary)
 
     const useFormAll = useForm<BeneficiaryInfoModel>({
         defaultValues: { ...beneficiary }
@@ -170,7 +170,6 @@ const BeneficiaryPage = () => {
             isRequired: true,
             textShow: form.watch('countryCode') || '',
             setValue(value) {
-                console.log(`countryCode`, value)
                 form.setValue('countryCode', value)
             },
         },
@@ -216,8 +215,7 @@ const BeneficiaryPage = () => {
 
     const onSubmit = () => {
         const { getValues } = useFormAll
-        console.log(`getValues()`, getValues())
-
+        
         dispatch(setBeneficiaryData(getValues()))
         dispatch(nextStep())
     }
@@ -286,21 +284,9 @@ const BeneficiaryPage = () => {
                         }
 
                         {
-                            Address.Country
+                            Address
                         }
 
-                        {
-                            Address.ZipCode
-                        }
-                        {
-                            Address.Province
-                        }
-                        {
-                            Address.District
-                        }
-                        {
-                            Address.SubDistrict
-                        }
                     </div>
                 </>
         }

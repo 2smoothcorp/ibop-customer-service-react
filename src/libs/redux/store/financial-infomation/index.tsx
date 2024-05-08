@@ -20,8 +20,6 @@ export const financialInfomationSlice = createSlice({
     initialState,
     reducers: {
         setFinancialInfoData: (state, action: PayloadAction<FinancialInfoModel>) => {
-            console.log(`action.payload`, action.payload)
-            //for (let key in action.payload) {
             state.assetValue = action.payload.assetValue
             state.incomeRateCode = action.payload.incomeRateCode
             state.incomeSourceCode = action.payload.incomeSourceCode
@@ -30,8 +28,6 @@ export const financialInfomationSlice = createSlice({
             state.investmentPurposeCode = action.payload.investmentPurposeCode
             state.investmentPurposeOther = action.payload.investmentPurposeOther
             state.investmentYear = action.payload.investmentYear
-
-            //}
         }
     }
 })

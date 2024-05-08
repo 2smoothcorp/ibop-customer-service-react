@@ -26,7 +26,6 @@ const FinancialInformation = () => {
     const isEditable = searchParams.get('edit') === 'true';
 
     const financialInfomation = useAppSelector(state => state.financialInfomation)
-    console.log(`financialInfomation`, financialInfomation)
 
     const financialInfomationForm = useForm<FinancialInfoModel>({
         defaultValues: { ...financialInfomation }
@@ -36,7 +35,6 @@ const FinancialInformation = () => {
     const { data, isLoading, error, refetch } = useQuery({
         queryKey: ['financialInfo', params.customerId],
         queryFn: async function () {
-            console.log('aaaa')
             try {
 
                 const request = await fetch(`/api/customer-profile/financial-info/${params.customerId}`)
@@ -70,7 +68,6 @@ const FinancialInformation = () => {
 
     const onSubmit = (e: any) => {
         const { getValues } = form
-        console.log(`getValues()`, getValues())
 
         dispatch(setFinancialInfoData(getValues()))
         dispatch(nextStep())
