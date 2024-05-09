@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 export default function InputAutoComplete({
     name,
+    value,
     defaultValue,
     placeholder,
     required = false,
@@ -46,6 +47,7 @@ export type InputAutoCompleteValue = {
 interface InputAutoCompleteProps {
     required?: boolean;
     name: string;
+    value?: string;
     defaultValue?: string;
     placeholder?: string;
     list?: InputAutoCompleteValue[];

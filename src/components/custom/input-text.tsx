@@ -27,10 +27,10 @@ export default function InputText({
 interface InputTextProps {
     name: string;
     required?: boolean;
-    defaultValue?: string;
+    defaultValue?: string | number;
     placeholder?: string;
     className?: string;
     readonly?: boolean;
     disabled?: boolean;
-    onChange?: (value: string) => void;
+    onChange?: (value: string | number) => void;
 }

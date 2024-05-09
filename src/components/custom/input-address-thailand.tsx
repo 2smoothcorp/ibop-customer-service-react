@@ -3,6 +3,7 @@ import { Autocomplete, Box, TextField } from "@mui/material";
 
 export default function InputAddressThailand({
     name,
+    value,
     defaultValue,
     placeholder,
     required = false,
@@ -31,7 +32,7 @@ export default function InputAddressThailand({
 
     return (
         <Autocomplete
-            value={defaultValue}
+            value={value || defaultValue}
             fullWidth
             isOptionEqualToValue={(option, value) => option.value.subDistrictCode === value.value.subDistrictCode}
             onInputChange={(_, value) => onChangeText && onChangeText(value)}
@@ -56,6 +57,7 @@ export default function InputAddressThailand({
 interface InputAddressThailandProps {
     required?: boolean;
     name: string;
+    value?: AddressBySearchProps;
     defaultValue?: AddressBySearchProps;
     placeholder?: string;
     list?: AddressBySearchProps[];

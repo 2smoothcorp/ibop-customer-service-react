@@ -1,28 +1,143 @@
-import ContentLoading from "@/components/content/content-loading";
+"use client"
+
+import AddressComponent from "@/components/address";
 import InputHorizontal from "@/components/custom/input-horizontal";
+import InputRadio from "@/components/custom/input-radio";
 import HeaderTitle from "@/components/navbar/header-title";
 import HeaderTitleSub from "@/components/navbar/header-title-sub";
-import { BeneficiaryInfoModel, BeneficiaryInfoResponseDataResponse } from "@/services/rest-api/customer-service";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
+import { setBeneficiaryData } from "@/libs/redux/store/beneficiary";
+import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
+import { BeneficiaryInfoModel, BeneficiaryInfoResponseDataResponse } from "@/services/rest-api/customer-service/models";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
-import { useParams } from "next/navigation";
-import React from "react";
-import { useForm } from "react-hook-form";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import React, { ReactElement } from "react";
+import { UseFormReturn, useForm } from "react-hook-form";
+import PersonForm from "./beneficiary/person-form";
 
-export default function Beneficiary() {
-    // const search = useSearchParams()
+interface DetailSection {
+    name: keyof BeneficiaryInfoModel
+    label: string
+    defaultValue?: string
+    isRequired?: boolean
+    isEditable?: boolean
+    normalize?: string
+    type?: string
+    onChange?: (value: string) => void
+    CustomComponent?: ReactElement
+}
+
+const fieldList = ({ form }: { form: UseFormReturn<BeneficiaryInfoModel> }): Array<DetailSection> => (
+
+    [
+        {
+            label: 'เลขที่',
+            name: 'addressNo'
+        },
+        {
+            label: 'หมู่ที่',
+            name: 'moo'
+        },
+        {
+            label: 'หมู่บ้าน / อาคาร',
+            name: 'buildingOrVillage'
+        },
+        {
+            label: 'เลขที่ห้อง',
+            name: 'roomNo'
+        },
+        {
+            label: 'ชั้น',
+            name: 'floor'
+        },
+        {
+            label: 'ตรอก / ซอย',
+            name: 'soi'
+        },
+        {
+            label: 'ถนน',
+            name: 'street'
+        },
+        /*
+        {
+            label: 'ประเทศ',
+            name: 'countryCode',
+            type: 'autocomplete',
+            onChange: (value) => {
+                if (value !== form.watch("countryCode")) {
+                    form.setValue('countryCode', value, { shouldDirty: true });
+                }
+            }
+        }
+        */
+    ]
+)
+
+const getValueFromFieldName = (attributeName: string, data: BeneficiaryInfoModel | undefined | null, normalize?: string): string | boolean => {
+    if (!data) return '-'
+    const value = data[attributeName as keyof typeof data] || '-';
+    return normalize ? normalizationData(normalize, data as BeneficiaryInfoModel, value) : value
+}
+
+const normalizationData = (attributeName: string, data: BeneficiaryInfoModel | undefined, defaultValue: string | boolean) => {
+    switch (attributeName) {
+        case 'addressNo':
+            return handleEmptyStringFormApi(data?.addressNo);
+        case 'moo':
+            return handleEmptyStringFormApi(data?.moo);
+        case 'buildingOrVillage':
+            return handleEmptyStringFormApi(data?.buildingOrVillage);
+        case 'roomNo':
+            return handleEmptyStringFormApi(data?.roomNo);
+        case 'floor':
+            return handleEmptyStringFormApi(data?.floor);
+        case 'soi':
+            return handleEmptyStringFormApi(data?.soi);
+        case 'street':
+            return handleEmptyStringFormApi(data?.street);
+        case 'countryCode':
+            return handleEmptyStringFormApi(data?.countryCode);
+        case 'country':
+            return isEmptyStringFormApi(data?.countryCode) ? '-' : `${data?.countryCode} - ${data?.countryDesc}`;
+        case 'zipCode':
+            return handleEmptyStringFormApi(data?.zipCode);
+        case 'province':
+            return handleEmptyStringFormApi(data?.provinceNameTh);
+        case 'district':
+            return handleEmptyStringFormApi(data?.districtNameTh);
+        case 'subDistrict':
+            return handleEmptyStringFormApi(data?.subDistrictNameTh);
+        case 'customAddress1':
+            return handleEmptyStringFormApi(data?.customAddress1);
+        case 'customAddress2':
+            return handleEmptyStringFormApi(data?.customAddress2);
+        case 'customAddress3':
+            return handleEmptyStringFormApi(data?.customAddress3);
+        default:
+            return '-';
+    }
+}
+
+const BeneficiaryPage = () => {
+
+    const searchParams = useSearchParams()
     const params = useParams()
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors },
-        setValue,
-        getValues,
-    } = useForm<SubmitInput>()
+    const router = useRouter()
+    const dispatch = useAppDispatch()
 
-    const [isEditable, setIsEditable] = React.useState<boolean>(false);
+    const isEditable = searchParams.get('edit') === 'true';
+
+    const beneficiary = useAppSelector(state => state.beneficiary.data)
+
+    const useFormAll = useForm<BeneficiaryInfoModel>({
+        defaultValues: { ...beneficiary }
+    })
+
+    const form = useFormAll;
+    const { setValue, getValues, watch } = form
+
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['financialInfo', params.customerId],
@@ -32,10 +147,14 @@ export default function Beneficiary() {
                 const request = await fetch(`/api/customer-profile/beneficiary/${customerId}`)
                 const response: BeneficiaryInfoResponseDataResponse = await request.json();
                 if (response.status == 200 && response.data && response.data.beneficiaryInfo) {
-                    // console.log(`beneficiaryInfo`, response.data.beneficiaryInfo)
-                    setDefaultData(response.data.beneficiaryInfo)
+
+                    for (let key in response.data?.beneficiaryInfo) {
+                        form.setValue(key as any, response.data?.beneficiaryInfo[key as keyof BeneficiaryInfoModel])
+                    }
+
                     return response.data.beneficiaryInfo
                 }
+
                 return null;
             } catch (e) {
                 return null;
@@ -44,310 +163,141 @@ export default function Beneficiary() {
         }
     })
 
-    const normalizationData = (name: string, beneficiaryInfo: BeneficiaryInfoModel): any => {
-        switch (name) {
-            case 'isOwner':
-                return beneficiaryInfo.isOwner ? true : false;
-            case 'addressNo':
-                return handleEmptyStringFormApi(beneficiaryInfo.addressNo);
-            case 'moo':
-                return handleEmptyStringFormApi(beneficiaryInfo.moo);
-            case 'buildingOrVillage':
-                return handleEmptyStringFormApi(beneficiaryInfo.buildingOrVillage);
-            case 'roomNo':
-                return handleEmptyStringFormApi(beneficiaryInfo.roomNo);
-            case 'floor':
-                return handleEmptyStringFormApi(beneficiaryInfo.floor);
-            case 'soi':
-                return handleEmptyStringFormApi(beneficiaryInfo.soi);
-            case 'street':
-                return handleEmptyStringFormApi(beneficiaryInfo.street);
-            case 'country':
-                return isEmptyStringFormApi(beneficiaryInfo.countryCode) ? '-' : `${beneficiaryInfo.countryCode} - ${beneficiaryInfo.countryDesc}`;
-            case 'zipCode':
-                return handleEmptyStringFormApi(beneficiaryInfo.zipCode);
-            case 'province':
-                return handleEmptyStringFormApi(beneficiaryInfo.provinceNameTh);
-            case 'district':
-                return handleEmptyStringFormApi(beneficiaryInfo.districtNameTh);
-            case 'subDistrict':
-                return handleEmptyStringFormApi(beneficiaryInfo.subDistrictNameTh);
-            case 'customAddress1':
-                return handleEmptyStringFormApi(beneficiaryInfo.customAddress1);
-            case 'customAddress2':
-                return handleEmptyStringFormApi(beneficiaryInfo.customAddress2);
-            case 'customAddress3':
-                return handleEmptyStringFormApi(beneficiaryInfo.customAddress3);
-            case 'beneficiaryFirstName':
-                return handleEmptyStringFormApi(beneficiaryInfo.beneficiaryFirstName);
-            case 'beneficiaryLastName':
-                return handleEmptyStringFormApi(beneficiaryInfo.beneficiaryLastName);
-            case 'referenceType':
-                return isEmptyStringFormApi(beneficiaryInfo.beneficiaryType) ? '-' : `${beneficiaryInfo.beneficiaryType} - ${beneficiaryInfo.referenceTypeDesc}`;
-            case 'beneficiaryRelationshipCode':
-                return handleEmptyStringFormApi(beneficiaryInfo.beneficiaryRelationshipCode);
-            case 'beneficiaryRelationship':
-                return isEmptyStringFormApi(beneficiaryInfo.beneficiaryRelationshipCode) ? '-' : `${beneficiaryInfo.beneficiaryRelationshipCode} - ${beneficiaryInfo.relationDesc}`;
+    const Address = AddressComponent({
+        isEditable: true,
+        country: {
+            name: 'countryCode',
+            isRequired: true,
+            textShow: form.watch('countryCode') || '',
+            setValue(value) {
+                form.setValue('countryCode', value)
+            },
+        },
+        province: {
+            name: 'province',
+            isRequired: true,
+        },
+        district: {
+            name: 'district',
+            isRequired: true,
+        },
+        subDistrict: {
+            name: 'subDistrict',
+            isRequired: true,
+        },
+        zipCode: {
+            name: 'zipCode',
+            isRequired: true,
+        },
+        addressValues: {
+            postCode: form.watch('zipCode') || '',
+            province: normalizationData('province', form.getValues(), ''),
+            provinceCode: form.watch('provinceCode') || '',
+            district: normalizationData('district', form.getValues(), ''),
+            districtCode: form.watch('districtCode') || '',
+            subDistrict: normalizationData('subDistrict', form.getValues(), ''),
+            subDistrictCode: form.watch('subDistrictCode') || '',
+        },
+        onAddressChange(address) {
+            setValue('zipCode', address.value.postCode, { "shouldDirty": true });
+            setValue('provinceNameTh', address.value.province, { "shouldDirty": true });
+            setValue('provinceCode', address.value.provinceCode, { "shouldDirty": true });
+            setValue('districtNameTh', address.value.district, { "shouldDirty": true });
+            setValue('districtCode', address.value.districtCode, { "shouldDirty": true });
+            setValue('subDistrictNameTh', address.value.subDistrict, { "shouldDirty": true });
+            setValue('subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
+        },
+    })
 
-            case 'beneficiaryNo':
-                return handleEmptyStringFormApi(beneficiaryInfo.beneficiaryNo);
-            case 'beneficiaryExpire':
-                if (beneficiaryInfo.beneficiaryNeverExpire) {
-                    return 'ตลอดชีพ';
-                }
-                return handleEmptyStringFormApi(beneficiaryInfo.beneficiaryExpireDate);
-            case 'beneficiaryExpireDate':
-                return !isEmptyStringFormApi(beneficiaryInfo.beneficiaryExpireDate) ? dayjs(beneficiaryInfo.beneficiaryExpireDate).format('DD/MM/YYYY') : '-';
-            default:
-                return '-';
-        }
+    const onBack = (e: any) => {
+        dispatch(prevStep())
     }
 
-    const setDefaultData = (beneficiaryInfo: BeneficiaryInfoModel) => {
-        setValue('isOwner', normalizationData('isOwner', beneficiaryInfo));
-        setValue('addressNo', normalizationData('addressNo', beneficiaryInfo));
-        setValue('moo', normalizationData('moo', beneficiaryInfo));
-        setValue('buildingOrVillage', normalizationData('buildingOrVillage', beneficiaryInfo));
-        setValue('roomNo', normalizationData('roomNo', beneficiaryInfo));
-        setValue('floor', normalizationData('floor', beneficiaryInfo));
-        setValue('soi', normalizationData('soi', beneficiaryInfo));
-        setValue('street', normalizationData('street', beneficiaryInfo));
-        setValue('country', normalizationData('country', beneficiaryInfo));
-        setValue('zipCode', normalizationData('zipCode', beneficiaryInfo));
-        setValue('province', normalizationData('province', beneficiaryInfo));
-        setValue('district', normalizationData('district', beneficiaryInfo));
-        setValue('subDistrict', normalizationData('subDistrict', beneficiaryInfo));
-        setValue('customAddress1', normalizationData('customAddress1', beneficiaryInfo));
-        setValue('customAddress2', normalizationData('customAddress2', beneficiaryInfo));
-        setValue('customAddress3', normalizationData('customAddress3', beneficiaryInfo));
-        setValue('beneficiaryFirstName', handleEmptyStringFormApi(beneficiaryInfo.beneficiaryFirstName));
-        setValue('beneficiaryLastName', handleEmptyStringFormApi(beneficiaryInfo.beneficiaryLastName));
-        setValue('beneficiaryRelationshipCode', handleEmptyStringFormApi(beneficiaryInfo.beneficiaryRelationshipCode));
-        setValue('beneficiaryExpireDate', normalizationData('beneficiaryExpireDate', beneficiaryInfo));
+    const onSubmit = () => {
+        const { getValues } = useFormAll
+        
+        dispatch(setBeneficiaryData(getValues()))
+        dispatch(nextStep())
     }
 
-    return (
-        <ContentLoading
-            isLoading={isLoading}
-            error={error && error.message || undefined}
-        >
-            <HeaderTitle
-                className="gap-0"
-                title="ผู้รับผลประโยชน์ที่แท้จริง ULTIMATE BENEFICIARY"
+    return (<div>
+        <HeaderTitle
+            className="gap-0"
+            title="ผู้รับผลประโยชน์ที่แท้จริง ULTIMATE BENEFICIARY"
+        />
+        <div className="px-10">
+            <HeaderTitleSub
+                title="ข้าพเจ้าเป็นเจ้าของบัญชีและเป็นผู้รับประโยชน์ที่แท้จริงจากการซื้อขายหลักทรัพย์ในบัญชีนี้"
+                isBorder={false}
             />
-            <div className="px-10">
-                <HeaderTitleSub
-                    title="ข้าพเจ้าเป็นเจ้าของบัญชีและเป็นผู้รับประโยชน์ที่แท้จริงจากการซื้อขายหลักทรัพย์ในบัญชีนี้"
-                    isBorder={false}
-                />
-                <div className="text-lg px-6 tracking-wide" >{data && data.isOwner ? 'ใช่' : 'บุคคลอื่นๆ'}</div>
-                {
-                    data && data.isOwner
-                        ? <></>
-                        : (
-                            <>
-                                <div className="grid grid-cols-3">
+            {
+                !isEditable ?
+                    <div className="text-lg px-6 tracking-wide" >{data && data.isOwner ? 'ใช่' : 'บุคคลอื่นๆ'}</div>
+                    :
+                    <InputRadio
+                        defaultValue={watch("isOwner") ? "01" : "02"}
+                        disabled={!isEditable}
+                        onChange={(value) => setValue('isOwner', value === "01" ? true : false)}
+                        name={"addressType"}
+                        list={[
+                            { value: "01", label: 'ใช่ (รับรองว่าไม่มีบุคคลอื่น)' },
+                            { value: "02", label: 'บุคคลอื่นๆ (โปรดระบุข้างล่าง)' }
+                        ]} />
+            }
+        </div>
+        {
+            watch("isOwner") ?
+                <></>
+                :
+                <>
+                    <div className="grid grid-cols-3">
+                        <PersonForm
+                            form={form}
+                            dataInfo={data}
+                            isEditable={isEditable}
+                            getValueFromFieldName={getValueFromFieldName}
+                            normalizationData={normalizationData}
+                        />
+                    </div>
+                    <HeaderTitle
+                        className="gap-0"
+                        title="ที่อยู่ตามประเภทหลักฐาน"
+                    />
+                    <div className="grid grid-cols-3">
+                        {
+                            fieldList({ form }).map((detail: DetailSection, idx: number) => {
+                                const { name, label, isRequired, normalize } = detail
+                                const _value = getValueFromFieldName(name, data, normalize);
+                                const textShow = watch(name)?.toString();
+                                return <React.Fragment key={`field-item-${idx}`}>
                                     <InputHorizontal
-                                        label="ชื่อ"
-                                        defaultValue={data && normalizationData('beneficiaryFirstName', data) || "-"}
+                                        label={label}
+                                        defaultValue={getValues(name || '')?.toString()}
                                         isEditable={isEditable}
-                                        register={register}
-                                        name="beneficiaryFirstName"
+                                        textShow={textShow}
+                                        name={name}
+                                        isRequired={isRequired}
+                                        onChange={(value) => setValue(name, value, { shouldDirty: true })}
                                     />
-                                    <InputHorizontal
-                                        label="นามสกุล"
-                                        defaultValue={data && normalizationData('beneficiaryLastName', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="beneficiaryLastName"
-                                    />
-                                    <InputHorizontal
-                                        label="ความสัมพันธ์"
-                                        defaultValue={data && normalizationData('beneficiaryRelationshipCode', data) || "-"}
-                                        textShow={data && normalizationData('beneficiaryRelationship', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="beneficiaryRelationshipCode"
-                                    />
-                                    <InputHorizontal
-                                        label="ประเภทหลักฐาน"
-                                        defaultValue={data && normalizationData('beneficiaryType', data) || "-"}
-                                        textShow={data && normalizationData('referenceType', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="beneficiaryType"
-                                    />
-                                    <InputHorizontal
-                                        label="เลขที่บัตร"
-                                        defaultValue={data && normalizationData('beneficiaryNo', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="beneficiaryNo"
-                                    />
-                                    <InputHorizontal
-                                        label="วันที่หมดอายุบัตร (ค.ศ.)"
-                                        defaultValue={data && normalizationData('beneficiaryExpireDate', data) || "-"}
-                                        textShow={data && normalizationData('beneficiaryExpire', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="beneficiaryExpireDate"
-                                    />
-                                </div>
-                                <HeaderTitleSub
-                                    title="ที่อยู่ตามผู้รับผลประโยชน์ที่แท้จริง"
-                                    isBorder={false}
-                                />
-                                <div className="grid grid-cols-3">
-                                    <InputHorizontal
-                                        label="เลขที่"
-                                        defaultValue={data && normalizationData('addressNo', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="addressNo"
-                                    />
-                                    <InputHorizontal
-                                        label="หมู่ที่"
-                                        defaultValue={data && normalizationData('moo', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="moo"
-                                    />
-                                    <InputHorizontal
-                                        label="หมู่บ้าน / อาคาร"
-                                        defaultValue={data && normalizationData('buildingOrVillage', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="buildingOrVillage"
-                                    />
-                                    <InputHorizontal
-                                        label="เลขที่ห้อง"
-                                        defaultValue={data && normalizationData('roomNo', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="roomNo"
-                                    />
-                                    <InputHorizontal
-                                        label="ชั้น"
-                                        defaultValue={data && normalizationData('floor', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="floor"
-                                    />
-                                    <InputHorizontal
-                                        label="ตรอก / ซอย"
-                                        defaultValue={data && normalizationData('soi', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="soi"
-                                    />
-                                    <InputHorizontal
-                                        label="ถนน"
-                                        defaultValue={data && normalizationData('street', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="street"
-                                    />
-                                    <InputHorizontal
-                                        label="ประเทศ"
-                                        defaultValue={data && normalizationData('country', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="country"
-                                        isRequired
-                                    />
-                                    <InputHorizontal
-                                        label="รหัสไปรษณีย์"
-                                        defaultValue={data && normalizationData('zipCode', data) || "-"}
-                                        isEditable={isEditable}
-                                        register={register}
-                                        name="zipCode"
-                                        isRequired
-                                    />
-                                    {
-                                        data?.countryCode !== '000'
-                                            ?
-                                            <>
-                                                <InputHorizontal
-                                                    label="ที่อยู่ 1"
-                                                    defaultValue={data && normalizationData('customAddress1', data) || "-"}
-                                                    isEditable={isEditable}
-                                                    register={register}
-                                                    name="customAddress1"
-                                                    isRequired
-                                                />
-                                                <InputHorizontal
-                                                    label="ที่อยู่ 2"
-                                                    defaultValue={data && normalizationData('customAddress2', data) || "-"}
-                                                    isEditable={isEditable}
-                                                    register={register}
-                                                    name="customAddress2"
-                                                    isRequired
-                                                />
-                                                <InputHorizontal
-                                                    label="ที่อยู่ 3"
-                                                    defaultValue={data && normalizationData('customAddress3', data) || "-"}
-                                                    isEditable={isEditable}
-                                                    register={register}
-                                                    name="customAddress3"
-                                                    isRequired
-                                                />
-                                            </>
-                                            : <>
-                                                <InputHorizontal
-                                                    label="จังหวัด"
-                                                    defaultValue={data && normalizationData('province', data) || "-"}
-                                                    isEditable={isEditable}
-                                                    register={register}
-                                                    name="province"
-                                                    isRequired
-                                                />
-                                                <InputHorizontal
-                                                    label="อำเภอ / เขต"
-                                                    defaultValue={data && normalizationData('district', data) || "-"}
-                                                    isEditable={isEditable}
-                                                    register={register}
-                                                    name="district"
-                                                    isRequired
-                                                />
-                                                <InputHorizontal
-                                                    label="ตำบล / แขวง"
-                                                    defaultValue={data && normalizationData('subDistrict', data) || "-"}
-                                                    isEditable={isEditable}
-                                                    register={register}
-                                                    name="subDistrict"
-                                                    isRequired
-                                                />
+                                </React.Fragment>
+                            })
+                        }
 
-                                            </>
-                                    }
-                                </div>
-                            </>
-                        )
-                }
+                        {
+                            Address
+                        }
+
+                    </div>
+                </>
+        }
+
+        {
+            isEditable && <div className="flex justify-end gap-4 mt-4">
+                <Button variant="contained" color="error" onClick={onBack}>ย้อนกลับ</Button>
+                <Button variant="contained" onClick={onSubmit}>ถัดไป</Button>
             </div>
-        </ContentLoading>
-    )
+        }
+    </div>)
 }
 
-interface SubmitInput {
-    isOwner: boolean;
-    addressNo: string;
-    moo: string;
-    buildingOrVillage: string;
-    roomNo: string;
-    floor: string;
-    soi: string;
-    street: string;
-    country: string;
-    zipCode: string;
-    province: string;
-    district: string;
-    subDistrict: string;
-    customAddress1: string;
-    customAddress2: string;
-    customAddress3: string;
-    beneficiaryFirstName: string;
-    beneficiaryLastName: string;
-    beneficiaryRelationshipCode: string;
-    beneficiaryExpireDate: string;
-}
+export default BeneficiaryPage
