@@ -28,22 +28,7 @@ const initialState: CustomerFatcaState = {
     isAmerica: false,
     isFatcaIndividualSelfCert: false,
     tinType: '1',
-    w9: {
-        name: "",
-        businessName: "",
-        appropriate: "Individual / sole proprietor or single-member LLC",
-        address1: "",
-        address2: "",
-        address3: "",
-        zipCode: "",
-        accountList: "",
-        ssn: "",
-        ein: "",
-        exemptionPayeeCode: "",
-        exemptionReportingCode: "",
-        refId: "",
-        refType: ""
-    },
+    w9: null,
     w8: null
 }
 

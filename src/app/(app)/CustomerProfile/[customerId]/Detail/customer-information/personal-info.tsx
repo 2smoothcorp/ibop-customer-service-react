@@ -355,7 +355,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                         // register={register}
                         name="birthDate"
                         type="date"
-                        maxDate={dayjs().subtract(18, 'year').format('YYYY-MM-DD')}
+                        maxDate={dayjs().subtract(15, 'year').format('YYYY-MM-DD')}
                         onChange={(val) => setValue("personalInfo.birthDate", val, { shouldDirty: true })}
                         isRequired
                     />

@@ -89,7 +89,7 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                 title="ส่วนที่ 1 สถานะความเป็นบุคคลอเมริกัน"
             />
             <ContentLoading
-                isLoading={isLoading}
+                isLoading={isLoading || watch('americaStatus').length === 0}
                 error={error && error.message || undefined}
                 hight={300}
             >
@@ -134,7 +134,7 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                         isBorder={false}
                     />
                     {
-                        data?.filter((x) => x.question.questionType === 'W8').map((item, index) => (
+                        watch('americaStatus').filter((x) => x.question.questionType === 'W8').map((item, index) => (
                             <InputSwitch
                                 key={index}
                                 label={item.question.questionTextTh || ''}

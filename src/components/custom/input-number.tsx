@@ -11,7 +11,26 @@ export default function InputNumber({
     disabled = false,
     readonly = false,
     onChange,
+    type = 'number'
 }: InputNumberProps) {
+
+    if (type === 'percent') {
+        return <NumericFormat
+            value={value}
+            onValueChange={(values) => onChange && onChange(values.floatValue || 0)}
+            name={name}
+            required={required}
+            defaultValue={defaultValue}
+            readOnly={readonly}
+            disabled={disabled}
+            decimalScale={0}
+            maxLength={4}
+            max={100}
+            suffix={'%'}
+            className={`w-full px-3 py-2 h-10 bg-white border border-slate-300 rounded-md text-lg shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${className}`}
+            placeholder={placeholder || ""}
+        />
+    }
 
     return (
         <NumericFormat
@@ -23,16 +42,17 @@ export default function InputNumber({
             disabled={disabled}
             decimalScale={decimal}
             thousandSeparator=","
-            className={`font-cordia-new w-full px-3 py-2 h-10 bg-white border border-slate-300 rounded-md text-lg shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${className}`}
+            className={`w-full px-3 py-2 h-10 bg-white border border-slate-300 rounded-md text-lg shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${className}`}
             placeholder={placeholder || ""}
         />
     )
 }
 
 interface InputNumberProps {
+    type?: 'number' | 'percent';
     required?: boolean;
     name: string;
-    value?: string;
+    value?: number;
     defaultValue?: string;
     placeholder?: string;
     className?: string;
