@@ -18,6 +18,7 @@ import CustomerInformation from "./customer-information"
 import EDividend from "./e-dividend"
 import FATCA from "./fatca"
 import FinancialInformation from "./financial-information"
+import SummaryInformation from "./summary-information"
 
 export default function DetailPage() {
     const searchParams = useSearchParams()
@@ -61,7 +62,7 @@ export default function DetailPage() {
         },
         {
             title: isEditable ? "สรุปรายละเอียดที่แก้ไข" : "ข้อมูลบัญชี",
-            component: isEditable ? <></> : <AccountInformation />
+            component: isEditable ? <SummaryInformation></SummaryInformation> : <AccountInformation />
         }
     ]
 
