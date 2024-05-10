@@ -31,7 +31,6 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                 const responseAnswers: AnswerFACTA = await requestAnswers.json();
                 const { questions, choices } = response;
                 const { answers } = responseAnswers;
-                // console.log('response', questions)
                 if (questions && answers && choices) {
                     let reulst: QuestionAsnwer[] = []
                     questions.map((question) => {
@@ -64,7 +63,6 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                             }
                         }
                     });
-                    // setDefaultData(data.politicRelationInfo)
                     setValue('americaStatus', reulst)
                     return reulst;
                 }
@@ -110,18 +108,18 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                                     if (x) {
                                         const choice = item.choices.find((x: Choice) => x.choiceTextTh === 'ใช่')
                                         if (choice && choice.choiceId) {
-                                            setValue('isW9', true)
-                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId)
-                                            setValue(`americaStatus.${index}.isCheck`, true)
+                                            setValue('isW9', true, { shouldDirty: true })
+                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
+                                            setValue(`americaStatus.${index}.isCheck`, true, { shouldDirty: true })
                                         }
                                     } else {
                                         const choice = item.choices.find((x: Choice) => x.choiceTextTh !== 'ใช่')
                                         if (choice && choice.choiceId) {
-                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId)
-                                            setValue(`americaStatus.${index}.isCheck`, false)
+                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
+                                            setValue(`americaStatus.${index}.isCheck`, false, { shouldDirty: true })
                                             const isRecheck = reCheckStatusAll(item.question.questionType)
                                             if (!isRecheck) {
-                                                setValue('isW9', false)
+                                                setValue('isW9', false, { shouldDirty: true })
                                             }
                                         }
                                     }
@@ -145,18 +143,18 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                                     if (x) {
                                         const choice = item.choices.find((x: Choice) => x.choiceTextTh === 'ใช่')
                                         if (choice && choice.choiceId) {
-                                            setValue('isW8', true)
-                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId)
-                                            setValue(`americaStatus.${index}.isCheck`, true)
+                                            setValue('isW8', true, { shouldDirty: true })
+                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
+                                            setValue(`americaStatus.${index}.isCheck`, true, { shouldDirty: true })
                                         }
                                     } else {
                                         const choice = item.choices.find((x: Choice) => x.choiceTextTh !== 'ใช่')
                                         if (choice && choice.choiceId) {
-                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId)
-                                            setValue(`americaStatus.${index}.isCheck`, false)
+                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
+                                            setValue(`americaStatus.${index}.isCheck`, false, { shouldDirty: true })
                                             const isRecheck = reCheckStatusAll(item.question.questionType)
                                             if (!isRecheck) {
-                                                setValue('isW8', false)
+                                                setValue('isW8', false, { shouldDirty: true })
                                             }
                                         }
                                     }

@@ -1,4 +1,4 @@
-import { Choice, GetFatcaW8Output, GetFatcaW9Output, Question } from '@/services/rest-api/customer-service';
+import { Choice, FatcaW8Input, FatcaW9Input, GetFatcaW8Output, GetFatcaW9Output, GetTinOutput, Question } from '@/services/rest-api/customer-service';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 // Define a type for the slice state
 export interface CustomerFatcaState {
@@ -9,7 +9,22 @@ export interface CustomerFatcaState {
     isFatcaIndividualSelfCert: boolean
     tinType: string,
     w9: GetFatcaW9Output | null
-    w8: GetFatcaW8Output | null
+    w8: GetFatcaW8Output | null,
+    tinInput: GetTinOutput[] | null
+    confirm: Confirm | null
+}
+
+interface Confirm {
+    answerInput: AnswerInput[] | null,
+    fatcaW8Input: FatcaW8Input | null,
+    fatcaW9Input: FatcaW9Input | null,
+    isFatcaIndividualSelfCertified: boolean | null,
+    tinInput: GetTinOutput[] | null
+}
+
+export interface AnswerInput {
+    questionId: number
+    choiceId: number
 }
 
 export interface QuestionAsnwer {
@@ -29,7 +44,9 @@ const initialState: CustomerFatcaState = {
     isFatcaIndividualSelfCert: false,
     tinType: '1',
     w9: null,
-    w8: null
+    w8: null,
+    tinInput: null,
+    confirm: null
 }
 
 export const customerFatcaSlice = createSlice({
@@ -37,26 +54,80 @@ export const customerFatcaSlice = createSlice({
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     reducers: {
-        setFatcaIndividualSelfCert: (state, action: PayloadAction<boolean>) => {
-            state.isFatcaIndividualSelfCert = action.payload
+        setAnswerInput: (state, action: PayloadAction<AnswerInput[]>) => {
+            if (state.confirm) {
+                state.confirm.answerInput = action.payload
+            } else {
+                state.confirm = {
+                    answerInput: action.payload,
+                    fatcaW8Input: null,
+                    fatcaW9Input: null,
+                    isFatcaIndividualSelfCertified: null,
+                    tinInput: null
+                }
+            }
         },
-        setTinType: (state, action: PayloadAction<string>) => {
-            state.tinType = action.payload
+        setFatcaW8Input: (state, action: PayloadAction<FatcaW8Input | null>) => {
+            if (state.confirm) {
+                state.confirm.fatcaW8Input = action.payload
+            } else {
+                state.confirm = {
+                    answerInput: null,
+                    fatcaW8Input: action.payload,
+                    fatcaW9Input: null,
+                    isFatcaIndividualSelfCertified: null,
+                    tinInput: null
+                }
+            }
         },
-        setAmericaStatus: (state, action: PayloadAction<QuestionAsnwer[]>) => {
-            state.americaStatus = action.payload
+        setFatcaW9Input: (state, action: PayloadAction<FatcaW9Input | null>) => {
+            if (state.confirm) {
+                state.confirm.fatcaW9Input = action.payload
+            } else {
+                state.confirm = {
+                    answerInput: null,
+                    fatcaW8Input: null,
+                    fatcaW9Input: action.payload,
+                    isFatcaIndividualSelfCertified: null,
+                    tinInput: null
+                }
+            }
         },
-        setIsAmerica: (state, action: PayloadAction<boolean>) => {
-            state.isAmerica = action.payload
-        }
+        setIsFatcaIndividualSelfCertified: (state, action: PayloadAction<boolean>) => {
+            if (state.confirm) {
+                state.confirm.isFatcaIndividualSelfCertified = action.payload
+            } else {
+                state.confirm = {
+                    answerInput: null,
+                    fatcaW8Input: null,
+                    fatcaW9Input: null,
+                    isFatcaIndividualSelfCertified: action.payload,
+                    tinInput: null
+                }
+            }
+        },
+        setTinInput: (state, action: PayloadAction<GetTinOutput[]>) => {
+            if (state.confirm) {
+                state.confirm.tinInput = action.payload
+            } else {
+                state.confirm = {
+                    answerInput: null,
+                    fatcaW8Input: null,
+                    fatcaW9Input: null,
+                    isFatcaIndividualSelfCertified: null,
+                    tinInput: action.payload
+                }
+            }
+        },
     }
 })
 
 export const {
-    setFatcaIndividualSelfCert,
-    setTinType,
-    setAmericaStatus,
-    setIsAmerica
+    setAnswerInput,
+    setFatcaW8Input,
+    setFatcaW9Input,
+    setIsFatcaIndividualSelfCertified,
+    setTinInput
 } = customerFatcaSlice.actions
 
 export default customerFatcaSlice.reducer

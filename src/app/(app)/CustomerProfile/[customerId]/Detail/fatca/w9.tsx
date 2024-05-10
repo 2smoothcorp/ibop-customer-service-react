@@ -3,7 +3,6 @@
 import ContentLoading from "@/components/content/content-loading";
 import LabelBase from "@/components/custom/label-base";
 import { InputRadio } from "@/components/input-radio";
-import { InputText } from "@/components/input-text";
 import HeaderNavbar from "@/components/navbar/header-navbar";
 import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice";
 import { GetFatcaW9Output } from "@/services/rest-api/customer-service";
@@ -13,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { TextFieldElement } from "react-hook-form-mui";
 
 export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaState, any, undefined> }) {
     const { watch, setValue } = useForm;
@@ -25,12 +25,14 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             label: 'Name Surname',
             col: 3,
             labelWidth: 120,
+            required: true,
         },
         {
             name: 'w9.businessName',
             label: 'Business name / disregarded entity name, if different from above',
             col: 9,
             labelWidth: 450,
+            required: false,
         },
         {
             type: 'radio',
@@ -47,7 +49,8 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                 { value: 'Trust / estate', label: 'Trust / estate' },
                 { value: 'Limited liability company', label: 'Limited liability company' },
                 { value: 'Other (see instructions)', label: 'Other (see instructions)' },
-            ]
+            ],
+            required: false,
         },
         {
             label: 'Exemption ( codes apply only to certain entities, not individuals; see instructions on page 3 )'
@@ -57,30 +60,35 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             label: 'Exempt payee code ( if any )',
             col: 12,
             labelWidth: 200,
+            required: false,
         },
         {
             name: 'w9.exemptionReportingCode',
             label: 'Exemption from FATCA reporting code ( if any )',
             col: 12,
             labelWidth: 320,
+            required: false,
         },
         {
             name: 'w9.address1',
             label: 'Address (number, street, and apt. or suite no.) See instructions.',
             col: 12,
             labelWidth: 430,
+            required: true,
         },
         {
             name: 'w9.address2',
             label: 'City, state, and ZIP code',
             col: 6,
             labelWidth: 180,
+            required: true,
         },
         {
             name: 'w9.accountList',
             label: 'List account number(s) here ( optional )',
             col: 6,
             labelWidth: 260,
+            required: false,
         },
         {
             type: 'radio',
@@ -92,19 +100,22 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             options: [
                 { value: '1', label: 'Social security number' },
                 { value: '2', label: 'Employer identification number' },
-            ]
+            ],
+            required: true,
         },
         {
             name: 'w9.ssn',
             label: '',
             col: 7,
             labelWidth: 0,
+            required: true,
         },
         {
             name: 'w9.ein',
             label: '',
             col: 7,
             labelWidth: 0,
+            required: true,
         },
     ]
 
@@ -195,10 +206,9 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                                         width={item.labelWidth}
                                         title={item.label}
                                     />
-                                    <InputText
+                                    <TextFieldElement
                                         name={item.name}
-                                        value={watch(item.name as any)}
-                                        onChange={(e) => setValue(item.name as any, e)}
+                                        required={item.required}
                                     />
                                 </Grid>
                             })

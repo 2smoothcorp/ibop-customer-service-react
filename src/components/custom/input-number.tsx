@@ -11,7 +11,7 @@ export default function InputNumber({
     disabled = false,
     readonly = false,
     onChange,
-    type = 'number'
+    type = 'number',
 }: InputNumberProps) {
 
     if (type === 'percent') {

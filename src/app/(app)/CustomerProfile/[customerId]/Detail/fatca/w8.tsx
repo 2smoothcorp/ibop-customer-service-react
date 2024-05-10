@@ -1,11 +1,9 @@
 "use client"
 
 import ContentLoading from "@/components/content/content-loading";
-import InputAutoComplete from "@/components/custom/input-auto-complete";
 import InputDate from "@/components/custom/input-date";
 import InputNumber from "@/components/custom/input-number";
 import LabelBase from "@/components/custom/label-base";
-import { InputText } from "@/components/input-text";
 import HeaderNavbar from "@/components/navbar/header-navbar";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
@@ -16,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useParams, useSearchParams } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
+import { AutocompleteElement, TextFieldElement } from "react-hook-form-mui";
 
 export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaState, any, undefined> }) {
     const { watch, setValue, register, formState: { errors } } = useForm;
@@ -31,6 +30,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             label: '1. Name of individual who is the beneficial owner',
             col: 12,
             labelWidth: 340,
+            required: true
         },
         {
             name: 'w8.citizenCountryCode',
@@ -38,13 +38,15 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             col: 12,
             labelWidth: 200,
             type: 'autocomplete',
-            options: countries
+            options: countries,
+            required: true
         },
         {
             name: 'w8.address1',
             label: '3. Permanent residence address ( street, apt. or suite no., or rural route). Do not use a P.O. box or in-care-of address.',
             col: 12,
             labelWidth: 800,
+            required: true
         },
         {
             name: 'w8.address2',
@@ -52,6 +54,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             col: 10,
             labelWidth: 480,
             labelLeft: 15,
+            required: true
         },
         {
             name: 'w8.countryCode',
@@ -59,13 +62,15 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             col: 2,
             labelWidth: 70,
             type: 'autocomplete',
-            options: countries
+            options: countries,
+            required: true
         },
         {
             name: 'w8.mailingAddress1',
             label: '4. Mailing address (if different from above)',
             col: 12,
             labelWidth: 300,
+            required: true
         },
         {
             name: 'w8.mailingAddress2',
@@ -73,6 +78,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             col: 10,
             labelWidth: 480,
             labelLeft: 20,
+            required: true
         },
         {
             name: 'w8.mailingCountryCode',
@@ -80,38 +86,44 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             col: 2,
             labelWidth: 70,
             type: 'autocomplete',
-            options: countries
+            options: countries,
+            required: true
         },
         {
             name: 'w8.taxNo',
             label: '5. U.S. taxpayer identification number (SSN or ITIN), if required (see instructions)',
             col: 12,
             labelWidth: 550,
+            required: true
         },
         {
             name: 'w8.foreignTaxNo',
             label: '6. a. Foreign tax identifying number (see instructions)',
             col: 6,
             labelWidth: 370,
+            required: true
         },
         {
             name: 'w8.foreignTaxNoRemark',
             label: '6. b. Check if FTIN not legally required',
             col: 6,
             labelWidth: 270,
+            required: true
         },
         {
             name: 'w8.referenceNo',
             label: '7. Reference number(s) (see instructions)',
             col: 12,
             labelWidth: 300,
+            required: true
         },
         {
             name: 'w8.dateOfBirth',
             label: '8. Date of birth (DD/MM/YYYY) (see instructions)',
             col: 12,
             labelWidth: 330,
-            type: 'date'
+            type: 'date',
+            required: true
         },
     ]
 
@@ -126,7 +138,8 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             label: '',
             col: 12,
             type: 'autocomplete',
-            options: countries
+            options: countries,
+            required: true
         },
         {
             label: '10. Special rate and conditions (if applicable-see instructions)',
@@ -138,6 +151,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             col: 12,
             labelWidth: 500,
             labelLeft: 20,
+            required: false
         },
         {
             name: 'w8.beneficialTaxRate',
@@ -145,7 +159,8 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             col: 12,
             labelWidth: 500,
             labelLeft: 20,
-            type: 'number'
+            type: 'number',
+            required: false
         },
         {
             name: 'w8.beneficialTaxRemark1',
@@ -153,6 +168,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             col: 12,
             labelWidth: 500,
             labelLeft: 20,
+            required: false
         },
         {
             label: 'Explain the additional conditions in the Article and paragraph the beneficial owner meets to be eligible for the rate of withholding:',
@@ -164,6 +180,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             label: '',
             col: 12,
             labelLeft: 14,
+            required: false
         }
 
     ]
@@ -179,9 +196,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             try {
                 const request = await fetch(`/api/customer-profile/w8/${customerId}`, { method: 'GET' });
                 const response: TinInfoOutput = await request.json();
-                const { isFatcaIndividualSelfCert } = response;
                 if (response) {
-                    setValue('isFatcaIndividualSelfCert', isFatcaIndividualSelfCert || false)
                     return response;
                 }
             } catch (error) {
@@ -216,6 +231,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                     defaultValue={watch(item.name as any)}
                     maxDate={dayjs().subtract(15, 'year').format('YYYY-MM-DD')}
                     onChange={(e) => setValue(item.name as any, e)}
+                    required
                 />
             </Grid>
         }
@@ -236,11 +252,11 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                     value={watch(item.name as any)}
                     onChange={(e) => {
                         if (e > 100) {
-                            setValue(item.name as any, '100')
+                            setValue(item.name as any, '100', { shouldDirty: true })
                         } else if (e <= 0) {
-                            setValue(item.name as any, '')
+                            setValue(item.name as any, '', { shouldDirty: true })
                         } else {
-                            setValue(item.name as any, e)
+                            setValue(item.name as any, e, { shouldDirty: true })
                         }
                     }}
                 />
@@ -257,12 +273,21 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                     width={item.labelWidth}
                     title={item.label}
                 />
-                <InputAutoComplete
-                    defaultValue={watch(item.name as any)}
-                    placeholder="Select country"
+                <AutocompleteElement
+                    autocompleteProps={{
+                        fullWidth: true,
+                    }}
+                    textFieldProps={{
+                        placeholder: 'Select country',
+                    }}
                     name={item.name}
-                    list={item.options}
-                    onChange={(e) => setValue(item.name as any, e)}
+                    options={item.options}
+                    required
+                    transform={{
+                        output: (event, item) => {
+                            return item.value || ''
+                        },
+                    }}
                 />
             </Grid>
         }
@@ -276,11 +301,9 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                 width={item.labelWidth}
                 title={item.label}
             />
-            <InputText
-                register={register}
+            <TextFieldElement
                 name={item.name}
-                value={watch(item.name as any)}
-                onChange={(e) => setValue(item.name as any, e)}
+                required={item.required}
             />
         </Grid>
     }
