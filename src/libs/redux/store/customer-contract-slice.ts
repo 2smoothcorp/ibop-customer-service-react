@@ -1,50 +1,31 @@
+import { DocReceiveAddressInfoModel, EmergencyContactInfoModel } from '@/services/rest-api/customer-service';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 // Define a type for the slice state
 export interface CustomerContractState {
-    contractInformation: ContractInformation,
-    contractEmergency: ContractEmergency[],
+    isAddressInfoType4SameType: 0 | 1 | 2 | 3,
+    docReceiveAddressInfo: ContractInformation,
+    emergencyContactInfo: EmergencyContactInfoModel[],
+    confirm: ContractConfirm | null
 }
 
-interface ContractInformation {
-    docReceiveChannel: string;
-    docReceiveAddressType: string;
-    addressNo: string;
-    moo: string;
-    buildingOrVillage: string;
-    roomNo: string;
-    floor: string;
-    soi: string;
-    street: string;
-    countryCode: string;
+interface ContractInformation extends DocReceiveAddressInfoModel {
     country: string;
-    zipCode: string;
     province: string;
-    provinceCode: string;
     district: string;
-    districtCode: string;
     subDistrict: string;
-    subDistrictCode: string;
-    mobileNo: string;
-    officeNo: string;
-    email: string;
-    customAddress1: string;
-    customAddress2: string;
-    customAddress3: string;
 }
 
-interface ContractEmergency {
-    emergencyContactId: number;
-    name: string;
-    mobile: string;
-    relationship: string;
-    relationshipCode: string;
-    relationshipOther: string;
+interface ContractConfirm {
+    isAddressInfoType4SameType?: boolean;
+    docReceiveAddressInfo?: DocReceiveAddressInfoModel;
+    emergencyContactInfo?: EmergencyContactInfoModel[];
 }
 
 // Define the initial state using that type
 const initialState: CustomerContractState = {
-    contractInformation: {
+    isAddressInfoType4SameType: 0,
+    docReceiveAddressInfo: {
         docReceiveChannel: "",
         docReceiveAddressType: "01",
         addressNo: "",
@@ -70,7 +51,7 @@ const initialState: CustomerContractState = {
         customAddress2: "",
         customAddress3: "",
     },
-    contractEmergency: [
+    emergencyContactInfo: [
         {
             emergencyContactId: -1,
             name: "",
@@ -96,6 +77,7 @@ const initialState: CustomerContractState = {
             relationshipOther: "",
         },
     ],
+    confirm: null
 }
 
 export const customerContractSlice = createSlice({
@@ -104,13 +86,22 @@ export const customerContractSlice = createSlice({
     initialState,
     reducers: {
         setDataCustomerContract(state, action: PayloadAction<CustomerContractState>) {
-            const { contractInformation, contractEmergency } = action.payload
-            state.contractInformation = contractInformation
-            state.contractEmergency = contractEmergency
+            const { docReceiveAddressInfo, emergencyContactInfo } = action.payload
+            state.docReceiveAddressInfo = docReceiveAddressInfo
+            state.emergencyContactInfo = emergencyContactInfo
+        },
+        setDataContractConfirm(state, action: PayloadAction<ContractConfirm | null>) {
+            if (action.payload) {
+                state.confirm = action.payload
+
+            } else {
+                state.confirm = null
+
+            }
         }
     }
 })
 
-export const { setDataCustomerContract } = customerContractSlice.actions
+export const { setDataCustomerContract, setDataContractConfirm } = customerContractSlice.actions
 
 export default customerContractSlice.reducer

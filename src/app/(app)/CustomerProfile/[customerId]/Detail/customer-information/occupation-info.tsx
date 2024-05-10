@@ -274,7 +274,16 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                                     disabled={!isEditable}
                                     name="addressType"
                                     defaultValue={watch('occupationInfo.address.addressType')}
-                                    onChange={(value) => setValue('occupationInfo.address.addressType', value as "01" | "02" | "03", { shouldDirty: true })}
+                                    onChange={(value) => {
+                                        if (value === '01') {
+                                            setValue('isAddressInfoType3SameType', 1, { shouldDirty: true })
+                                        } else if (value === '02') {
+                                            setValue('isAddressInfoType3SameType', 2, { shouldDirty: true })
+                                        } else {
+                                            setValue('isAddressInfoType3SameType', 0, { shouldDirty: true })
+                                        }
+                                        setValue('occupationInfo.address.addressType', value as '01' | '02')
+                                    }}
                                     list={[
                                         { value: "01", label: "ตามประเภทหลักฐาน" },
                                         { value: "02", label: "ตามที่อยู่ปัจจุบัน" },

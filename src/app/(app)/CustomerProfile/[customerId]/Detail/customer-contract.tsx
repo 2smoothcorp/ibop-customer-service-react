@@ -1,9 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { CustomerContractState, setDataCustomerContract } from "@/libs/redux/store/customer-contract-slice";
+import { CustomerContractState, setDataContractConfirm, setDataCustomerContract } from "@/libs/redux/store/customer-contract-slice";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
+import { dirtyValues } from "@/utils/function";
 import { Button } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { FormContainer } from "react-hook-form-mui";
 import ContractEmergency from "./customer-contract/contract-emergency";
 import ContractInformation from "./customer-contract/contract-information";
 
@@ -18,23 +20,28 @@ export default function CustomerContract() {
         defaultValues: customerContract
     })
 
-    const saveData = () => {
-        const { getValues } = useFormAll
-        dispatch(setDataCustomerContract(getValues()))
+    const saveData = (data: CustomerContractState) => {
+        const { formState: { dirtyFields }, getValues } = useFormAll
+        const dirtyData = dirtyValues(dirtyFields, getValues())
+        dispatch(setDataCustomerContract(data))
+        console.log(dirtyData)
+        if (dirtyData) {
+            dispatch(setDataContractConfirm(dirtyData))
+        }
         dispatch(nextStep())
     }
 
     return (
-        <>
+        <FormContainer formContext={useFormAll} onSuccess={saveData}>
             <ContractInformation useForm={useFormAll} />
             <ContractEmergency useForm={useFormAll} />
             {
                 isEditable && <div className="flex justify-end gap-4 mt-6">
                     <Button variant="contained" color="error" onClick={() => dispatch(prevStep())}>ย้อนกลับ</Button>
-                    <Button variant="contained" onClick={saveData}>ถัดไป</Button>
+                    <Button variant="contained" type="submit">ถัดไป</Button>
                 </div>
             }
 
-        </>
+        </FormContainer>
     )
 }
