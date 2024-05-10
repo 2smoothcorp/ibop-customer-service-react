@@ -126,12 +126,9 @@ export default function AddressByCurrent({ useForm }: { useForm: UseFormReturn<C
             try {
                 const request = await fetch(`/api/customer-profile/address-info/${customerId}/02`, { method: 'GET' });
                 const response: AddressInfoResponseDataResponse = await request.json();
-                // console.log('data', response)
                 if (response.status == 200) {
                     const { data } = response;
-
                     if (data && data.addressInfoModel) {
-
                         setDefaultData(data.addressInfoModel)
                         return data.addressInfoModel
                     }
@@ -166,7 +163,14 @@ export default function AddressByCurrent({ useForm }: { useForm: UseFormReturn<C
                     <InputRadio
                         defaultValue={watch("addressByCurrent.addressType")}
                         disabled={!isEditable}
-                        onChange={(value) => setValue('addressByCurrent.addressType', value as "01" | "02")}
+                        onChange={(value) => {
+                            if (value === '01') {
+                                setValue('isAddressInfoType2SameType', 1, { shouldDirty: true })
+                            } else {
+                                setValue('isAddressInfoType2SameType', 0, { shouldDirty: true })
+                            }
+                            setValue('addressByCurrent.addressType', value as '01' | '02')
+                        }}
                         name={"addressType"}
                         list={[
                             { value: '01', label: 'ตามประเภทหลักฐาน' },

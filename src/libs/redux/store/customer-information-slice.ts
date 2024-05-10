@@ -1,3 +1,4 @@
+import { AddressInfoModel, OccupationInfoModel, PersonalInfoModel, PoliticRelationInfoModel, SpouseInfoModel } from '@/services/rest-api/customer-service';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 // Define a type for the slice state
@@ -8,6 +9,18 @@ export interface CustomerInformationState {
     addressByCurrent: AddressInfo,
     occupationInfo: OccupationInfo,
     politicRelationInfo: PoliticRelationInfo,
+    confirm: PersonalConfirm | null,
+    isAddressInfoType2SameType: 0 | 1 | 2 | 3,
+    isAddressInfoType3SameType: 0 | 1 | 2 | 3,
+}
+
+export interface PersonalConfirm {
+    personalInfo?: PersonalInfoModel,
+    spouseInfo?: SpouseInfoModel,
+    addressInfoType1?: AddressInfoModel,
+    addressInfoType2?: AddressInfoModel,
+    occupationInfo?: OccupationInfoModel,
+    politicRelationInfo?: PoliticRelationInfoModel,
 }
 
 interface PersonalInfo {
@@ -188,6 +201,9 @@ const initialState: CustomerInformationState = {
         politicianRelation: false,
         politicianPosition: '',
     },
+    confirm: null,
+    isAddressInfoType2SameType: 0,
+    isAddressInfoType3SameType: 0,
 }
 
 export const customerInformationSlice = createSlice({
@@ -203,12 +219,16 @@ export const customerInformationSlice = createSlice({
             state.addressByCurrent = addressByCurrent
             state.occupationInfo = occupationInfo
             state.politicRelationInfo = politicRelationInfo
+        },
+        setDataPersonalConfirm: (state, action: PayloadAction<PersonalConfirm | null>) => {
+            state.confirm = action.payload
         }
     }
 })
 
 export const {
-    setDataCustomerInformation
+    setDataCustomerInformation,
+    setDataPersonalConfirm,
 } = customerInformationSlice.actions
 
 export default customerInformationSlice.reducer

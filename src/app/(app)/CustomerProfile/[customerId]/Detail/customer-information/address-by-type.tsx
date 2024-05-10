@@ -161,6 +161,7 @@ export default function AddressByType({ useForm }: { useForm: UseFormReturn<Cust
                         // register={register}
                         name="addressNo"
                         onChange={(value) => setValue('addressByType.addressNo', value, { shouldDirty: true })}
+                        isRequired
                     />
                     <InputHorizontal
                         label="หมู่ที่"
