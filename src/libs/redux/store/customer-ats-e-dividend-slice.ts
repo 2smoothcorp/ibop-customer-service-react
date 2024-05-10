@@ -6,6 +6,12 @@ export interface CustomerAtsEDividendState {
     idRowsMainAts: number,
     eDividend: BankInfoModel[],
     idRowsMainEDividend: number,
+    confirm: Confirm | null
+}
+
+interface Confirm {
+    atsInfo: BankInfoModel[] | null,
+    eDividendInfo: BankInfoModel[] | null,
 }
 
 // Define the initial state using that type
@@ -14,6 +20,7 @@ const initialState: CustomerAtsEDividendState = {
     idRowsMainAts: -1,
     eDividend: [],
     idRowsMainEDividend: -1,
+    confirm: null
 }
 
 export const customerAtsEDividendSlice = createSlice({
@@ -33,9 +40,37 @@ export const customerAtsEDividendSlice = createSlice({
         setDataCustomerEDividend(state, action: PayloadAction<BankInfoModel[]>) {
             state.eDividend = action.payload
         },
+        setAtsInfo: (state, action: PayloadAction<BankInfoModel[] | null>) => {
+            if (state.confirm) {
+                state.confirm.atsInfo = action.payload
+            } else {
+                state.confirm = {
+                    atsInfo: action.payload,
+                    eDividendInfo: null
+                }
+            }
+        },
+        setEDividendInfo: (state, action: PayloadAction<BankInfoModel[] | null>) => {
+            if (state.confirm) {
+                state.confirm.eDividendInfo = action.payload
+            } else {
+                state.confirm = {
+                    atsInfo: null,
+                    eDividendInfo: action.payload
+                }
+            }
+
+        }
     }
 })
 
-export const { setDataCustomerAts, setDataCustomerEDividend, setMainIdCustomerAts, setMainIdCustomerEDividend } = customerAtsEDividendSlice.actions
+export const {
+    setDataCustomerAts,
+    setDataCustomerEDividend,
+    setMainIdCustomerAts,
+    setMainIdCustomerEDividend,
+    setAtsInfo,
+    setEDividendInfo
+} = customerAtsEDividendSlice.actions
 
 export default customerAtsEDividendSlice.reducer
