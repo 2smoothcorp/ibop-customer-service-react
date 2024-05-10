@@ -105,7 +105,6 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
         setValue('personalInfo.firstNameEn', normalizationData('firstNameEn', personalInfo));
         setValue('personalInfo.lastNameEn', normalizationData('lastNameEn', personalInfo));
         setValue('personalInfo.birthDate', normalizationData('birthDate', personalInfo));
-
     }
 
     const getData = async () => {

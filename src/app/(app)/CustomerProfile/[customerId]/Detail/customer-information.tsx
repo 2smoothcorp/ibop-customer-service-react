@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
 import { CustomerInformationState, setDataCustomerInformation, setDataPersonalConfirm } from "@/libs/redux/store/customer-information-slice";
+import { nextStep } from "@/libs/redux/store/customer-profile-slice";
 import { dirtyValues } from "@/utils/function";
 import { Button } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -29,14 +30,11 @@ export default function CustomerInformation() {
         // console.log(dirtyFields, getValues)
         const dirtyData = dirtyValues(dirtyFields, getValues())
         dispatch(setDataCustomerInformation(data))
-        console.log(dirtyData)
+        // console.log(dirtyData)
         if (dirtyData) {
             dispatch(setDataPersonalConfirm(dirtyData))
         }
-        // dispatch(nextStep())
-        // const { getValues } = useFormAll
-        // dispatch(setDataCustomerInformation(getValues()))
-        // dispatch(nextStep())
+        dispatch(nextStep())
     }
 
     return (

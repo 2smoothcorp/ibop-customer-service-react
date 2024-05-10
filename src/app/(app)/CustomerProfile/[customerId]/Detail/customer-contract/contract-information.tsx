@@ -91,27 +91,27 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
     }
 
     const setDefaultData = (addressInfo: DocReceiveAddressInfoModel) => {
-        setValue('contractInformation.docReceiveChannel', handleEmptyStringFormApi(addressInfo.docReceiveChannel));
-        setValue('contractInformation.docReceiveAddressType', handleEmptyStringFormApi(addressInfo.docReceiveAddressType));
-        setValue('contractInformation.addressNo', normalizationData('addressNo', addressInfo));
-        setValue('contractInformation.moo', normalizationData('moo', addressInfo));
-        setValue('contractInformation.buildingOrVillage', normalizationData('buildingOrVillage', addressInfo));
-        setValue('contractInformation.roomNo', normalizationData('roomNo', addressInfo));
-        setValue('contractInformation.floor', normalizationData('floor', addressInfo));
-        setValue('contractInformation.soi', normalizationData('soi', addressInfo));
-        setValue('contractInformation.street', normalizationData('street', addressInfo));
-        setValue('contractInformation.countryCode', normalizationData('countryCode', addressInfo));
-        setValue('contractInformation.country', normalizationData('country', addressInfo));
-        setValue('contractInformation.zipCode', normalizationData('zipCode', addressInfo));
-        setValue('contractInformation.province', normalizationData('province', addressInfo));
-        setValue('contractInformation.district', normalizationData('district', addressInfo));
-        setValue('contractInformation.subDistrict', normalizationData('subDistrict', addressInfo));
-        setValue('contractInformation.mobileNo', normalizationData('mobileNo', addressInfo));
-        setValue('contractInformation.officeNo', normalizationData('officeNo', addressInfo));
-        setValue('contractInformation.email', normalizationData('email', addressInfo));
-        setValue('contractInformation.customAddress1', normalizationData('customAddress1', addressInfo));
-        setValue('contractInformation.customAddress2', normalizationData('customAddress2', addressInfo));
-        setValue('contractInformation.customAddress3', normalizationData('customAddress3', addressInfo));
+        setValue('docReceiveAddressInfo.docReceiveChannel', handleEmptyStringFormApi(addressInfo.docReceiveChannel));
+        setValue('docReceiveAddressInfo.docReceiveAddressType', handleEmptyStringFormApi(addressInfo.docReceiveAddressType));
+        setValue('docReceiveAddressInfo.addressNo', normalizationData('addressNo', addressInfo));
+        setValue('docReceiveAddressInfo.moo', normalizationData('moo', addressInfo));
+        setValue('docReceiveAddressInfo.buildingOrVillage', normalizationData('buildingOrVillage', addressInfo));
+        setValue('docReceiveAddressInfo.roomNo', normalizationData('roomNo', addressInfo));
+        setValue('docReceiveAddressInfo.floor', normalizationData('floor', addressInfo));
+        setValue('docReceiveAddressInfo.soi', normalizationData('soi', addressInfo));
+        setValue('docReceiveAddressInfo.street', normalizationData('street', addressInfo));
+        setValue('docReceiveAddressInfo.countryCode', normalizationData('countryCode', addressInfo));
+        setValue('docReceiveAddressInfo.country', normalizationData('country', addressInfo));
+        setValue('docReceiveAddressInfo.zipCode', normalizationData('zipCode', addressInfo));
+        setValue('docReceiveAddressInfo.province', normalizationData('province', addressInfo));
+        setValue('docReceiveAddressInfo.district', normalizationData('district', addressInfo));
+        setValue('docReceiveAddressInfo.subDistrict', normalizationData('subDistrict', addressInfo));
+        setValue('docReceiveAddressInfo.mobileNo', normalizationData('mobileNo', addressInfo));
+        setValue('docReceiveAddressInfo.officeNo', normalizationData('officeNo', addressInfo));
+        setValue('docReceiveAddressInfo.email', normalizationData('email', addressInfo));
+        setValue('docReceiveAddressInfo.customAddress1', normalizationData('customAddress1', addressInfo));
+        setValue('docReceiveAddressInfo.customAddress2', normalizationData('customAddress2', addressInfo));
+        setValue('docReceiveAddressInfo.customAddress3', normalizationData('customAddress3', addressInfo));
         setAddress({
             value: {
                 postCode: addressInfo.zipCode || '',
@@ -127,7 +127,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
     }
 
     const getData = async () => {
-        if (!watch('contractInformation.addressNo')) {
+        if (!watch('docReceiveAddressInfo.addressNo')) {
             const list = getAddressBySearch('', 'postCode');
             if (list.length > 0)
                 setAddress(list[0])
@@ -159,10 +159,10 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
     }
 
     const setAddresHook = (address: AddressBySearchProps) => {
-        setValue('contractInformation.zipCode', address.value.postCode, { "shouldDirty": true });
-        setValue('contractInformation.provinceCode', address.value.provinceCode, { "shouldDirty": true });
-        setValue('contractInformation.districtCode', address.value.districtCode, { "shouldDirty": true });
-        setValue('contractInformation.subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
+        setValue('docReceiveAddressInfo.zipCode', address.value.postCode, { "shouldDirty": true });
+        setValue('docReceiveAddressInfo.provinceCode', address.value.provinceCode, { "shouldDirty": true });
+        setValue('docReceiveAddressInfo.districtCode', address.value.districtCode, { "shouldDirty": true });
+        setValue('docReceiveAddressInfo.subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
     }
 
     return (
@@ -184,12 +184,12 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                             isEditable ? (
                                 <InputRadio
                                     name={"politicianRelation"}
-                                    defaultValue={watch('contractInformation.docReceiveChannel') || 'EMAIL'}
+                                    defaultValue={watch('docReceiveAddressInfo.docReceiveChannel') || 'EMAIL'}
                                     list={[
                                         { label: "อีเมล", value: 'EMAIL' },
                                         { label: "ไปรษณีย์", value: 'POST' },
                                     ]}
-                                    onChange={(value) => setValue('contractInformation.docReceiveChannel', value, { shouldDirty: true })}
+                                    onChange={(value) => setValue('docReceiveAddressInfo.docReceiveChannel', value, { shouldDirty: true })}
                                 />
                             ) : data && normalizationData('docReceiveChannel', data) || "-"
                         }
@@ -202,7 +202,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                         <InputRadio
                             disabled={!isEditable}
                             name={"politicianRelation"}
-                            defaultValue={watch('contractInformation.docReceiveAddressType') || '04'}
+                            defaultValue={watch('docReceiveAddressInfo.docReceiveAddressType') || '04'}
                             list={[
                                 { value: "01", label: "ตามประเภทหลักฐาน" },
                                 { value: "02", label: "ตามที่อยู่ปัจจุบัน" },
@@ -210,79 +210,90 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                 { value: "04", label: "อื่นๆ (โปรดระบุข้อมูลด้านล่างนี้)" }
 
                             ]}
-                            onChange={(value) => setValue('contractInformation.docReceiveAddressType', value, { shouldDirty: true })}
+                            onChange={(value) => {
+                                if (value === '01') {
+                                    setValue('isAddressInfoType4SameType', 1, { shouldDirty: true })
+                                } else if (value === '02') {
+                                    setValue('isAddressInfoType4SameType', 2, { shouldDirty: true })
+                                } else if (value === '03') {
+                                    setValue('isAddressInfoType4SameType', 3, { shouldDirty: true })
+                                } else {
+                                    setValue('isAddressInfoType4SameType', 0, { shouldDirty: true })
+                                }
+                                setValue('docReceiveAddressInfo.docReceiveAddressType', value)
+                            }}
                         />
                     </ContentLabel>
                 </div>
                 {
-                    watch('contractInformation.docReceiveAddressType') === '04' && (
+                    watch('docReceiveAddressInfo.docReceiveAddressType') === '04' && (
                         <div className="grid grid-cols-3">
                             <InputHorizontal
                                 label="เลขที่"
-                                defaultValue={watch("contractInformation.addressNo")}
+                                defaultValue={watch("docReceiveAddressInfo.addressNo")}
                                 textShow={data && normalizationData('addressNo', data) || "-"}
                                 isEditable={isEditable}
                                 // register={register}
                                 name="addressNo"
-                                onChange={(value) => setValue('contractInformation.addressNo', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.addressNo', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="หมู่ที่"
-                                defaultValue={watch("contractInformation.moo")}
+                                defaultValue={watch("docReceiveAddressInfo.moo")}
                                 textShow={data && normalizationData('moo', data) || "-"}
                                 isEditable={isEditable}
                                 // register={register}
                                 name="moo"
-                                onChange={(value) => setValue('contractInformation.moo', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.moo', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="หมู่บ้าน / อาคาร"
-                                defaultValue={watch("contractInformation.buildingOrVillage")}
+                                defaultValue={watch("docReceiveAddressInfo.buildingOrVillage")}
                                 textShow={data && normalizationData('buildingOrVillage', data) || "-"}
                                 isEditable={isEditable}
                                 // register={register}
                                 name="buildingOrVillage"
-                                onChange={(value) => setValue('contractInformation.buildingOrVillage', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.buildingOrVillage', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="เลขที่ห้อง"
-                                defaultValue={watch("contractInformation.roomNo")}
+                                defaultValue={watch("docReceiveAddressInfo.roomNo")}
                                 textShow={data && normalizationData('roomNo', data) || "-"}
                                 isEditable={isEditable}
                                 // register={register}
                                 name="roomNo"
-                                onChange={(value) => setValue('contractInformation.roomNo', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.roomNo', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="ชั้น"
-                                defaultValue={watch("contractInformation.floor")}
+                                defaultValue={watch("docReceiveAddressInfo.floor")}
                                 textShow={data && normalizationData('floor', data) || "-"}
                                 isEditable={isEditable}
                                 // register={register}
                                 name="floor"
-                                onChange={(value) => setValue('contractInformation.floor', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.floor', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="ตรอก / ซอย"
-                                defaultValue={watch("contractInformation.soi")}
+                                defaultValue={watch("docReceiveAddressInfo.soi")}
                                 textShow={data && normalizationData('soi', data) || "-"}
                                 isEditable={isEditable}
                                 // register={register}
                                 name="soi"
-                                onChange={(value) => setValue('contractInformation.soi', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.soi', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="ถนน"
-                                defaultValue={watch("contractInformation.street")}
+                                defaultValue={watch("docReceiveAddressInfo.street")}
                                 textShow={data && normalizationData('street', data) || "-"}
                                 isEditable={isEditable}
                                 // register={register}
                                 name="street"
-                                onChange={(value) => setValue('contractInformation.street', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.street', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="ประเทศ"
-                                defaultValue={watch("contractInformation.countryCode")}
+                                defaultValue={watch("docReceiveAddressInfo.countryCode")}
                                 textShow={data && normalizationData('country', data) || "-"}
                                 isEditable={isEditable}
                                 // register={register}
@@ -291,8 +302,8 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                 type="autocomplete"
                                 list={countries}
                                 onChange={(value) => {
-                                    if (value !== watch("contractInformation.countryCode")) {
-                                        setValue('contractInformation.countryCode', value, { shouldDirty: true });
+                                    if (value !== watch("docReceiveAddressInfo.countryCode")) {
+                                        setValue('docReceiveAddressInfo.countryCode', value, { shouldDirty: true });
                                     }
                                 }}
                                 placeholder="โปรดเลือกประเทศ"
@@ -318,14 +329,14 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                 }}
                             />
                             {
-                                watch("contractInformation.countryCode") !== '000'
+                                watch("docReceiveAddressInfo.countryCode") !== '000'
                                     ?
                                     <>
                                         <InputHorizontal
                                             label="ที่อยู่ 1"
                                             defaultValue={data && normalizationData('customAddress1', data) || ""}
                                             textShow={data && normalizationData('customAddress1', data) || "-"}
-                                            onChange={(value) => setValue('contractInformation.customAddress1', value, { shouldDirty: true })}
+                                            onChange={(value) => setValue('docReceiveAddressInfo.customAddress1', value, { shouldDirty: true })}
                                             isEditable={isEditable}
                                             name="customAddress1"
                                             isRequired
@@ -334,7 +345,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                             label="ที่อยู่ 2"
                                             defaultValue={data && normalizationData('customAddress2', data) || ""}
                                             textShow={data && normalizationData('customAddress2', data) || "-"}
-                                            onChange={(value) => setValue('contractInformation.customAddress2', value, { shouldDirty: true })}
+                                            onChange={(value) => setValue('docReceiveAddressInfo.customAddress2', value, { shouldDirty: true })}
                                             isEditable={isEditable}
                                             name="customAddress2"
                                             isRequired
@@ -343,7 +354,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                             label="ที่อยู่ 3"
                                             defaultValue={data && normalizationData('customAddress3', data) || "-"}
                                             textShow={data && normalizationData('customAddress3', data) || "-"}
-                                            onChange={(value) => setValue('contractInformation.customAddress3', value, { shouldDirty: true })}
+                                            onChange={(value) => setValue('docReceiveAddressInfo.customAddress3', value, { shouldDirty: true })}
                                             isEditable={isEditable}
                                             name="customAddress3"
                                             isRequired
@@ -420,7 +431,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                 isEditable={isEditable}
                                 name="mobileNo"
                                 isRequired
-                                onChange={(value) => setValue('contractInformation.mobileNo', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.mobileNo', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="โทรศัพท์พื้นฐาน"
@@ -429,7 +440,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                 isEditable={isEditable}
                                 name="officeNo"
                                 isRequired
-                                onChange={(value) => setValue('contractInformation.officeNo', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.officeNo', value, { shouldDirty: true })}
                             />
                             <InputHorizontal
                                 label="อีเมล"
@@ -438,7 +449,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                 isEditable={isEditable}
                                 name="email"
                                 isRequired
-                                onChange={(value) => setValue('contractInformation.email', value, { shouldDirty: true })}
+                                onChange={(value) => setValue('docReceiveAddressInfo.email', value, { shouldDirty: true })}
                             />
                         </div>
                     )
