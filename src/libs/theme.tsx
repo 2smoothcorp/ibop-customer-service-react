@@ -64,6 +64,19 @@ export const mainTheme = createTheme({
 
   /** Custom Component Specific Theme here */
   components: {
+    MuiTextField: {
+      defaultProps: {
+        variant: 'outlined',
+        size: 'small',
+        fullWidth: true,
+        InputProps: {
+          sx: {
+            backgroundColor: '#fff',
+            fontSize: '18px',
+          }
+        }
+      }
+    },
     MuiAutocomplete: {
       styleOverrides: {
         root: {

@@ -7,7 +7,7 @@ export default function HeaderTitleSub({
     return (
         <div className={`flex flex-col gap-[5px] py-[12px] ${className}`}>
             <div className="flex justify-between">
-                <span className="font-db-helvethaica text-[18px] font-semibold p-0 m-0 tracking-wide ">{title}</span>
+                <span className="font-db-helvethaica text-[20px] font-semibold p-0 m-0 tracking-wide ">{title}</span>
                 {rightComponent}
             </div>
             {

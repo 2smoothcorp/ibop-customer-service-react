@@ -28,7 +28,12 @@ export const useMasterDataCountriesCustom = () => {
                 const response: ComboBoxListDataResponse = await request.json();
                 if (response && response.data && response.data.length > 0) {
                     const customData = response.data.map((item) => {
-                        return { ...item, value: item.rValue || '', label: `${item.rValue} - ${item.rText}` }
+                        return {
+                            ...item,
+                            id: item.rValue || '',
+                            value: item.rValue || '',
+                            label: `${item.rValue} - ${item.rText}`
+                        }
                     });
                     return customData
                 }

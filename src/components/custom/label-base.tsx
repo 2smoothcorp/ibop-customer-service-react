@@ -1,10 +1,11 @@
-export default function LabelBase({ title, className }: LabelBaseProps) {
+export default function LabelBase({ title, className, width }: LabelBaseProps) {
     return (
-        <label className={`font-cordia-new text-lg tracking-wide ${className}`} >{title}</label>
+        <div className={`text-[20px] tracking-wide font-bold ${className}`} style={{ minWidth: width }} >{title}</div>
     )
 }
 
 interface LabelBaseProps {
     title: string;
     className?: string;
+    width?: number | string;
 }
