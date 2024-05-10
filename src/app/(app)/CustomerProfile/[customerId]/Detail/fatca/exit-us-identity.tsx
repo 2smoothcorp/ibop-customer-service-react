@@ -327,7 +327,7 @@ export default function ExitUSIndentity({ useForm }: { useForm: UseFormReturn<Cu
         className="gap-0"
         title="ส่วนที่ 2 ท่านเป็นผู้มีถิ่นที่อยู่ทางภาษีในประเทศอื่นๆนอกจากสหรัฐอเมริกา" />
       <ContentLoading
-        isLoading={isLoading}
+        isLoading={isLoading || watch('isFatcaIndividualSelfCert') === null}
         error={error && error.message || undefined}
         hight={300}
       >
@@ -337,7 +337,7 @@ export default function ExitUSIndentity({ useForm }: { useForm: UseFormReturn<Cu
               <InputSwitch
                 label="สถานะ FATCA"
                 name="isFatcaIndividualSelfCert"
-                defaultValue={watch('isFatcaIndividualSelfCert')}
+                defaultValue={watch('isFatcaIndividualSelfCert') || false}
                 onChange={(isCheck) => setValue('isFatcaIndividualSelfCert', isCheck, { shouldDirty: true })}
                 disabled={!isEditable} />
             )}

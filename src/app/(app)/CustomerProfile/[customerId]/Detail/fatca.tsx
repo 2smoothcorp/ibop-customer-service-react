@@ -39,7 +39,9 @@ export default function Fatca() {
             dispatch(setAnswerInput(answerInput));
         }
         // if (isFatcaIndividualSelfCert !== undefined) {
-        dispatch(setIsFatcaIndividualSelfCertified(data.isFatcaIndividualSelfCert))
+        if (data.isFatcaIndividualSelfCert) {
+            dispatch(setIsFatcaIndividualSelfCertified(data.isFatcaIndividualSelfCert))
+        }
         // }
         if (tinInput !== undefined) {
             if (data.tinInput) {

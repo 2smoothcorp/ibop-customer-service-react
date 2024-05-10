@@ -6,7 +6,7 @@ export interface CustomerFatcaState {
     isW8: boolean
     isW9: boolean
     isAmerica: boolean
-    isFatcaIndividualSelfCert: boolean
+    isFatcaIndividualSelfCert: boolean | null
     tinType: string,
     w9: GetFatcaW9Output | null
     w8: GetFatcaW8Output | null,
@@ -41,7 +41,7 @@ const initialState: CustomerFatcaState = {
     isW8: false,
     isW9: false,
     isAmerica: false,
-    isFatcaIndividualSelfCert: false,
+    isFatcaIndividualSelfCert: null,
     tinType: '1',
     w9: null,
     w8: null,
