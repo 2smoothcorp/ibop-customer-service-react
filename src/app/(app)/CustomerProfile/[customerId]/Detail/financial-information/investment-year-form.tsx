@@ -29,7 +29,7 @@ const InvestmentYearForm = (props: InvestmentYearFormProps) => {
                         defaultValue={form.watch('investmentYear') || 0}
                         disabled={false}
                         required={true}
-                        onChange={(value) => form.setValue("investmentYear", parseInt(value.toString()))}
+                        onChange={(value) => form.setValue("investmentYear", parseInt(value.toString()), { shouldDirty: true })}
                     />
                 </div>
                 :

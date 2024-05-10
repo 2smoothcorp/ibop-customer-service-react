@@ -37,7 +37,7 @@ const IncomeRateForm = (props: IncomeRateFormProps) => {
                     <IncomeRateDDL
                         name={`incomeRateCode`}
                         defaultValue={form.watch('incomeRateCode') || ''}
-                        onChange={(v) => form.setValue(`incomeRateCode`, v)}
+                        onChange={(v) => form.setValue(`incomeRateCode`, v, { shouldDirty: true })}
                     />
                 </div>
                 :

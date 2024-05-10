@@ -24,6 +24,10 @@ const PurposeForm = (props: PurposeFormProps) => {
         return (form.getValues('investmentPurposeCode') || []).filter(p => p == value).length ? true : false
     }
 
+    const isPurposeOther = () => {
+        return (form.watch('investmentPurposeCode') || []).filter(p => p == '0').length ? true : false
+    }
+
     const editMode = () => {
         return (<>
             <div className="grid grid-cols-3 w-2/3">
@@ -50,7 +54,8 @@ const PurposeForm = (props: PurposeFormProps) => {
                         isEditable={isEditable}
                         labelWidth="max-content"
                         labelAlign="left"
-                        onChange={(v) => form.setValue('investmentPurposeOther', v)}
+                        disabled={!isPurposeOther()}
+                        onChange={(v) => form.setValue('investmentPurposeOther', v, { shouldDirty: true })}
                     />
                 </div>
             </div>

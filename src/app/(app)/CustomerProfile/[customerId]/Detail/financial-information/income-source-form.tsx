@@ -24,6 +24,10 @@ const IncomeSourceForm = (props: IncomeSourceFormProps) => {
         return (form.getValues('incomeSourceCode') || []).filter(p => p == value).length ? true : false
     }
 
+    const isIncomeSourceOther = () => {
+        return (form.watch('incomeSourceCode') || []).filter(p => p == '0').length ? true : false
+    }
+
     const view = () => {
         return <>
             {
@@ -71,7 +75,8 @@ const IncomeSourceForm = (props: IncomeSourceFormProps) => {
                         isEditable={true}
                         labelWidth="max-content"
                         labelAlign="left"
-                        onChange={(v) => form.setValue('incomeSourceOther', v)}
+                        disabled={!isIncomeSourceOther()}
+                        onChange={(v) => form.setValue('incomeSourceOther', v, { shouldDirty: true })}
                     />
                 </div>
             </div>

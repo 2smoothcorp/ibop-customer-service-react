@@ -29,7 +29,7 @@ const AssetForm = (props: AssetFormProps) => {
                         defaultValue={form.watch('assetValue') || 0}
                         disabled={false}
                         required={true}
-                        onChange={(value) => form.setValue("assetValue", parseInt(value.toString()))}
+                        onChange={(value) => form.setValue("assetValue", parseInt(value.toString()), { shouldDirty: true })}
                     />
                 </div>
                 :
