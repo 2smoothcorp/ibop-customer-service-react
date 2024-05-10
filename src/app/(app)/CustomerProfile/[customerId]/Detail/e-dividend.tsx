@@ -3,7 +3,7 @@
 import HeaderTitle from "@/components/navbar/header-title";
 import Table from "@/components/table/table";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { setDataCustomerEDividend, setMainIdCustomerEDividend } from "@/libs/redux/store/customer-ats-e-dividend-slice";
+import { setDataCustomerEDividend, setEDividendInfo, setMainIdCustomerEDividend } from "@/libs/redux/store/customer-ats-e-dividend-slice";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { BankInfoModel, BankInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { Button, Checkbox } from "@mui/material";
@@ -15,6 +15,7 @@ import { useState } from "react";
 export default function EDividend() {
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
+    const [defaultIdMain, setDefaultIdMain] = useState<number | null>(null)
     const [tablePaginator, setTablePaginator] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
     const dispatch = useAppDispatch()
 
@@ -36,16 +37,17 @@ export default function EDividend() {
                     const { data } = response;
 
                     if (data && data.bankInfoModel && data.bankInfoModel.length > 0) {
-                        // console.log(data.bankInfoModel)
-                        // setDefaultData(data.bankInfoModel)
                         const result = data.bankInfoModel.map((item, index) => {
+                            if (item.isDefault) setDefaultIdMain(index)
                             return ({
                                 ...item,
                                 id: index,
                             });
                         });
                         const rusultIsMain = result.find((item) => item.isDefault)
-                        dispatch(setMainIdCustomerEDividend(rusultIsMain?.id || 0))
+                        if (idRowsMainEDividend === -1) {
+                            dispatch(setMainIdCustomerEDividend(rusultIsMain?.id || 0))
+                        }
                         return result
                         // return [{
                         //     accountName: "",
@@ -87,14 +89,22 @@ export default function EDividend() {
 
     const saveData = () => {
         if (data) {
-            const indexOld = data.findIndex((item) => item.isDefault)
-            const indexNew = data.findIndex((_, index) => index == idRowsMainEDividend)
-            if (data.length > 1 && indexOld !== -1 && indexNew !== -1) {
-                const newData = [...data]
-                newData[indexOld].isDefault = false
-                newData[indexNew].isDefault = true
-                const result = newData.filter((_, index) => index === indexOld || index === indexNew)
-                dispatch(setDataCustomerEDividend(result))
+            console.log(defaultIdMain, idRowsMainEDividend)
+            if (defaultIdMain === idRowsMainEDividend) {
+                dispatch(setEDividendInfo(null))
+            } else {
+                const indexOld = data.findIndex((item) => item.isDefault)
+                const indexNew = data.findIndex((_, index) => index == idRowsMainEDividend)
+                if (data.length > 1 && indexOld !== -1 && indexNew !== -1) {
+                    const newData = [...data]
+                    newData[indexOld].action = 'update'
+                    newData[indexNew].action = 'update'
+                    newData[indexOld].isDefault = false
+                    newData[indexNew].isDefault = true
+                    const result = newData.filter((_, index) => index === indexOld || index === indexNew)
+                    dispatch(setDataCustomerEDividend(result))
+                    dispatch(setEDividendInfo(result))
+                }
             }
         }
         dispatch(nextStep())
@@ -218,7 +228,7 @@ const columns: GridColDef[] = [
         sortable: false,
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        minWidth: 200,
         valueGetter: (value, row) => `${row.isDefault ? '✅' : '❌'}`,
     },
 ];

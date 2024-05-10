@@ -75,3 +75,12 @@ export const getAddressBySearch = (search: string, mode: AddressBySearchModeProp
     })
     return result;
 }
+
+export const isObjectEmpty = (obj: object) => {
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop))
+            return false;
+    }
+
+    return true;
+}

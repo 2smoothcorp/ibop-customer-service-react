@@ -3,7 +3,7 @@
 import HeaderTitle from "@/components/navbar/header-title";
 import Table from "@/components/table/table";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { setDataCustomerAts, setMainIdCustomerAts } from "@/libs/redux/store/customer-ats-e-dividend-slice";
+import { setAtsInfo, setDataCustomerAts, setMainIdCustomerAts } from "@/libs/redux/store/customer-ats-e-dividend-slice";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { BankInfoModel, BankInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { Button, Checkbox } from "@mui/material";
@@ -15,6 +15,7 @@ import { useState } from "react";
 export default function ATS() {
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
+    const [defaultIdMain, setDefaultIdMain] = useState<number | null>(null)
     const [tablePaginator, setTablePaginator] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
     const params = useParams()
     const dispatch = useAppDispatch()
@@ -39,13 +40,16 @@ export default function ATS() {
                         // console.log(data.bankInfoModel)
                         // setDefaultData(data.bankInfoModel)
                         const result = data.bankInfoModel.map((item, index) => {
+                            if (item.isDefault) setDefaultIdMain(index)
                             return ({
                                 ...item,
                                 id: index,
                             });
                         });
                         const rusultIsMain = result.find((item) => item.isDefault)
-                        dispatch(setMainIdCustomerAts(rusultIsMain?.id || 0))
+                        if (idRowsMainAts === -1) {
+                            dispatch(setMainIdCustomerAts(rusultIsMain?.id || 0))
+                        }
                         return result
                         // return [{
                         //     accountName: "",
@@ -87,15 +91,21 @@ export default function ATS() {
 
     const saveData = () => {
         if (data) {
-            const indexOld = data.findIndex((item) => item.isDefault)
-            const indexNew = data.findIndex((_, index) => index == idRowsMainAts)
-            if (data.length > 1 && indexOld !== -1 && indexNew !== -1) {
-                const newData = [...data]
-                console.log('newData', newData)
-                newData[indexOld].isDefault = false
-                newData[indexNew].isDefault = true
-                const result = newData.filter((_, index) => index === indexOld || index === indexNew)
-                dispatch(setDataCustomerAts(result))
+            if (defaultIdMain === idRowsMainAts) {
+                dispatch(setAtsInfo(null))
+            } else {
+                const indexOld = data.findIndex((item) => item.isDefault)
+                const indexNew = data.findIndex((_, index) => index == idRowsMainAts)
+                if (data.length > 1 && indexOld !== -1 && indexNew !== -1) {
+                    const newData = [...data]
+                    newData[indexOld].action = 'update'
+                    newData[indexNew].action = 'update'
+                    newData[indexOld].isDefault = false
+                    newData[indexNew].isDefault = true
+                    const result = newData.filter((_, index) => index === indexOld || index === indexNew)
+                    dispatch(setDataCustomerAts(result))
+                    dispatch(setAtsInfo(result))
+                }
             }
         }
         dispatch(nextStep())

@@ -10,6 +10,7 @@ export default function InputAutoComplete({
     list = [],
     disabled = false,
     onChange,
+    fullWidth = true
 }: InputAutoCompleteProps) {
 
     const [data, setData] = useState<InputAutoCompleteValue | null>(null);
@@ -28,7 +29,7 @@ export default function InputAutoComplete({
 
     return (
         <Autocomplete
-            fullWidth
+            fullWidth={fullWidth}
             value={data}
             onChange={(_, item) => item && typeof item !== 'string' && onChange && onChange(item.value)}
             isOptionEqualToValue={(option, value) => option.value === value.value}
@@ -53,6 +54,7 @@ interface InputAutoCompleteProps {
     list?: InputAutoCompleteValue[];
     disabled?: boolean;
     onChange?: (value: string) => void;
+    fullWidth?: boolean;
 }
 
 function setData(result: InputAutoCompleteValue) {
