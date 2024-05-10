@@ -88,6 +88,7 @@ models/CustomerInfoListResponse.ts
 models/CustomerInfoListResponsePagination.ts
 models/CustomerInfoRequest.ts
 models/CustomerProfileCustomerInformationCorporateIdPutRequest.ts
+models/CustomerProfileCustomerInformationRejectCorporateIdPostRequest.ts
 models/CustomerProfileReportOutput.ts
 models/CustomerProfileReportOutputCustomerProfileReportOutputPagination.ts
 models/CustomerProfileRequest.ts
@@ -169,6 +170,7 @@ models/PoliticRelationInfoResponseDataResponse.ts
 models/Question.ts
 models/QuestionsOutput.ts
 models/QuestionsOutputDataResponse.ts
+models/RejectRequest.ts
 models/RequestCustomerInput.ts
 models/ReserveAccountNoInput.ts
 models/ReserveAccountNoOutput.ts
