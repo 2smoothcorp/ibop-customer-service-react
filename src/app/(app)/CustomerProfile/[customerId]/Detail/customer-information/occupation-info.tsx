@@ -451,6 +451,7 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                                     <div className="text-[18px] px-4 font-semibold tracking-wide">ที่อยู่สถานที่ทำงาน</div>
                                 </div>
                                 <RadioButtonGroup
+                                    disabled={!isEditable}
                                     name="isAddressInfoType3SameType"
                                     row
                                     options={[

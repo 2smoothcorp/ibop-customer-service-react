@@ -331,6 +331,7 @@ export default function AddressInfoType2({ useForm }: { useForm: UseFormReturn<C
             >
                 <div className="w-full px-10">
                     <RadioButtonGroup
+                        disabled={!isEditable}
                         name="isAddressInfoType2SameType"
                         row
                         options={[
