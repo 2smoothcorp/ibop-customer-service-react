@@ -7,7 +7,7 @@ import TabNavbar from "@/components/navbar/tab-navbar"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook"
 import { jumpToStep } from "@/libs/redux/store/customer-profile-slice"
 import { useSearchParams } from "next/navigation"
-import React from "react"
+import React, { useEffect } from "react"
 import AccountInformation from "./account-information"
 import ATS from "./ats"
 import AttorneySection from "./attorney"
@@ -65,6 +65,12 @@ export default function DetailPage() {
             component: isEditable ? <SummaryInformation></SummaryInformation> : <AccountInformation />
         }
     ]
+
+    const customerInformationConfirm = useAppSelector(state => state.customerInformation.confirm)
+
+    useEffect(() => {
+        console.log('customerInformationConfirm', customerInformationConfirm)
+    }, [customerInformationConfirm])
 
     const step = useAppSelector((state) => state.customerProfile.step)
     const dispatch = useAppDispatch()

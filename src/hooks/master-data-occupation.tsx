@@ -23,7 +23,7 @@ const useMasterDataOccupation = () => {
     return { ...masterData }
 }
 
-export const useMasterDataOccupationCustom = () => {
+export const useMasterDataOccupationCustom = (labelEmpty: string = "กรุณาเลือกอาชีพ") => {
     const masterData = useQuery({
         queryKey: ['occupationCustom'],
         queryFn: async function () {
@@ -34,11 +34,14 @@ export const useMasterDataOccupationCustom = () => {
                     const customData = response.data.map((item) => {
                         return {
                             ...item,
+                            id: item.rValue || '',
                             value: item.rValue || '',
                             label: `${item.rValue} - ${item.rText}` + (item.rText2 ? ` ( ${item.rText2} )` : '')
                         }
                     });
-                    return customData
+                    return [{
+                        id: "", value: "", label: labelEmpty,
+                    }].concat(customData)
                 }
                 return [];
             } catch (e) {

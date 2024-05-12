@@ -18,7 +18,7 @@ const useMasterDataTitles = () => {
     return { ...masterData }
 }
 
-export const useMasterDataTitlesCustom = () => {
+export const useMasterDataTitlesCustom = (labelEmpty: string = "กรุณาเลือก") => {
     const masterData = useQuery({
         queryKey: ['TitlesCustom'],
         queryFn: async function () {
@@ -27,9 +27,16 @@ export const useMasterDataTitlesCustom = () => {
                 const response: ComboBoxListDataResponse = await request.json();
                 if (response && response.data && response.data.length > 0) {
                     const customData = response.data.map((item) => {
-                        return { ...item, value: item.rValue || '', label: `${item.rValue} - ${item.rText}` }
+                        return {
+                            ...item,
+                            id: item.rValue || '',
+                            value: item.rValue || '',
+                            label: `${item.rValue} - ${item.rText}`
+                        }
                     });
-                    return customData
+                    return [{
+                        id: "", value: "", label: labelEmpty,
+                    }].concat(customData)
                 }
                 return [];
             } catch (e) {

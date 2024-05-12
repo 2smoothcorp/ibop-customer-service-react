@@ -65,6 +65,24 @@ export const mainTheme = createTheme({
   /** Custom Component Specific Theme here */
   components: {
     MuiTextField: {
+      styleOverrides: {
+        root: {
+          // '& .MuiFormHelperText-root': {
+          //   position: 'absolute',
+          //   bottom: '-30px',
+          //   fontSize: '16px',
+          // },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#D1D5DB',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#1F346B',
+            },
+          },
+        }
+
+      },
       defaultProps: {
         variant: 'outlined',
         size: 'small',

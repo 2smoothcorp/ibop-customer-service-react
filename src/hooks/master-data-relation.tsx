@@ -18,7 +18,7 @@ const useMasterDataRelation = () => {
     return { ...masterData }
 }
 
-export const useMasterDataRelationCustom = () => {
+export const useMasterDataRelationCustom = (labelEmpty: string = "กรุณาเลือก") => {
     const masterData = useQuery({
         queryKey: ['relationCustom'],
         queryFn: async function () {
@@ -29,11 +29,14 @@ export const useMasterDataRelationCustom = () => {
                     const customData = response.data.map((item) => {
                         return {
                             ...item,
+                            id: item.rValue || '',
                             value: item.rValue || '',
                             label: `${item.rValue} - ${item.rText}`
                         }
                     });
-                    return customData
+                    return [{
+                        id: "", value: "", label: labelEmpty,
+                    }].concat(customData)
                 }
                 return [];
             } catch (e) {

@@ -18,7 +18,7 @@ const useMasterDataReference = () => {
     return { ...masterData }
 }
 
-export const useMasterDataReferenceCustom = () => {
+export const useMasterDataReferenceCustom = (labelEmpty: string = "กรุณาเลือกประเภทหลักฐานลูกค้า") => {
     const masterData = useQuery({
         queryKey: ['referencesCustom'],
         queryFn: async function () {
@@ -27,9 +27,16 @@ export const useMasterDataReferenceCustom = () => {
                 const response: ComboBoxListDataResponse = await request.json();
                 if (response && response.data && response.data.length > 0) {
                     const customData = response.data.map((item) => {
-                        return { ...item, value: item.rValue || '', label: `${item.rValue} - ${item.rText}` }
+                        return {
+                            ...item,
+                            id: item.rValue || '',
+                            value: item.rValue || '',
+                            label: `${item.rValue} - ${item.rText}`
+                        }
                     });
-                    return customData
+                    return [{
+                        id: "", value: "", label: labelEmpty,
+                    }].concat(customData)
                 }
                 return [];
             } catch (e) {

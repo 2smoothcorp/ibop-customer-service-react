@@ -1,27 +1,31 @@
 "use client"
 
 import ContentLoading from "@/components/content/content-loading";
-import InputCheckbox from "@/components/custom/input-checkbox";
-import InputHorizontal from "@/components/custom/input-horizontal";
+import InputElement, { InputElementProps } from "@/components/custom/input-element";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataNationCustom } from "@/hooks/master-data-nation";
 import { useMasterDataPersonTypeCustom } from "@/hooks/master-data-person-type";
 import { useMasterDataReferenceCustom } from "@/hooks/master-data-reference";
 import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
+import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { PersonalInfoModel, PersonalInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { handleEmptyStringFormApi, handlerEmpty, isEmptyStringFormApi, objectToArray } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useParams, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { CheckboxElement } from "react-hook-form-mui";
 
 export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
-    const { setValue, watch } = useForm
+    const { setValue, watch, trigger } = useForm
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
+
+    const confirmPersonalInfo = useAppSelector(state => state.customerInformation.confirm?.personalInfo)
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['personalInfo', params.customerId],
@@ -63,11 +67,11 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
             case 'identityExpireDate':
                 return !isEmptyStringFormApi(personalInfo.identityExpireDate) ? dayjs(personalInfo.identityExpireDate).format('DD/MM/YYYY') : '-';
             case 'genderCode':
-                return handleEmptyStringFormApi(personalInfo.genderCode);
+                return handlerEmpty(personalInfo.genderCode);
             case 'gender':
                 return !isEmptyStringFormApi(personalInfo.genderCode) ? `${personalInfo.genderCode} - ${personalInfo.gender}` : '-';
             case 'titleCode':
-                return handleEmptyStringFormApi(personalInfo.titleCode);
+                return handlerEmpty(personalInfo.titleCode);
             case 'title':
                 return !isEmptyStringFormApi(personalInfo.titleCode) ? `${personalInfo.titleCode} - ${personalInfo.titleNameTh || personalInfo.titleNameEn}` : '-';
             case 'firstNameTh':
@@ -79,15 +83,16 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
             case 'lastNameEn':
                 return handleEmptyStringFormApi(personalInfo.lastNameEn);
             case 'birthDate':
-                return !isEmptyStringFormApi(personalInfo.birthDate) ? dayjs(personalInfo.birthDate).format('YYYY-MM-DD') : '-';
+                return !isEmptyStringFormApi(personalInfo.birthDate) ? personalInfo.birthDate || '' : '';
             default:
                 return '-';
         }
     }
 
     const setDefaultData = (personalInfo: PersonalInfoModel) => {
+
         setValue('personalInfo.personType', normalizationData('personType', personalInfo));
-        setValue('personalInfo.personTypeCode', normalizationData('personTypeCode', personalInfo));
+        setValue('personalInfo.personTypeCode', normalizationData('personTypeCode', personalInfo), { shouldDirty: false });
         setValue('personalInfo.referenceTypeDesc', normalizationData('referenceTypeDesc', personalInfo));
         setValue('personalInfo.referenceType', normalizationData('referenceType', personalInfo));
         setValue('personalInfo.referenceID', normalizationData('referenceID', personalInfo));
@@ -96,20 +101,55 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
         setValue('personalInfo.nation', normalizationData('nation', personalInfo));
         setValue('personalInfo.nationalityCode', normalizationData('nationalityCode', personalInfo));
         setValue('personalInfo.identityExpireDate', normalizationData('identityExpireDate', personalInfo));
+        setValue('personalInfo.identityExpireDateDayjs',
+            (personalInfo.identityExpireDate !== '' && personalInfo.identityExpireDate !== '-')
+                ? dayjs(personalInfo.identityExpireDate || null)
+                : null,
+            { shouldDirty: false });
         setValue('personalInfo.gender', normalizationData('gender', personalInfo));
         setValue('personalInfo.genderCode', normalizationData('genderCode', personalInfo));
         setValue('personalInfo.title', normalizationData('title', personalInfo));
-        setValue('personalInfo.titleCode', normalizationData('titleCode', personalInfo));
+        setValue('personalInfo.titleCode', normalizationData('titleCode', personalInfo), { shouldDirty: false });
         setValue('personalInfo.firstNameTh', normalizationData('firstNameTh', personalInfo));
         setValue('personalInfo.lastNameTh', normalizationData('lastNameTh', personalInfo));
         setValue('personalInfo.firstNameEn', normalizationData('firstNameEn', personalInfo));
         setValue('personalInfo.lastNameEn', normalizationData('lastNameEn', personalInfo));
-        setValue('personalInfo.birthDate', normalizationData('birthDate', personalInfo));
+        setValue('personalInfo.birthDate', normalizationData('birthDate', personalInfo), { shouldDirty: false });
+        setValue('personalInfo.birthDateDayjs',
+            (personalInfo.birthDate !== '' && personalInfo.birthDate !== '-')
+                ? dayjs(personalInfo.birthDate || null)
+                : null,
+            { shouldDirty: false });
+        if (confirmPersonalInfo) {
+            try {
+                const oldData = objectToArray({ personalInfo: confirmPersonalInfo });
+                oldData.map((item) => {
+                    const [key, value] = item
+                    if (key === 'personalInfo.birthDate') {
+                        setValue("personalInfo.birthDateDayjs", dayjs(value as any), {
+                            shouldDirty: true
+                        })
+                    }
+                    if (key === 'personalInfo.identityExpireDate') {
+                        setValue("personalInfo.identityExpireDateDayjs", dayjs(value as any), {
+                            shouldDirty: true
+                        })
+                    }
+                    setValue(key as any, value, {
+                        shouldDirty: true
+                    })
+                });
+            } catch (err) {
+                console.error(err)
+            }
+        }
+
     }
 
-    const getData = async () => {
+    const getData = async (): Promise<PersonalInfoModel | null> => {
         if (data) {
             setDefaultData(data)
+            return data;
         }
         const { customerId } = params
         if (customerId) {
@@ -119,7 +159,6 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                 if (response.status == 200) {
                     const { data } = response;
                     if (data && data.personalInfo) {
-                        // console.log(`data.personalInfo`, data.personalInfo)
                         setDefaultData(data.personalInfo)
                         return data.personalInfo
                     }
@@ -131,6 +170,199 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
         return null
     }
 
+
+    const inputDate: InputElementProps[] = [
+        {
+            type: "autocomplete",
+            label: "ประเภทลูกค้า",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "personalInfo.personTypeCode",
+                rules: {
+                    required: 'โปรดเลือกประเภทลูกค้า',
+                },
+                options: personType || [],
+            }
+        },
+        {
+            type: "autocomplete",
+            label: "ประเภทหลักฐานลูกค้า",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "personalInfo.referenceType",
+                rules: {
+                    required: 'โปรดเลือกประเภทหลักฐานลูกค้า',
+                },
+                options: reference || [],
+            }
+        },
+        {
+            label: "เลขที่บัตร",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "personalInfo.referenceID",
+                rules: {
+                    required: 'โปรดระบุเลขที่บัตร',
+                },
+                inputProps: {
+                    placeholder: "เลขที่บัตร",
+                }
+            }
+        },
+        {
+            type: "autocomplete",
+            label: "ประเทศที่ออกบัตร",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "personalInfo.countryCode",
+                rules: {
+                    required: 'โปรดเลือกประเทศที่ออกบัตร',
+                },
+                options: countries || [],
+            }
+        },
+        {
+            type: "autocomplete",
+            label: "ประเทศเจ้าของสัญชาติ",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "personalInfo.nationalityCode",
+                rules: {
+                    required: 'โปรดเลือกประเทศเจ้าของสัญชาติ',
+                },
+                options: nation || [],
+            }
+        },
+        {
+            type: "date",
+            label: "วันที่หมดอายุบัตร (ค.ศ.)",
+            isEditable: isEditable,
+            datePickerElementProps: {
+                name: "personalInfo.identityExpireDateDayjs",
+                minDate: dayjs(),
+                inputProps: {
+                    placeholder: "โปรดระบุวันที่หมดอายุบัตร",
+                },
+                rules: {
+                    required: 'โปรดระบุวันที่หมดอายุบัตร',
+                },
+            },
+            rightInputComponent: isEditable ?
+                <div className="w-full h-full flex justify-center items-center p-2">
+                    <CheckboxElement
+                        label="ตลอดชีพ"
+                        name="personalInfo.identityNeverExpire"
+                    />
+                </div> : <></>
+        },
+        {
+            type: "autocomplete",
+            label: "คำนำหน้า",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "personalInfo.titleCode",
+                rules: {
+                    required: 'โปรดเลือกคำนำหน้า',
+                },
+                options: titles || [],
+            }
+        },
+        {
+            label: "ชื่อ (ภาษาไทย)",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "personalInfo.firstNameTh",
+                rules: {
+                    required: 'โปรดระบุชื่อ (ภาษาไทย)',
+                },
+                inputProps: {
+                    placeholder: "โปรดระบุชื่อ (ภาษาไทย)",
+                }
+            }
+        },
+        {
+            label: "นามสกุล (ภาษาไทย)",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "personalInfo.lastNameTh",
+                rules: {
+                    required: 'โปรดระบุนามสกุล (ภาษาไทย)',
+                },
+                inputProps: {
+                    placeholder: "โปรดระบุนามสกุล (ภาษาไทย)",
+                }
+            }
+        },
+        {
+            type: "radio",
+            label: "เพศ",
+            isEditable: isEditable,
+            radioButtonGroupProps: {
+                row: true,
+                name: "personalInfo.genderCode",
+                rules: {
+                    required: 'โปรดเลือกเพศ',
+                },
+                options: [
+                    { id: '0', value: '0', label: 'ชาย' },
+                    { id: '1', value: '1', label: 'หญิง' },
+                    { id: '3', value: '3', label: 'ไม่ระบุ' },
+                ]
+            }
+        },
+        {
+            label: "ชื่อ (ภาษาอังกฤษ)",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "personalInfo.firstNameEn",
+                rules: {
+                    required: 'โปรดระบุชื่อ (ภาษาอังกฤษ)',
+                },
+                inputProps: {
+                    placeholder: "โปรดระบุชื่อ (ภาษาอังกฤษ)",
+                }
+            }
+        },
+        {
+            label: "นามสกุล (ภาษาอังกฤษ)",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "personalInfo.lastNameEn",
+                rules: {
+                    required: 'โปรดระบุนามสกุล (ภาษาอังกฤษ)',
+                },
+                inputProps: {
+                    placeholder: "โปรดระบุนามสกุล (ภาษาอังกฤษ)",
+                }
+            }
+        },
+        {
+            label: "",
+        },
+        {
+            type: "date",
+            label: "วัน/เดือน/ปีเกิด (ค.ศ.)",
+            isEditable: isEditable,
+            datePickerElementProps: {
+                name: "personalInfo.birthDateDayjs",
+                rules: {
+                    required: 'โปรดระบุวัน/เดือน/ปีเกิด',
+                },
+                inputProps: {
+                    placeholder: "โปรดระบุวัน/เดือน/ปีเกิด",
+                },
+                maxDate: dayjs().subtract(15, 'year'),
+            }
+        },
+
+    ]
+
+    useEffect(() => {
+        if (!isLoading) {
+            trigger('personalInfo')
+        }
+    }, [isLoading, trigger])
+
     return (
         <>
             <HeaderTitle
@@ -141,225 +373,20 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                 isLoading={isLoading || isLoadingPersonType || isLoadingReference || isLoadingCountries || isLoadingTitles || isLoadingNation}
                 error={error ? error.message : undefined}
             >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    <InputHorizontal
-                        label="ประเภทลูกค้า"
-                        placeholder="โปรดเลือกประเภทลูกค้า"
-                        defaultValue={watch('personalInfo.personTypeCode')}
-                        textShow={data && normalizationData('personType', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="personTypeCode"
-                        type="autocomplete"
-                        list={personType}
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.personTypeCode', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="ประเภทหลักฐานลูกค้า"
-                        placeholder="โปรดเลือกประเภทหลักฐานลูกค้า"
-                        defaultValue={watch('personalInfo.referenceType')}
-                        textShow={data && normalizationData('referenceTypeDesc', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="referenceType"
-                        type="autocomplete"
-                        list={reference}
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.referenceType', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="เลขที่บัตร"
-                        placeholder="โปรดระบุเลขที่บัตร"
-                        defaultValue={watch('personalInfo.referenceID')}
-                        textShow={data && normalizationData('referenceID', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="referenceID"
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.referenceID', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="ประเทศที่ออกบัตร"
-                        placeholder="โปรดเลือกประเทศที่ออกบัตร"
-                        defaultValue={watch('personalInfo.countryCode')}
-                        textShow={data && normalizationData('country', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        type="autocomplete"
-                        list={countries}
-                        name="countryCode"
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.countryCode', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="ประเทศเจ้าของสัญชาติ"
-                        placeholder="โปรดเลือกประเทศเจ้าของสัญชาติ"
-                        defaultValue={watch('personalInfo.nationalityCode')}
-                        textShow={data && normalizationData('nation', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="nationalityCode"
-                        type="autocomplete"
-                        list={nation}
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.nationalityCode', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="วันที่หมดอายุบัตร (ค.ศ.)"
-                        placeholder="โปรดระบุวันที่หมดอายุบัตร"
-                        defaultValue={data &&
-                            (
-                                normalizationData('identityExpireDate', data) !== '-'
-                                    ? normalizationData('identityExpireDate', data)
-                                    : null
+                <div className="grid grid-cols-3">
+                    {
+                        inputDate.map((input, index) => {
+                            return (
+                                <InputElement
+                                    key={index}
+                                    {...input}
+                                />
                             )
-                            || undefined}
-                        textShow={data &&
-                            (
-                                normalizationData('identityExpireDate', data) !== '-'
-                                    ? dayjs(normalizationData('identityExpireDate', data)).format('DD/MM/YYYY')
-                                    : normalizationData('identityNeverExpire', data) || null
-                            )
-                            || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        type="date"
-                        minDate={dayjs().format('YYYY-MM-DD')}
-                        name="identityExpireDate"
-                        isRequired={false}
-                        disabled={watch("personalInfo.identityNeverExpire") || false}
-                        onChange={(value) => setValue("personalInfo.identityExpireDate", value, { shouldDirty: true })}
-                        rightInputComponent={
-                            isEditable ?
-                                <div className="w-[120px] flex justify-center">
-                                    <InputCheckbox
-                                        width={100}
-                                        label="ตลอดชีพ"
-                                        name="identityNeverExpire"
-                                        defaultValue={watch('personalInfo.identityNeverExpire')}
-                                        onChange={(value) => { setValue('personalInfo.identityNeverExpire', value, { shouldDirty: true }) }}
-                                    />
-                                </div> : <></>
-                        }
-                    />
-                    <InputHorizontal
-                        label="คำนำหน้า"
-                        placeholder="โปรดเลือกคำนำหน้า"
-                        defaultValue={watch('personalInfo.titleCode')}
-                        textShow={data && normalizationData('title', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="titleCode"
-                        type="autocomplete"
-                        list={titles}
-                        isRequired
-                        onChange={(value) => {
-                            if (value === '103' || value === '301' || value === '302') {
-                                console.log('change man')
-                                setValue('personalInfo.genderCode', '0', { shouldDirty: true })
-                            }
-                            if (value === '104' || value === '105' || value === '304' || value === '306') {
-                                console.log('change girl')
-                                setValue('personalInfo.genderCode', '1', { shouldDirty: true })
-                            }
-                            setValue('personalInfo.titleCode', value, { shouldDirty: true })
-                        }}
-                    />
-                    <InputHorizontal
-                        label="ชื่อ (ภาษาไทย)"
-                        placeholder="โปรดระบุชื่อ (ภาษาไทย)"
-                        defaultValue={watch('personalInfo.firstNameTh')}
-                        textShow={data && normalizationData('firstNameTh', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="firstNameTh"
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.firstNameTh', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="นามสกุล (ภาษาไทย)"
-                        placeholder="โปรดระบุนามสกุล (ภาษาไทย)"
-                        defaultValue={watch('personalInfo.lastNameTh')}
-                        textShow={data && normalizationData('lastNameTh', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="lastNameTh"
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.lastNameTh', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="เพศ"
-                        placeholder="โปรดเลือกเพศ"
-                        defaultValue={watch('personalInfo.genderCode')}
-                        textShow={data && normalizationData('gender', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="genderCode"
-                        type="radio"
-                        list={[
-                            { value: '0', label: 'ชาย' },
-                            { value: '1', label: 'หญิง' },
-                            // { value: '2', label: '2-นิติบุคคล' },
-                            { value: '3', label: 'ไม่ระบุ' },
-                        ]}
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.genderCode', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="ชื่อ (ภาษาอังกฤษ)"
-                        placeholder="โปรดระบุชื่อ (ภาษาอังกฤษ)"
-                        defaultValue={data && normalizationData('firstNameEn', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="firstNameEn"
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.firstNameEn', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label="นามสกุล (ภาษาอังกฤษ)"
-                        placeholder="โปรดระบุนามสกุล (ภาษาอังกฤษ)"
-                        defaultValue={data && normalizationData('lastNameEn', data) || '-'}
-                        isEditable={isEditable}
-                        // register={register}
-                        name="lastNameEn"
-                        isRequired
-                        onChange={(value) => setValue('personalInfo.lastNameEn', value, { shouldDirty: true })}
-                    />
-                    <InputHorizontal
-                        label=""
-                        defaultValue=""
-                        // register={register}
-                        name=""
-                    />
-
-                    <InputHorizontal
-                        label="วัน/เดือน/ปีเกิด (ค.ศ.)"
-                        placeholder="โปรดระบุวัน/เดือน/ปีเกิด"
-                        defaultValue={data &&
-                            (
-                                normalizationData('birthDate', data) !== '-'
-                                    ? normalizationData('birthDate', data)
-                                    : null
-                            )
-                            || undefined}
-                        textShow={
-                            data && (
-                                normalizationData('birthDate', data) !== '-'
-                                    ? dayjs(normalizationData('birthDate', data)).format('DD/MM/YYYY')
-                                    : null
-                            ) || '-'
-                        }
-                        isEditable={isEditable}
-                        // register={register}
-                        name="birthDate"
-                        type="date"
-                        maxDate={dayjs().subtract(15, 'year').format('YYYY-MM-DD')}
-                        onChange={(val) => setValue("personalInfo.birthDate", val, { shouldDirty: true })}
-                        isRequired
-                    />
+                        })
+                    }
                 </div>
             </ContentLoading>
         </>
     )
 }
+

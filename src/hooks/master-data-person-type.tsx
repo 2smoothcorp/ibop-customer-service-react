@@ -23,7 +23,7 @@ const useMasterDataPersonType = () => {
     return { ...masterData }
 }
 
-export const useMasterDataPersonTypeCustom = () => {
+export const useMasterDataPersonTypeCustom = (labelEmpty: string = "กรุณาเลือกประเภทลูกค้า") => {
     const masterData = useQuery({
         queryKey: ['personTypeCustom'],
         queryFn: async function () {
@@ -32,9 +32,16 @@ export const useMasterDataPersonTypeCustom = () => {
                 const response: ComboBoxListDataResponse = await request.json();
                 if (response && response.data && response.data.length > 0) {
                     const customData = response.data.map((item) => {
-                        return { ...item, value: item.rValue || '', label: `${item.rValue} - ${item.rText}` }
+                        return {
+                            ...item,
+                            id: item.rValue || '',
+                            value: item.rValue || '',
+                            label: `${item.rValue} - ${item.rText}`
+                        }
                     });
-                    return customData
+                    return [{
+                        id: "", value: "", label: labelEmpty,
+                    }].concat(customData)
                 }
                 return [];
             } catch (e) {

@@ -19,7 +19,7 @@ const useMasterDataCountries = () => {
     return { ...MasterDataCountries }
 }
 
-export const useMasterDataCountriesCustom = () => {
+export const useMasterDataCountriesCustom = (labelEmpty: string = "กรุณาเลือกประเทศ") => {
     const MasterDataCountries = useQuery({
         queryKey: ['countries-custom'],
         queryFn: async function () {
@@ -35,7 +35,9 @@ export const useMasterDataCountriesCustom = () => {
                             label: `${item.rValue} - ${item.rText}`
                         }
                     });
-                    return customData
+                    return [{
+                        id: "", value: "", label: labelEmpty,
+                    }].concat(customData)
                 }
                 return [];
             } catch (e) {
