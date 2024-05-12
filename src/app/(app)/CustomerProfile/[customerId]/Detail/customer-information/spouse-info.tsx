@@ -1,19 +1,21 @@
 "use client"
 
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
+import InputElement, { InputElementProps } from "@/components/custom/input-element";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataReferenceCustom } from "@/hooks/master-data-reference";
 import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
+import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { SpouseInfoModel, SpouseInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { isEmptyStringFormApi, objectToArray } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
-    const { setValue, watch } = useForm;
+    const { setValue, watch, trigger } = useForm;
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
@@ -27,24 +29,26 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
         queryFn: () => getData(),
     })
 
-    const normalizationData = (name: string, spouseInfo: SpouseInfoModel): any => {
-        switch (name) {
-            case 'familyStatus':
-                return handleEmptyStringFormApi(spouseInfo.familyStatus);
-            case 'spouseReferenceType':
-                return handleEmptyStringFormApi(spouseInfo.spouseReferenceType);
-            case 'spouseIdentityId':
-                return handleEmptyStringFormApi(spouseInfo.spouseIdentityId);
-            case 'spouseTitle':
-                return !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? `${spouseInfo.spouseTitleCode} - ${spouseInfo.spouseTitleName}` : '-';
-            case 'spouseFirstName':
-                return handleEmptyStringFormApi(spouseInfo.spouseFirstName);
-            case 'spouseLastName':
-                return handleEmptyStringFormApi(spouseInfo.spouseLastName);
-            default:
-                return '-';
-        }
-    }
+    // const normalizationData = (name: string, spouseInfo: SpouseInfoModel): any => {
+    //     switch (name) {
+    //         case 'familyStatus':
+    //             return handleEmptyStringFormApi(spouseInfo.familyStatus);
+    //         case 'spouseReferenceType':
+    //             return handleEmptyStringFormApi(spouseInfo.spouseReferenceType);
+    //         case 'spouseIdentityId':
+    //             return handleEmptyStringFormApi(spouseInfo.spouseIdentityId);
+    //         case 'spouseTitle':
+    //             return !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? `${spouseInfo.spouseTitleCode} - ${spouseInfo.spouseTitleName}` : '-';
+    //         case 'spouseFirstName':
+    //             return handleEmptyStringFormApi(spouseInfo.spouseFirstName);
+    //         case 'spouseLastName':
+    //             return handleEmptyStringFormApi(spouseInfo.spouseLastName);
+    //         default:
+    //             return '-';
+    //     }
+    // }
+
+    const confirmSpouseInfo = useAppSelector(state => state.customerInformation.confirm?.spouseInfo)
 
     const setDefaultData = (spouseInfo: SpouseInfoModel) => {
         setValue('spouseInfo.familyStatus', !isEmptyStringFormApi(spouseInfo.familyStatus) ? spouseInfo.familyStatus || '' : '');
@@ -53,11 +57,25 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
         setValue('spouseInfo.spouseTitleCode', !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? spouseInfo.spouseTitleCode || '' : '');
         setValue('spouseInfo.spouseFirstName', !isEmptyStringFormApi(spouseInfo.spouseFirstName) ? spouseInfo.spouseFirstName || '' : '');
         setValue('spouseInfo.spouseLastName', !isEmptyStringFormApi(spouseInfo.spouseLastName) ? spouseInfo.spouseLastName || '' : '');
+        if (confirmSpouseInfo) {
+            try {
+                const oldData = objectToArray({ spouseInfo: confirmSpouseInfo });
+                oldData.map((item) => {
+                    const [key, value] = item;
+                    setValue(key as any, value, {
+                        shouldDirty: true
+                    })
+                });
+            } catch (err) {
+                console.error(err)
+            }
+        }
     }
 
-    const getData = async () => {
+    const getData = async (): Promise<SpouseInfoModel | null> => {
         if (data) {
             setDefaultData(data)
+            return data
         }
         const { customerId } = params
         if (customerId) {
@@ -78,6 +96,84 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
         return null
     }
 
+    const inputDate: InputElementProps[] = [
+        {
+            type: 'radio',
+            label: "สถานภาพ",
+            isEditable: isEditable,
+            radioButtonGroupProps: {
+                name: 'spouseInfo.familyStatus',
+                row: true,
+                options: [
+                    { id: "โสด", label: "โสด" },
+                    { id: "สมรส", label: "สมรส" },
+                ]
+            }
+        },
+        {
+            type: 'autocomplete',
+            label: "ประเภทหลักฐานลูกค้า",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: 'spouseInfo.spouseReferenceType',
+                rules: {
+                    required: 'โปรดเลือกประเภทหลักฐานลูกค้า'
+                },
+                options: reference || [],
+            }
+        },
+        {
+            label: "เลขที่บัตร",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: 'spouseInfo.spouseIdentityId',
+                rules: {
+                    required: 'โปรดกรอกเลขที่บัตร'
+                }
+            }
+        },
+        {
+            type: 'autocomplete',
+            label: "คำนำหน้า",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: 'spouseInfo.spouseTitleCode',
+                rules: {
+                    required: 'โปรดเลือกคำนำหน้า'
+                },
+                options: titles || [],
+            }
+        },
+        {
+            label: 'ชื่อคู่สมรส',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: 'spouseInfo.spouseFirstName',
+                rules: {
+                    required: 'โปรดกรอกชื่อคู่สมรส'
+                }
+            }
+        },
+        {
+            label: 'นามสกุลคู่สมรส',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: 'spouseInfo.spouseLastName',
+                rules: {
+                    required: 'โปรดกรอกนามสกุลคู่สมรส'
+                }
+            }
+        }
+    ]
+
+    const familyStatus = watch('spouseInfo.familyStatus')
+
+    useEffect(() => {
+        if (trigger && familyStatus) {
+            trigger('spouseInfo')
+        }
+    }, [familyStatus, isLoading, trigger])
+
     return (
         <>
             <HeaderTitle
@@ -90,7 +186,22 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
                 hight={92}
             >
                 <div className="grid grid-cols-3">
-                    <InputHorizontal
+                    {
+                        inputDate.map((input, index) => {
+                            if (watch('spouseInfo.familyStatus') !== 'สมรส' && index > 0) {
+                                return null
+                            } else {
+                                return (
+                                    <InputElement
+                                        key={index}
+                                        {...input}
+                                    />
+                                )
+                            }
+
+                        })
+                    }
+                    {/* <InputHorizontal
                         label="สถานภาพ"
                         defaultValue={watch('spouseInfo.familyStatus')}
                         textShow={data && normalizationData('familyStatus', data) || "-"}
@@ -166,7 +277,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
                                 />
                             </>
                         )
-                    }
+                    } */}
 
                 </div>
 

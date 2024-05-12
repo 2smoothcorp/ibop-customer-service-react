@@ -2,18 +2,20 @@
 
 import ContentLabel from "@/components/content/content-label";
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
-import InputRadio from "@/components/custom/input-radio";
+import InputElement from "@/components/custom/input-element";
 import HeaderTitle from "@/components/navbar/header-title";
+import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { PoliticRelationInfoModel, PoliticRelationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { isEmptyStringFormApi } from "@/utils/function";
+import { isEmptyStringFormApi, objectToArray } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { RadioButtonGroup } from "react-hook-form-mui";
 
 export default function PoliticRelationInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
-    const { setValue, watch } = useForm;
+    const { setValue, watch, trigger } = useForm;
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
@@ -35,16 +37,31 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
         }
     }
 
+    const confirmPoliticRelationInfo = useAppSelector(state => state.customerInformation.confirm?.politicRelationInfo)
+
     const setDefaultData = (politicRelationInfo: PoliticRelationInfoModel) => {
         setValue('politicRelationInfo.politicianRelationString', politicRelationInfo.politicianRelation ? 'true' : 'false');
         setValue('politicRelationInfo.politicianRelation', politicRelationInfo.politicianRelation || false);
         setValue('politicRelationInfo.politicianPosition', !isEmptyStringFormApi(politicRelationInfo.politicianPosition) ? politicRelationInfo.politicianPosition || '' : '');
+        if (confirmPoliticRelationInfo) {
+            try {
+                const oldData = objectToArray({ politicRelationInfo: confirmPoliticRelationInfo });
+                oldData.map((item) => {
+                    const [key, value] = item;
+                    setValue(key as any, value, {
+                        shouldDirty: true
+                    })
+                });
+            } catch (err) {
+                console.error(err)
+            }
+        }
     }
 
-    const getData = async () => {
-        console.log("getData")
+    const getData = async (): Promise<PoliticRelationInfoModel | null> => {
         if (data) {
             setDefaultData(data)
+            return data
         }
         const { customerId } = params
         if (customerId) {
@@ -66,6 +83,24 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
         return null
     }
 
+    const politicianRelation = watch('politicRelationInfo.politicianRelation')
+
+    useEffect(() => {
+        if (trigger && politicianRelation) {
+            trigger('politicRelationInfo')
+        }
+    }, [isLoading, trigger, politicianRelation])
+
+    const politicianRelationString = watch('politicRelationInfo.politicianRelationString')
+
+    useEffect(() => {
+        if (politicianRelationString === 'ture') {
+            setValue('politicRelationInfo.politicianRelation', true, { shouldDirty: true })
+        } else {
+            setValue('politicRelationInfo.politicianRelation', false, { shouldDirty: true })
+        }
+    }, [politicianRelationString, setValue])
+
     return (
         <>
             <HeaderTitle
@@ -82,17 +117,28 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
                 >
                     {
                         isEditable
-                            ? <InputRadio
-                                name={"politicianRelation"}
-                                defaultValue={watch('politicRelationInfo.politicianRelationString') || 'false'}
-                                list={[
-                                    { label: "ใช่", value: 'true' },
-                                    { label: "ไม่ใช่", value: 'false' },
+                            ?
+                            <RadioButtonGroup
+                                name="politicRelationInfo.politicianRelationString"
+                                row
+                                options={[
+                                    { label: "ใช่", id: 'true' },
+                                    { label: "ไม่ใช่", id: 'false' },
                                 ]}
-                                onChange={(value) => {
-                                    setValue('politicRelationInfo.politicianRelationString', value, { shouldDirty: true });
-                                    setValue('politicRelationInfo.politicianRelation', value == 'true', { shouldDirty: true })
-                                }}
+                            // transform={{
+                            //     input: (value) => value ? 'true' : 'false',
+                            //     output: (value) => value === 'true' ? true : false
+                            // }}
+                            // name={"politicianRelation"}
+                            // defaultValue={watch('politicRelationInfo.politicianRelationString') || 'false'}
+                            // list={[
+                            //     { label: "ใช่", value: 'true' },
+                            //     { label: "ไม่ใช่", value: 'false' },
+                            // ]}
+                            // onChange={(value) => {
+                            //     setValue('politicRelationInfo.politicianRelationString', value, { shouldDirty: true });
+                            //     setValue('politicRelationInfo.politicianRelation', value == 'true', { shouldDirty: true })
+                            // }}
                             />
                             : data && data.politicianRelation ? `ใช่` : "ไม่ใช่"
                     }
@@ -100,18 +146,29 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
 
                 </ContentLabel>
                 {
-                    watch('politicRelationInfo.politicianRelation') && (
-                        <InputHorizontal
+                    watch('politicRelationInfo.politicianRelationString') === 'true' && (
+                        <InputElement
                             labelWidth={120}
                             label="ระบุตำแหน่ง"
-                            defaultValue={watch('politicRelationInfo.politicianPosition')}
-                            textShow={data && data.politicianPosition || "-"}
                             isEditable={isEditable}
-                            onChange={(value) => setValue('politicRelationInfo.politicianPosition', value, { shouldDirty: true })}
-                            name="politicianPosition"
-                            isRequired
-                            type="text"
+                            textFieldElementProps={{
+                                name: "politicRelationInfo.politicianPosition",
+                                rules: {
+                                    required: 'กรุณาระบุตำแหน่ง',
+                                },
+                            }}
                         />
+                        // <InputHorizontal
+                        //     labelWidth={120}
+                        //     label="ระบุตำแหน่ง"
+                        //     defaultValue={watch('politicRelationInfo.politicianPosition')}
+                        //     textShow={data && data.politicianPosition || "-"}
+                        //     isEditable={isEditable}
+                        //     onChange={(value) => setValue('politicRelationInfo.politicianPosition', value, { shouldDirty: true })}
+                        //     name="politicianPosition"
+                        //     isRequired
+                        //     type="text"
+                        // />
                     )
                 }
             </ContentLoading>
