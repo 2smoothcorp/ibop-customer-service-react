@@ -146,6 +146,7 @@ const Consent = (): ReactElement => {
     const onChangeConsentOption = (changedValue: string, idx: number) => {
         const cpyConsent = [...consentOptionList];
         cpyConsent[idx].answer = changedValue;
+        cpyConsent[idx].dirty = true;
         setConsentOptionList(cpyConsent);
     }
 
@@ -238,6 +239,7 @@ interface ConsentInfo {
     consentId: string;
     question: string;
     answer: string;
+    dirty?: boolean;
 }
 
 export default Consent;

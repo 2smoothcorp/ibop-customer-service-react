@@ -16,14 +16,20 @@ import InvestmentSection from "./financial-information/investment-form";
 import PurposeForm from "./financial-information/investment-purpose-form";
 import InvestmentYearForm from "./financial-information/investment-year-form";
 
-const FinancialInformation = () => {
+export interface FinancialInformationProps {
+    data?: FinancialInfoModel
+}
+
+const FinancialInformation = (props: FinancialInformationProps) => {
 
     const searchParams = useSearchParams()
     const params = useParams()
     const router = useRouter()
     const dispatch = useAppDispatch()
 
-    const isEditable = searchParams.get('edit') === 'true';
+    const data: FinancialInfoModel | undefined = props?.data;
+
+    const isEditable = searchParams.get('edit') === 'true' && !data;
 
     const financialInfomation = useAppSelector(state => state.financialInfomation)
 
@@ -32,7 +38,8 @@ const FinancialInformation = () => {
     })
     const form = financialInfomationForm;
 
-    const { data, isLoading, error, refetch } = useQuery({
+
+    const { data: _data, isLoading, error, refetch } = useQuery({
         queryKey: ['financialInfo', params.customerId],
         queryFn: async function () {
             try {
@@ -82,22 +89,22 @@ const FinancialInformation = () => {
                 title="ข้อมูลทางการเงิน"
             />
             <div className="my-4">
-                <PurposeForm data={data} isEditable={isEditable} form={form} onChangeCheckBox={toggleValueFromCheckBox} />
+                <PurposeForm data={data || _data?.data?.financialInfo} isEditable={isEditable} form={form} onChangeCheckBox={toggleValueFromCheckBox} />
             </div>
             <div className="my-4">
-                <InvestmentSection data={data} isEditable={isEditable} form={form} />
+                <InvestmentSection data={data || _data?.data?.financialInfo} isEditable={isEditable} form={form} />
             </div>
             <div className="my-4">
-                <IncomeSourceForm data={data} isEditable={isEditable} form={form} onChangeCheckBox={toggleValueFromCheckBox} />
+                <IncomeSourceForm data={data || _data?.data?.financialInfo} isEditable={isEditable} form={form} onChangeCheckBox={toggleValueFromCheckBox} />
             </div>
             <div className="my-4">
-                <IncomeRateForm data={data} isEditable={isEditable} form={form} />
+                <IncomeRateForm data={data || _data?.data?.financialInfo} isEditable={isEditable} form={form} />
             </div>
             <div className="my-4">
-                <InvestmentYearForm data={data} isEditable={isEditable} form={form} />
+                <InvestmentYearForm data={data || _data?.data?.financialInfo} isEditable={isEditable} form={form} />
             </div>
             <div className="my-4">
-                <AssetForm data={data} isEditable={isEditable} form={form} />
+                <AssetForm data={data || _data?.data?.financialInfo} isEditable={isEditable} form={form} />
             </div>
             {
                 isEditable && <div className="flex justify-end gap-4">

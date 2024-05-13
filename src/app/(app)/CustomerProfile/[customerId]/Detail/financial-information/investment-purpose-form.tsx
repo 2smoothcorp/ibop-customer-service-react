@@ -2,12 +2,12 @@ import InputCheckbox from "@/components/custom/input-checkbox";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import LabelText from "@/components/custom/label";
 import useMasterDataInvestmentPurpose from "@/hooks/masterDataInvestmentPurpose";
-import { FinancialInfoModel, FinancialInfoResponseDataResponse } from "@/services/rest-api/customer-service";
+import { FinancialInfoModel } from "@/services/rest-api/customer-service";
 import { UseFormReturn } from "react-hook-form";
 
 export interface PurposeFormProps {
     isEditable?: boolean
-    data: FinancialInfoResponseDataResponse | undefined
+    data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
     onChangeCheckBox?: (fieldName: string, value: string, isChecked: boolean) => void
 }
@@ -55,7 +55,7 @@ const PurposeForm = (props: PurposeFormProps) => {
                         labelWidth="max-content"
                         labelAlign="left"
                         disabled={!isPurposeOther()}
-                        onChange={(v) => form.setValue('investmentPurposeOther', v, { shouldDirty: true })}
+                        onChange={(v) => form.setValue('investmentPurposeOther', v)}
                     />
                 </div>
             </div>
@@ -65,18 +65,18 @@ const PurposeForm = (props: PurposeFormProps) => {
     const viewMode = () => {
         return (<>
             {
-                (data?.data?.financialInfo?.investmentPurposeCode || []).map((purpose: string, idx: number) => {
+                (data?.investmentPurposeCode || []).map((purpose: string, idx: number) => {
                     const _purpose = masterDataInvestmentPurpose?.data?.filter((d) => d.rValue === purpose)[0]?.rText
                         || purpose
                     return <div className="text-lg px-10 tracking-wide" key={`purpose${idx}`}>{_purpose}</div>
                 })
             }
             {
-                data?.data?.financialInfo?.investmentPurposeOther ?
-                    <div className="text-lg px-10 tracking-wide">{data?.data?.financialInfo?.investmentPurposeOther}</div> : null
+                data?.investmentPurposeOther ?
+                    <div className="text-lg px-10 tracking-wide">{data?.investmentPurposeOther}</div> : null
             }
             {
-                (data?.data?.financialInfo?.investmentPurposeCode || []).length === 0 && !data?.data?.financialInfo?.investmentPurposeOther ?
+                (data?.investmentPurposeCode || []).length === 0 && !data?.investmentPurposeOther ?
                     <div className="text-lg px-10 tracking-wide">-</div> : null
             }
         </>)

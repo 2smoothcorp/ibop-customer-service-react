@@ -2,12 +2,12 @@ import InputCheckbox from "@/components/custom/input-checkbox";
 import InputHorizontal from "@/components/custom/input-horizontal";
 import LabelText from "@/components/custom/label";
 import useMasterDataIncomeSource from "@/hooks/masterDataIncomeSourceHook";
-import { FinancialInfoModel, FinancialInfoResponseDataResponse } from "@/services/rest-api/customer-service";
+import { FinancialInfoModel } from "@/services/rest-api/customer-service";
 import { UseFormReturn } from "react-hook-form";
 
 export interface IncomeSourceFormProps {
     isEditable?: boolean
-    data: FinancialInfoResponseDataResponse | undefined
+    data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
     onChangeCheckBox?: (fieldName: string, value: string, isChecked: boolean) => void
 }
@@ -31,18 +31,18 @@ const IncomeSourceForm = (props: IncomeSourceFormProps) => {
     const view = () => {
         return <>
             {
-                (data?.data?.financialInfo?.incomeSourceCode || []).map((incomeSource: string, idx: number) => {
+                (data?.incomeSourceCode || []).map((incomeSource: string, idx: number) => {
                     const _incomeSource = incomeSources?.filter((d) => d.rValue === incomeSource)[0]?.rText
                         || incomeSource
                     return <div className="text-lg px-10 tracking-wide" key={`incomeSource${idx}`}>{_incomeSource}</div>
                 })
             }
             {
-                data?.data?.financialInfo?.incomeSourceOther ?
-                    <div className="text-lg px-10 tracking-wide">{data?.data?.financialInfo?.incomeSourceOther}</div> : null
+                data?.incomeSourceOther ?
+                    <div className="text-lg px-10 tracking-wide">{data?.incomeSourceOther}</div> : null
             }
             {
-                (data?.data?.financialInfo?.incomeSourceCode || []).length === 0 && !data?.data?.financialInfo?.incomeSourceOther ?
+                (data?.incomeSourceCode || []).length === 0 && !data?.incomeSourceOther ?
                     <div className="text-lg px-10 tracking-wide">-</div> : null
             }
         </>

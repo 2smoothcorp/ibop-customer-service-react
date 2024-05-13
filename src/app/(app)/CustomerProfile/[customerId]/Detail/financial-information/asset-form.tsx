@@ -2,12 +2,12 @@
 
 import InputText from "@/components/custom/input-text"
 import LabelText from "@/components/custom/label"
-import { FinancialInfoModel, FinancialInfoResponseDataResponse } from "@/services/rest-api/customer-service"
+import { FinancialInfoModel } from "@/services/rest-api/customer-service"
 import { UseFormReturn } from "react-hook-form"
 
 export interface AssetFormProps {
     isEditable?: boolean
-    data: FinancialInfoResponseDataResponse | undefined
+    data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
 }
 
@@ -33,7 +33,7 @@ const AssetForm = (props: AssetFormProps) => {
                     />
                 </div>
                 :
-                <div className="text-lg px-10 tracking-wide" >{data?.data?.financialInfo?.assetValue?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") || '-'}</div>
+                <div className="text-lg px-10 tracking-wide" >{data?.assetValue?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") || '-'}</div>
         }
     </div>)
 }

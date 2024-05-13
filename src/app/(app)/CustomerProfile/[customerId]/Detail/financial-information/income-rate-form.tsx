@@ -1,12 +1,12 @@
 import LabelText from "@/components/custom/label"
 import IncomeRateDDL from "@/components/dropdownlist/income-rate-ddl"
 import { useMasterDataIncomeRateCustom } from "@/hooks/masterDataIncomeRateHook"
-import { FinancialInfoModel, FinancialInfoResponseDataResponse } from "@/services/rest-api/customer-service"
+import { FinancialInfoModel } from "@/services/rest-api/customer-service"
 import { UseFormReturn } from "react-hook-form"
 
 export interface IncomeRateFormProps {
     isEditable?: boolean
-    data: FinancialInfoResponseDataResponse | undefined
+    data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
 }
 
@@ -41,7 +41,7 @@ const IncomeRateForm = (props: IncomeRateFormProps) => {
                     />
                 </div>
                 :
-                <div className="text-lg px-10 tracking-wide" >{getIncomeRateText(data?.data?.financialInfo?.incomeRateCode || '-')}</div>
+                <div className="text-lg px-10 tracking-wide" >{getIncomeRateText(data?.incomeRateCode || '-')}</div>
         }
     </div>)
 }

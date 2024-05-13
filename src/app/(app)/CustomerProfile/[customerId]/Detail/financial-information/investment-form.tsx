@@ -1,12 +1,12 @@
 import LabelText from "@/components/custom/label"
 import CountriesDDL from "@/components/dropdownlist/counrties-ddl"
 import useMasterDataCountries from "@/hooks/masterDataCountries"
-import { FinancialInfoModel, FinancialInfoResponseDataResponse } from "@/services/rest-api/customer-service"
+import { FinancialInfoModel } from "@/services/rest-api/customer-service"
 import { UseFormReturn } from "react-hook-form"
 
 export interface InvestmentSectionProps {
     isEditable?: boolean
-    data: FinancialInfoResponseDataResponse | undefined
+    data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
 }
 
@@ -44,7 +44,7 @@ const InvestmentSection = (props: InvestmentSectionProps) => {
                     />
                 </div>
                 :
-                <div className="text-lg px-10 tracking-wide" >{getCountryText(data?.data?.financialInfo?.investmentFundCode || '-')}</div>
+                <div className="text-lg px-10 tracking-wide" >{getCountryText(data?.investmentFundCode || '-')}</div>
         }
     </div>)
 }

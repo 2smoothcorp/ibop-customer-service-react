@@ -13,7 +13,7 @@ import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function
 import { Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import PersonForm from "./beneficiary/person-form";
 
@@ -120,14 +120,18 @@ const normalizationData = (attributeName: string, data: BeneficiaryInfoModel | u
     }
 }
 
-const BeneficiaryPage = () => {
+export interface BeneficiaryPageProps {
+    data?: BeneficiaryInfoModel
+}
+
+const BeneficiaryPage = (props: BeneficiaryPageProps) => {
 
     const searchParams = useSearchParams()
     const params = useParams()
     const router = useRouter()
     const dispatch = useAppDispatch()
 
-    const isEditable = searchParams.get('edit') === 'true';
+    const isEditable = searchParams.get('edit') === 'true' && !props?.data;
 
     const beneficiary = useAppSelector(state => state.beneficiary.data)
 
@@ -138,24 +142,33 @@ const BeneficiaryPage = () => {
     const form = useFormAll;
     const { setValue, getValues, watch } = form
 
-
-    const { data, isLoading, error } = useQuery({
+    const { data: _data, isLoading, error } = useQuery({
         queryKey: ['financialInfo', params.customerId],
         queryFn: async function () {
             try {
                 const { customerId } = params;
                 const request = await fetch(`/api/customer-profile/beneficiary/${customerId}`)
                 const response: BeneficiaryInfoResponseDataResponse = await request.json();
+                console.log(`response.data`, response.data)
                 if (response.status == 200 && response.data && response.data.beneficiaryInfo) {
 
                     for (let key in response.data?.beneficiaryInfo) {
                         form.setValue(key as any, response.data?.beneficiaryInfo[key as keyof BeneficiaryInfoModel])
                     }
 
-                    return response.data.beneficiaryInfo
+                    return {
+                        isOwner: Object.keys(response.data).length === 0,
+                        ...response.data.beneficiaryInfo
+                    }
                 }
 
-                return null;
+                if (Object.keys(response?.data || {}).length === 0) {
+                    form.setValue('isOwner', true)
+                }
+
+                return {
+                    isOwner: Object.keys(response?.data || {}).length === 0
+                };
             } catch (e) {
                 return null;
             } finally {
@@ -163,8 +176,10 @@ const BeneficiaryPage = () => {
         }
     })
 
+    const data: BeneficiaryInfoModel | undefined | null = props?.data || _data;
+
     const Address = AddressComponent({
-        isEditable: true,
+        isEditable: isEditable,
         country: {
             name: 'countryCode',
             isRequired: true,
@@ -215,7 +230,7 @@ const BeneficiaryPage = () => {
 
     const onSubmit = () => {
         const { getValues } = useFormAll
-        
+
         dispatch(setBeneficiaryData(getValues()))
         dispatch(nextStep())
     }
@@ -269,7 +284,7 @@ const BeneficiaryPage = () => {
                                 const { name, label, isRequired, normalize } = detail
                                 const _value = getValueFromFieldName(name, data, normalize);
                                 const textShow = watch(name)?.toString();
-                                return <React.Fragment key={`field-item-${idx}`}>
+                                return <div key={`beneficiary-field-item-${idx}`}>
                                     <InputHorizontal
                                         label={label}
                                         defaultValue={getValues(name || '')?.toString()}
@@ -278,8 +293,9 @@ const BeneficiaryPage = () => {
                                         name={name}
                                         isRequired={isRequired}
                                         onChange={(value) => setValue(name, value, { shouldDirty: true })}
+                                        key={`beneficiary-input-field-item-${idx}`}
                                     />
-                                </React.Fragment>
+                                </div>
                             })
                         }
 

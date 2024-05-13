@@ -90,8 +90,8 @@ const PersonForm = (props: PersonFormProps) => {
                 const _value = getValueFromFieldName(name, dataInfo, normalize);
                 const textShow = watch(name)?.toString();
 
-                if (CustomComponent) return CustomComponent
-                return <React.Fragment key={`field-item-${idx}`}>
+                if (CustomComponent) return <React.Fragment key={`person-field-item-${idx}`}>{CustomComponent}</React.Fragment>
+                return <React.Fragment key={`person-field-item-${idx}`}>
                     <InputHorizontal
                         label={label || ''}
                         defaultValue={getValues(name || '')?.toString()}
