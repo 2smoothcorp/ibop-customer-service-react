@@ -410,7 +410,9 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                     }
                 </div>
                 {
-                    !["01", "02", "03", "04", "05", "06"].includes(watch('occupationInfo.occupationCode') || '') && watch('occupationInfo.occupationCode') !== '-' && (
+                    !["01", "02", "03", "04", "05", "06"].includes(watch('occupationInfo.occupationCode') || '') &&
+                    watch('occupationInfo.occupationCode') !== '' &&
+                    watch('occupationInfo.occupationCode') !== '-' && (
                         <>
                             <div className="grid grid-cols-3">
                                 <InputElement
