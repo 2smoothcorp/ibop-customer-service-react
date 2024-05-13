@@ -64,12 +64,12 @@ const SummaryInformation = () => {
             title="สรุปรายละเอียดที่แก้ไข"
         />
         <div className="rounded-lg border-2 p-4 my-2">
-            <SummaryPersonalInfo data={form.customerInformation as CustomerInformationState} />
-            <SummarySpouseInfo data={form.customerInformation as CustomerInformationState} />
-            <SummaryAddressByTypeInfo data={form.customerInformation as CustomerInformationState} />
-            <SummaryAddressByCurrentInfo data={form.customerInformation as CustomerInformationState} />
-            <SummaryOccupationInfo data={form.customerInformation as CustomerInformationState} />
-            <SummaryPoliticRelationInfo data={form.customerInformation as CustomerInformationState} />
+            <SummaryPersonalInfo data={form.customerInformation.confirm as CustomerInformationState} />
+            <SummarySpouseInfo data={form.customerInformation.confirm as CustomerInformationState} />
+            <SummaryAddressByTypeInfo data={form.customerInformation.confirm as CustomerInformationState} />
+            <SummaryAddressByCurrentInfo data={form.customerInformation.confirm as CustomerInformationState} />
+            <SummaryOccupationInfo data={form.customerInformation.confirm as CustomerInformationState} />
+            <SummaryPoliticRelationInfo data={form.customerInformation.confirm as CustomerInformationState} />
         </div>
 
         <div className="rounded-lg border-2 p-4 my-2">
