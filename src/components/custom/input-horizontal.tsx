@@ -39,6 +39,7 @@ export default function InputHorizontal({
     addressOptionType,
     onChangeAddress,
     defaultValueAddress,
+    isLabelFullWidth = false,
 }: InputHorizontalProps) {
 
     function getRequired() {
@@ -130,24 +131,35 @@ export default function InputHorizontal({
     }
 
     return (
-        <div className={`${isLableCols1 ? "grid " + allGridCols : "flex"} items-center min-h-[46px] w-full`}>
-            <div className={`w-1/2`}
+        <div className={`${isLableCols1 ? "grid " + allGridCols : "flex"} items-center min-h-[46px] w-full flex-wrap`}>
+            <div className={isLabelFullWidth ? `w-full` : `w-1/2`}
                 style={{
                     width: labelWidth,
                     textAlign: labelAlign,
                 }}>
                 {
                     labelWidth
-                        ? <div
+                        ?
+                        <div
                             className="text-lg px-4 font-semibold tracking-wide"
-                        >{label} {getRequired()}</div>
-                        : (
-                            <div className="text-lg px-4 font-semibold tracking-wide w-full text-right">{label} {getRequired()}</div>
+                        >
+                            {label} {getRequired()}
+                        </div>
+                        :
+                        (
+                            <div
+                                className="text-lg px-4 font-semibold tracking-wide w-full"
+                                style={{
+                                    textAlign: labelAlign,
+                                }}
+                            >
+                                {label} {getRequired()}
+                            </div>
                         )
                 }
             </div>
 
-            <div className={`w-1/2 flex flex-row ${isLableCols1 ? inputCol : ""}`}>
+            <div className={[`w-1/2 flex flex-row ${isLableCols1 ? inputCol : ""}`, isLabelFullWidth ? `px-4` : ``].join(' ')}>
                 {
                     isEditable
                         ? (
@@ -191,7 +203,7 @@ interface InputHorizontalProps {
     labelAlign?: Property.TextAlign | undefined;
     register?: UseFormRegister<any>;
     list?: InputSelectHookValue[];
-    onChange?: (value: string) => void;
+    onChange?: (value: string | number) => void;
     onChangeNumber?: (value: number) => void;
     maxDate?: string;
     minDate?: string;
@@ -201,4 +213,5 @@ interface InputHorizontalProps {
     addressOptionType?: 'postCode' | 'province' | 'district' | 'subDistrict';
     onChangeAddress?: (value: AddressBySearchProps) => void;
     defaultValueAddress?: AddressBySearchProps;
+    isLabelFullWidth?: boolean;
 }

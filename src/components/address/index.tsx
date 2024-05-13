@@ -76,6 +76,7 @@ const AddressComponent = (props: AddressComponentProps): Array<ReactElement> => 
                 country?.setValue?.(value)
             }}
             placeholder={country?.placeHolder || "โปรดเลือกประเทศ"}
+            key={`countries`}
         />
     )
 
@@ -98,6 +99,7 @@ const AddressComponent = (props: AddressComponentProps): Array<ReactElement> => 
             onChange={(text) => {
                 getAddress(text, 'province')
             }}
+            key={`province`}
         />
     )
 
@@ -120,6 +122,7 @@ const AddressComponent = (props: AddressComponentProps): Array<ReactElement> => 
             onChange={(text) => {
                 getAddress(text, 'district')
             }}
+            key={`district`}
         />
     )
 
@@ -142,6 +145,7 @@ const AddressComponent = (props: AddressComponentProps): Array<ReactElement> => 
             onChange={(text) => {
                 getAddress(text, 'subDistrict')
             }}
+            key={`subDistrict`}
         />
     )
 
@@ -164,6 +168,7 @@ const AddressComponent = (props: AddressComponentProps): Array<ReactElement> => 
             onChange={(text) => {
                 getAddress(text, 'postCode')
             }}
+            key={`postCode`}
         />
     )
 
