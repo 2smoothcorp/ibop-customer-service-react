@@ -29,6 +29,7 @@ export default function InputElement({
 }: InputElementProps) {
     const value = useWatch({ name: getName() });
     const identityNeverExpire = useWatch({ name: 'personalInfo.identityNeverExpire' });
+    const identityExpireDate = useWatch({ name: 'personalInfo.identityExpireDate' });
 
     function getName(): string {
         if (type === "text") {
@@ -56,8 +57,11 @@ export default function InputElement({
         const name = getName();
         if (type === 'date') {
             if (name === 'personalInfo.identityExpireDateDayjs') {
+                console.log('identityNeverExpire', identityNeverExpire)
                 if (identityNeverExpire)
                     return 'ตลอดชีพ';
+                else if (identityExpireDate === '-' || identityExpireDate === '')
+                    return '-';
             }
             return dayjs(value).format('DD/MM/YYYY');
         }
