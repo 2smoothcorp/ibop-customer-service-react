@@ -1,18 +1,33 @@
 import HeaderTitle from "@/components/navbar/header-title"
 import { useAppSelector } from "@/libs/redux/hook"
+import { CustomerAtsEDividendState } from "@/libs/redux/store/customer-ats-e-dividend-slice"
+import { CustomerContractState } from "@/libs/redux/store/customer-contract-slice"
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice"
 import { swal } from "@/libs/sweetalert"
-import { services } from "@/services"
-import { CustomerProfileV2Api, PersonalInfoRequest } from "@/services/rest-api/customer-service"
+import { BeneficiaryInfoModel, FinancialInfoModel } from "@/services/rest-api/customer-service"
 import { Button } from "@mui/material"
 import { useParams } from "next/navigation"
 import { useForm } from "react-hook-form"
+import BeneficiaryPage from "./beneficiary"
+import FinancialInformation from "./financial-information"
+import SummaryATSInfo from "./summary/ats/table"
+import SummaryContractEmergencyInfo from "./summary/contract-information/contract-emergency"
+import SummaryContractInformationInfo from "./summary/contract-information/contract-information"
+import SummaryAddressByCurrentInfo from "./summary/customer-information/address-by-current"
+import SummaryAddressByTypeInfo from "./summary/customer-information/address-by-type"
+import SummaryOccupationInfo from "./summary/customer-information/occupation-info"
+import SummaryPersonalInfo from "./summary/customer-information/personal-info"
+import SummaryPoliticRelationInfo from "./summary/customer-information/politic-relation-info"
+import SummarySpouseInfo from "./summary/customer-information/spouse-info"
+import SummaryEDividendInfo from "./summary/e-dividend/table"
 
 const SummaryInformation = () => {
 
     const params = useParams()
 
     const form = useAppSelector((state) => state)
+
+    //console.log(`SummaryInformation`, form)
 
     const useFormAll = useForm<CustomerInformationState>({
         defaultValues: form.customerInformation
@@ -29,15 +44,13 @@ const SummaryInformation = () => {
 
     const onSubmit = async () => {
         try {
-            const customerProfileApi = await services.getCustomerServiceApi();
-            const api: CustomerProfileV2Api = customerProfileApi.getCustomerProfileV2Api()
-            await api.customerProfileCustomerInformationCorporateIdPut({
-                corporateId: params.customerId as string,
-                customerProfileCustomerInformationCorporateIdPutRequest: {
-                    personalInfo: form.customerInformation as PersonalInfoRequest,
-                    beneficiaryInfo: form.beneficiary.data,
-                }
+            const request = await fetch(`/api/customer-profile/update/${params.customerId}`, {
+                method: 'PUT',
+                body: JSON.stringify(form)
             })
+
+            console.log(`request`, request)
+            console.log(`ResponseError`, await request.text())
         } catch (e) {
             console.error(`SummaryInformation onSubmit function`, e)
         } finally {
@@ -48,8 +61,34 @@ const SummaryInformation = () => {
     return (<>
         <HeaderTitle
             className="gap-0"
-            title="สรุแรายละเอียดที่แก้ไข"
+            title="สรุปรายละเอียดที่แก้ไข"
         />
+        <div className="rounded-lg border-2 p-4 my-2">
+            <SummaryPersonalInfo data={form.customerInformation as CustomerInformationState} />
+            <SummarySpouseInfo data={form.customerInformation as CustomerInformationState} />
+            <SummaryAddressByTypeInfo data={form.customerInformation as CustomerInformationState} />
+            <SummaryAddressByCurrentInfo data={form.customerInformation as CustomerInformationState} />
+            <SummaryOccupationInfo data={form.customerInformation as CustomerInformationState} />
+            <SummaryPoliticRelationInfo data={form.customerInformation as CustomerInformationState} />
+        </div>
+
+        <div className="rounded-lg border-2 p-4 my-2">
+            <SummaryContractInformationInfo data={form.customerContract as CustomerContractState} />
+            <SummaryContractEmergencyInfo data={form.customerContract as CustomerContractState} />
+        </div>
+        <div className="rounded-lg border-2 p-4 my-2">
+            <FinancialInformation data={form.financialInfomation as FinancialInfoModel} />
+        </div>
+        <div className="rounded-lg border-2 p-4 my-2">
+            <BeneficiaryPage data={form.beneficiary.data as BeneficiaryInfoModel} />
+        </div>
+        <div className="rounded-lg border-2 p-4 my-2">
+            <SummaryATSInfo data={form.customerAtsEDividend as CustomerAtsEDividendState} />
+        </div>
+        <div className="rounded-lg border-2 p-4 my-2">
+            <SummaryEDividendInfo data={form.customerAtsEDividend as CustomerAtsEDividendState} />
+        </div>
+
         {
             <div className="flex justify-end gap-4">
                 <Button variant="contained" color="error" onClick={onCancel}>ยกเลิก</Button>
