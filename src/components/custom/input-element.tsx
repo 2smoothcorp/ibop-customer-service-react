@@ -86,6 +86,13 @@ export default function InputElement({
             }
             return '-';
         }
+        if (type === 'radio' && name === 'personalInfo.genderCode') {
+            const result = radioButtonGroupProps?.options?.find((item: any) => item.id === value) as { label: string, id: string };
+            if (result) {
+                return `${result.id} - ${result.label}`;
+            }
+            return '-';
+        }
         return value
     }
 

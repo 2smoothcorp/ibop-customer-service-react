@@ -20,7 +20,7 @@ import { UseFormReturn } from "react-hook-form";
 import { CheckboxElement } from "react-hook-form-mui";
 
 export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
-    const { setValue, watch, trigger } = useForm
+    const { setValue, watch, trigger, resetField } = useForm
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
@@ -100,7 +100,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
         setValue('personalInfo.countryCode', normalizationData('countryCode', personalInfo));
         setValue('personalInfo.nation', normalizationData('nation', personalInfo));
         setValue('personalInfo.nationalityCode', normalizationData('nationalityCode', personalInfo));
-        setValue('personalInfo.identityExpireDate', normalizationData('identityExpireDate', personalInfo));
+        setValue('personalInfo.identityExpireDate', !isEmptyStringFormApi(personalInfo.identityExpireDate) ? personalInfo.identityExpireDate : '');
         setValue('personalInfo.identityExpireDateDayjs',
             (personalInfo.identityExpireDate !== '' && personalInfo.identityExpireDate !== '-')
                 ? dayjs(personalInfo.identityExpireDate || null)
@@ -120,29 +120,33 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                 ? dayjs(personalInfo.birthDate || null)
                 : null,
             { shouldDirty: false });
-        if (confirmPersonalInfo) {
-            try {
-                const oldData = objectToArray({ personalInfo: confirmPersonalInfo });
-                oldData.map((item) => {
-                    const [key, value] = item
-                    if (key === 'personalInfo.birthDate') {
-                        setValue("personalInfo.birthDateDayjs", dayjs(value as any), {
-                            shouldDirty: true
+        setTimeout(() => {
+            if (confirmPersonalInfo) {
+                try {
+                    const oldData = objectToArray({ personalInfo: confirmPersonalInfo });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        if (key === 'personalInfo.birthDate') {
+                            setValue("personalInfo.birthDateDayjs", dayjs(value as any), {
+                                shouldDirty: false,
+                            })
+                        }
+                        if (key === 'personalInfo.identityExpireDate') {
+                            setValue("personalInfo.identityExpireDateDayjs", dayjs(value as any), {
+                                shouldDirty: false
+                            })
+                        }
+                        resetField(key as any)
+                        setValue(key as any, value, {
+                            shouldDirty: true,
                         })
-                    }
-                    if (key === 'personalInfo.identityExpireDate') {
-                        setValue("personalInfo.identityExpireDateDayjs", dayjs(value as any), {
-                            shouldDirty: true
-                        })
-                    }
-                    setValue(key as any, value, {
-                        shouldDirty: true
-                    })
-                });
-            } catch (err) {
-                console.error(err)
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
             }
-        }
+        }, 1)
+
 
     }
 
@@ -170,6 +174,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
         return null
     }
 
+    const identityNeverExpire = watch('personalInfo.identityNeverExpire')
 
     const inputDate: InputElementProps[] = [
         {
@@ -238,13 +243,11 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
             label: "วันที่หมดอายุบัตร (ค.ศ.)",
             isEditable: isEditable,
             datePickerElementProps: {
+                disabled: identityNeverExpire || false,
                 name: "personalInfo.identityExpireDateDayjs",
                 minDate: dayjs(),
-                inputProps: {
-                    placeholder: "โปรดระบุวันที่หมดอายุบัตร",
-                },
                 rules: {
-                    required: 'โปรดระบุวันที่หมดอายุบัตร',
+                    required: identityNeverExpire ? false : 'โปรดระบุวันที่หมดอายุบัตร',
                 },
             },
             rightInputComponent: isEditable ?
@@ -348,20 +351,43 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                 rules: {
                     required: 'โปรดระบุวัน/เดือน/ปีเกิด',
                 },
-                inputProps: {
-                    placeholder: "โปรดระบุวัน/เดือน/ปีเกิด",
-                },
+                // inputProps: {
+                //     placeholder: "โปรดระบุวัน/เดือน/ปีเกิด",
+                // },
                 maxDate: dayjs().subtract(15, 'year'),
             }
         },
 
     ]
 
+    const birthDateDayjs = watch('personalInfo.birthDateDayjs')
+
+    useEffect(() => {
+        if (birthDateDayjs && data?.birthDate) {
+            const result = birthDateDayjs.format('YYYY-MM-DD');
+            const oldResult = dayjs(data?.birthDate).format('YYYY-MM-DD')
+            if (result !== oldResult)
+                setValue('personalInfo.birthDate', birthDateDayjs.format('YYYY-MM-DD'), { shouldDirty: true })
+
+        }
+    }, [birthDateDayjs, data?.birthDate, setValue])
+
+    const identityExpireDateDayjs = watch('personalInfo.identityExpireDateDayjs')
+
+    useEffect(() => {
+        if (identityExpireDateDayjs && data?.identityExpireDate) {
+            const result = identityExpireDateDayjs.format('YYYY-MM-DD')
+            const oldResult = dayjs(data?.identityExpireDate).format('YYYY-MM-DD')
+            if (result !== oldResult)
+                setValue('personalInfo.identityExpireDate', identityExpireDateDayjs.format('YYYY-MM-DD'), { shouldDirty: true })
+        }
+    }, [data?.identityExpireDate, identityExpireDateDayjs, setValue])
+
     useEffect(() => {
         if (!isLoading) {
             trigger('personalInfo')
         }
-    }, [isLoading, trigger])
+    }, [trigger, identityNeverExpire, isLoading])
 
     return (
         <>

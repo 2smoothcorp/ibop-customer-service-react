@@ -1,8 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { CustomerInformationState, setDataPersonalConfirm } from "@/libs/redux/store/customer-information-slice";
-import { normalizationDataFormHook } from "@/utils/function";
+import { CustomerInformationState, PersonalConfirm, setDataPersonalConfirm } from "@/libs/redux/store/customer-information-slice";
+import { nextStep } from "@/libs/redux/store/customer-profile-slice";
+import { dirtyValues } from "@/utils/function";
 import { Button } from "@mui/material";
-import dayjs, { Dayjs } from "dayjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -14,7 +14,10 @@ import PersonalInfo from "./customer-information/personal-info";
 import PoliticRelationInfo from "./customer-information/politic-relation-info";
 import SpouseInfo from "./customer-information/spouse-info";
 
+let callback: string | number | NodeJS.Timeout | null | undefined = null;
+
 export default function CustomerInformation() {
+
     const router = useRouter()
     const dispatch = useAppDispatch()
     const searchParams = useSearchParams()
@@ -26,49 +29,86 @@ export default function CustomerInformation() {
         defaultValues: customerInformation,
         mode: 'onChange'
     })
-    const { watch, getFieldState } = useFormAll
+    const { setValue, getValues, watch } = useFormAll
 
-    const saveData = (data: CustomerInformationState) => {
-        const { formState: { dirtyFields }, getValues } = useFormAll
-        console.log(dirtyFields, getValues())
-        // const dirtyData = dirtyValues(dirtyFields, getValues())
-        // dispatch(setDataCustomerInformation(data))
-        // console.log(data, dirtyData)
-        // if (dirtyData) {
-        //     dispatch(setDataPersonalConfirm(dirtyData))
-        // }
-    }
+    // handler 
+
+    const identityNeverExpire = watch('personalInfo.identityNeverExpire')
 
     useEffect(() => {
-        const subscription = watch((_, { name, type }) => {
-            if (name) {
-                const { isDirty } = getFieldState(name);
-                if (isDirty && (
-                    type === 'change' ||
-                    name.search('.zipCode') > 1 ||
-                    name.search('.provinceCode') > 1 ||
-                    name.search('.districtCode') > 1 ||
-                    name.search('.subDistrictCode') > 1 ||
-                    name.search('.politicianRelation') > 1
-                )) {
-                    const value = watch(name);
-                    if (name == 'personalInfo.birthDateDayjs' && typeof value === 'object') {
-                        const dataString = dayjs(value as Dayjs).format('YYYY-MM-DD')
-                        const objValue = normalizationDataFormHook("personalInfo.birthDate", dataString);
-                        dispatch(setDataPersonalConfirm(objValue))
-                    } else if (name == 'personalInfo.identityExpireDateDayjs' && typeof value === 'object') {
-                        const dataString = dayjs(value as Dayjs).format('YYYY-MM-DD')
-                        const objValue = normalizationDataFormHook("personalInfo.identityExpireDate", dataString);
-                        dispatch(setDataPersonalConfirm(objValue))
-                    } else {
-                        const objValue = normalizationDataFormHook(name, value);
-                        dispatch(setDataPersonalConfirm(objValue))
-                    }
-                }
+        if (identityNeverExpire) {
+            // if (identityNeverExpire === true) {
+            setValue('personalInfo.identityExpireDateDayjs', null, { shouldDirty: true })
+            setValue('personalInfo.identityExpireDate', '', { shouldDirty: true })
+            // }
+        }
+    }, [identityNeverExpire, setValue])
+
+    const titleCode = watch('personalInfo.titleCode')
+
+    useEffect(() => {
+        if (titleCode) {
+            if (titleCode === '103' || titleCode === '301' || titleCode === '302') {
+                setValue('personalInfo.genderCode', '0', { shouldDirty: true })
             }
-        });
-        return () => subscription.unsubscribe();
-    }, [getFieldState, watch, dispatch]);
+            if (titleCode === '104' || titleCode === '105' || titleCode === '304' || titleCode === '306') {
+                setValue('personalInfo.genderCode', '1', { shouldDirty: true })
+            }
+        }
+    }, [setValue, titleCode])
+
+    const saveData = (data: CustomerInformationState) => {
+        setValue('personalInfo.identityExpireDateDayjs', null, { shouldDirty: false })
+        setValue('personalInfo.birthDateDayjs', null, { shouldDirty: false })
+        setTimeout(() => {
+            const { dirtyFields } = useFormAll.formState
+            // console.log(dirtyFields)
+            const dirtyData = dirtyValues(dirtyFields, getValues())
+
+            if (dirtyData) {
+                const result = dirtyData as PersonalConfirm
+                // console.log("dirtyData: ", result)
+                dispatch(setDataPersonalConfirm(result))
+            }
+            dispatch(nextStep())
+        }, 300)
+    }
+
+    // useEffect(() => {
+    //     const subscription = watch((_, { name, type }) => {
+    //         if (name) {
+    //             const { isDirty } = getFieldState(name);
+    //             if (isDirty && (
+    //                 type === 'change' ||
+    //                 name.search('.zipCode') > 1 ||
+    //                 name.search('.provinceCode') > 1 ||
+    //                 name.search('.districtCode') > 1 ||
+    //                 name.search('.subDistrictCode') > 1 ||
+    //                 name.search('.politicianRelation') > 1
+    //             )) {
+    //                 console.log(callback)
+    //                 if (callback) {
+    //                     clearTimeout(callback);
+    //                 }
+    //                 // console.log(name, type, isDirty)
+    //                 const value = watch(name);
+    //                 if (name == 'personalInfo.birthDateDayjs' && typeof value === 'object') {
+    //                     const dataString = dayjs(value as Dayjs).format('YYYY-MM-DD')
+    //                     const objValue = normalizationDataFormHook("personalInfo.birthDate", dataString);
+    //                     dispatch(setDataPersonalConfirm(objValue))
+    //                 } else if (name == 'personalInfo.identityExpireDateDayjs' && typeof value === 'object') {
+    //                     const dataString = dayjs(value as Dayjs).format('YYYY-MM-DD')
+    //                     const objValue = normalizationDataFormHook("personalInfo.identityExpireDate", dataString);
+    //                     dispatch(setDataPersonalConfirm(objValue))
+    //                 } else {
+    //                     const objValue = normalizationDataFormHook(name, value);
+    //                     dispatch(setDataPersonalConfirm(objValue))
+    //                 }
+    //             }
+    //         }
+    //     });
+    //     return () => subscription.unsubscribe();
+    // }, [getFieldState, watch, dispatch]);
 
     return (
         <FormContainer formContext={useFormAll} onSuccess={saveData}>

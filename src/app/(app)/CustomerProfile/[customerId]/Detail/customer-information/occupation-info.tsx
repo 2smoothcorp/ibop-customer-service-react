@@ -141,8 +141,6 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
             setValue('occupationInfo.jobWorkPlace', isEmptyStringFormApi(occupation.occupationInfo.jobWorkPlace) ? '' : normalizationData('jobWorkPlace', occupation));
             setValue('occupationInfo.jobPosition', isEmptyStringFormApi(occupation.occupationInfo.jobPosition) ? '' : normalizationData('jobPosition', occupation));
             setValue('occupationInfo.jobDepartment', isEmptyStringFormApi(occupation.occupationInfo.jobDepartment) ? '' : normalizationData('jobDepartment', occupation));
-
-
         }
         if (occupation.addressInfoType3) {
             setValue('addressInfoType3.addressType', '03');
@@ -355,13 +353,13 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
     const addressTemp = watch('addressInfoType3.addressTemp')
 
     useEffect(() => {
-        if (addressTemp) {
-            setValue('addressInfoType3.zipCode', addressTemp.postCode, { shouldDirty: true, shouldTouch: true })
+        if (addressTemp && data && data.addressInfoType3 && data.addressInfoType3.zipCode !== addressTemp.postCode) {
+            setValue('addressInfoType3.zipCode', addressTemp.postCode, { shouldDirty: true })
             setValue('addressInfoType3.provinceCode', addressTemp.provinceCode, { shouldDirty: true })
             setValue('addressInfoType3.districtCode', addressTemp.districtCode, { shouldDirty: true })
             setValue('addressInfoType3.subDistrictCode', addressTemp.subDistrictCode, { shouldDirty: true })
         }
-    }, [addressTemp, setValue])
+    }, [addressTemp, data, setValue])
 
     const occupationCode = watch('occupationInfo.occupationCode')
 

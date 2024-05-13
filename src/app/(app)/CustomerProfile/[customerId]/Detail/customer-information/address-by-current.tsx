@@ -151,13 +151,13 @@ export default function AddressInfoType2({ useForm }: { useForm: UseFormReturn<C
     const addressTemp = watch('addressInfoType2.addressTemp')
 
     useEffect(() => {
-        if (addressTemp) {
+        if (addressTemp && data && data.zipCode !== addressTemp.postCode) {
             setValue('addressInfoType2.zipCode', addressTemp.postCode, { shouldDirty: true })
             setValue('addressInfoType2.provinceCode', addressTemp.provinceCode, { shouldDirty: true })
             setValue('addressInfoType2.districtCode', addressTemp.districtCode, { shouldDirty: true })
             setValue('addressInfoType2.subDistrictCode', addressTemp.subDistrictCode, { shouldDirty: true })
         }
-    }, [addressTemp, setValue])
+    }, [addressTemp, data, setValue])
 
     useEffect(() => {
         if (!isLoading) {

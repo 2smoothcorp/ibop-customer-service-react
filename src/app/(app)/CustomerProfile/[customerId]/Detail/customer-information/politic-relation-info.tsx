@@ -43,19 +43,21 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
         setValue('politicRelationInfo.politicianRelationString', politicRelationInfo.politicianRelation ? 'true' : 'false');
         setValue('politicRelationInfo.politicianRelation', politicRelationInfo.politicianRelation || false);
         setValue('politicRelationInfo.politicianPosition', !isEmptyStringFormApi(politicRelationInfo.politicianPosition) ? politicRelationInfo.politicianPosition || '' : '');
-        if (confirmPoliticRelationInfo) {
-            try {
-                const oldData = objectToArray({ politicRelationInfo: confirmPoliticRelationInfo });
-                oldData.map((item) => {
-                    const [key, value] = item;
-                    setValue(key as any, value, {
-                        shouldDirty: true
-                    })
-                });
-            } catch (err) {
-                console.error(err)
+        setTimeout(() => {
+            if (confirmPoliticRelationInfo) {
+                try {
+                    const oldData = objectToArray({ politicRelationInfo: confirmPoliticRelationInfo });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
             }
-        }
+        }, 100)
     }
 
     const getData = async (): Promise<PoliticRelationInfoModel | null> => {
@@ -68,7 +70,7 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
             try {
                 const request = await fetch(`/api/customer-profile/politic-relation-info/${customerId}`, { method: 'GET' });
                 const response: PoliticRelationInfoResponseDataResponse = await request.json();
-                console.log(response)
+                // console.log(response)
                 if (response.status == 200) {
                     const { data } = response;
                     if (data && data.politicRelationInfo) {
@@ -122,23 +124,9 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
                                 name="politicRelationInfo.politicianRelationString"
                                 row
                                 options={[
-                                    { label: "ใช่", id: 'true' },
-                                    { label: "ไม่ใช่", id: 'false' },
+                                    { label: "ใช่", id: 'true', value: 'true' },
+                                    { label: "ไม่ใช่", id: 'false', value: 'false' },
                                 ]}
-                            // transform={{
-                            //     input: (value) => value ? 'true' : 'false',
-                            //     output: (value) => value === 'true' ? true : false
-                            // }}
-                            // name={"politicianRelation"}
-                            // defaultValue={watch('politicRelationInfo.politicianRelationString') || 'false'}
-                            // list={[
-                            //     { label: "ใช่", value: 'true' },
-                            //     { label: "ไม่ใช่", value: 'false' },
-                            // ]}
-                            // onChange={(value) => {
-                            //     setValue('politicRelationInfo.politicianRelationString', value, { shouldDirty: true });
-                            //     setValue('politicRelationInfo.politicianRelation', value == 'true', { shouldDirty: true })
-                            // }}
                             />
                             : data && data.politicianRelation ? `ใช่` : "ไม่ใช่"
                     }

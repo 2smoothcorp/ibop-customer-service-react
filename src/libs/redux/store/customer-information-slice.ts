@@ -208,7 +208,7 @@ export const customerInformationSlice = createSlice({
                 state.confirm = null
             } else {
                 if (state.confirm) {
-                    const oldData = current(state.confirm)
+                    let oldData = current(state.confirm)
                     state.confirm = mergeDeep({}, oldData, action.payload)
                 } else {
                     state.confirm = action.payload

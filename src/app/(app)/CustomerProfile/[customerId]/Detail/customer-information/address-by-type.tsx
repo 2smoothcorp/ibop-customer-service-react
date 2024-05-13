@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
-    const { trigger, setValue, watch } = useForm;
+    const { trigger, setValue, watch, resetField } = useForm;
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
@@ -214,6 +214,7 @@ export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<C
                     return value.postCode;
                 },
                 options: getAddressToPostCode() || [],
+                disabled: watch('addressInfoType1.countryCode') !== '000',
             })
         },
         {
@@ -293,13 +294,13 @@ export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<C
     const addressTemp = watch('addressInfoType1.addressTemp')
 
     useEffect(() => {
-        if (addressTemp) {
-            setValue('addressInfoType1.zipCode', addressTemp.postCode, { shouldDirty: true, shouldTouch: true })
+        if (addressTemp && data && data.zipCode !== addressTemp.postCode) {
+            setValue('addressInfoType1.zipCode', addressTemp.postCode, { shouldDirty: true })
             setValue('addressInfoType1.provinceCode', addressTemp.provinceCode, { shouldDirty: true })
             setValue('addressInfoType1.districtCode', addressTemp.districtCode, { shouldDirty: true })
             setValue('addressInfoType1.subDistrictCode', addressTemp.subDistrictCode, { shouldDirty: true })
         }
-    }, [addressTemp, setValue])
+    }, [addressTemp, data, resetField, setValue])
 
     useEffect(() => {
         if (!isLoading) {

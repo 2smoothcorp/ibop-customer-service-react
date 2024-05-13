@@ -25,7 +25,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
 
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ['politicRelationInfo', params.customerId],
+        queryKey: ['spouseInfo', params.customerId],
         queryFn: () => getData(),
     })
 
