@@ -32,7 +32,7 @@ export default function Fatca() {
 
     const saveData = (data: CustomerFatcaState) => {
         const { formState: { dirtyFields } } = useFormAll
-        console.log(dirtyFields)
+        // console.log(dirtyFields)
         const { americaStatus, isFatcaIndividualSelfCert, tinInput, w8 } = dirtyFields
         if (americaStatus && americaStatus?.length > 0) {
             const answerInput = data.americaStatus.map((item) => { return { questionId: item.questionId, choiceId: item.choiceId } as AnswerInput })
