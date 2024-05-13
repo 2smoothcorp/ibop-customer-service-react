@@ -77,7 +77,7 @@ export default function SummaryContractEmergencyInfo({ data }: { data: CustomerC
                         return fieldList({ data: _data }).map((detail: DetailSection<EmergencyContactInfoModel>, idx: number) => {
                             const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition, isFull, labelAlign } = detail
 
-                            if (!name) return <div></div>
+                            if (!name) return <div key={`field-item-${idx}`}></div>
                             if (condition && typeof condition === 'function' && !condition(_data)) return null
 
                             const _textShow = (getValueFromFieldName(name, _data, normalize) || '').toString();

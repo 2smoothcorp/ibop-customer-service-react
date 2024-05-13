@@ -85,7 +85,7 @@ export default function SummarySpouseInfo({ data }: { data: CustomerInformationS
                 {
                     fieldList({ data: data.spouseInfo }).map((detail: DetailSection, idx: number) => {
                         const { name, label, defaultValue, isRequired, normalize, CustomComponent } = detail
-                        if (!name) return <div></div>
+                        if (!name) return <div key={`field-item-${idx}`}></div>
                         const _textShow = (getValueFromFieldName(name, data.spouseInfo, normalize) || '').toString();
                         //if (CustomComponent) return CustomComponent
                         return <React.Fragment key={`field-item-${idx}`}>

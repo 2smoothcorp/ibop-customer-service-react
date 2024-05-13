@@ -1,9 +1,8 @@
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel } from "@/services/rest-api/customer-service";
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 
 interface DetailSection {
     name?: keyof AddressInfoModel
@@ -122,7 +121,7 @@ export default function SummaryAddressByCurrentInfo({ data }: { data: CustomerIn
 
     const isEditable = false;
 
-    const _data = data.addressByCurrent;
+    const _data = data;
 
     return <>
         <HeaderTitle
@@ -134,7 +133,7 @@ export default function SummaryAddressByCurrentInfo({ data }: { data: CustomerIn
             error={undefined}
         >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {
+                {/*
                     fieldList({ data: _data }).map((detail: DetailSection, idx: number) => {
                         const { name, label, defaultValue, isRequired, normalize, CustomComponent } = detail
 
@@ -153,15 +152,14 @@ export default function SummaryAddressByCurrentInfo({ data }: { data: CustomerIn
                             />
                         </React.Fragment>
                     })
-                }
+                */}
                 <div></div>
                 <div></div>
-                {
-
-                    data.addressByCurrent.addressType === '02' ?
+                {/*
+                    !data.isAddressInfoType2SameType && !data.isAddressInfoType3SameType ?
                         AddressOtherfieldList({ data: _data }).map((detail: DetailSection, idx: number) => {
                             const { name, label, defaultValue, isRequired, normalize, CustomComponent } = detail
-                            if (!name) return <div></div>
+                            if (!name) return <div key={`field-item-${idx}`}></div>
                             const _textShow = (getValueFromFieldName(name, _data, normalize) || '').toString();
                             //if (CustomComponent) return CustomComponent
                             return <React.Fragment key={`field-item-${idx}`}>
@@ -176,7 +174,7 @@ export default function SummaryAddressByCurrentInfo({ data }: { data: CustomerIn
                             </React.Fragment>
                         }) :
                         null
-                }
+                    */}
             </div>
         </ContentLoading>
     </>

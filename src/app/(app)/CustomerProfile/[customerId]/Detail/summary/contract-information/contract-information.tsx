@@ -148,7 +148,7 @@ export default function SummaryContractInformationInfo({ data }: { data: Custome
                     fieldList({ data: _data }).map((detail: DetailSection<ContractInformation>, idx: number) => {
                         const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition, isFull, labelAlign } = detail
 
-                        if (!name) return <div></div>
+                        if (!name) return <div key={`field-item-${idx}`}></div>
                         if (condition && typeof condition === 'function' && !condition(_data)) return null
 
                         const _textShow = (getValueFromFieldName(name, _data, normalize) || '').toString();
@@ -174,7 +174,7 @@ export default function SummaryContractInformationInfo({ data }: { data: Custome
                         addressFieldList({ data: _data }).map((detail: DetailSection<ContractInformation>, idx: number) => {
                             const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition, isFull, labelAlign } = detail
 
-                            if (!name) return <div></div>
+                            if (!name) return <div key={`field-item-${idx}`}></div>
                             if (condition && typeof condition === 'function' && !condition(_data)) return null
 
                             const _textShow = (getValueFromFieldName(name, _data, normalize) || '').toString();

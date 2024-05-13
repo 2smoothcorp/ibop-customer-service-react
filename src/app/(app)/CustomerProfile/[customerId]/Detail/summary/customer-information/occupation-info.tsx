@@ -172,7 +172,7 @@ export default function SummaryOccupationInfo({ data }: { data: CustomerInformat
                     fieldList({ data: _dataOccupation }).map((detail: DetailSection<OccupationInfoModel>, idx: number) => {
                         const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition } = detail
 
-                        if (!name) return <div></div>
+                        if (!name) return <div key={`field-item-${idx}`}></div>
                         if (condition && typeof condition === 'function' && !condition(_dataOccupation)) return null
 
                         const _textShow = (getValueFromFieldName(name, _dataOccupation, normalize) || '').toString();
@@ -226,7 +226,7 @@ export default function SummaryOccupationInfo({ data }: { data: CustomerInformat
                             {jobAddress03_FieldList({ data: _dataAddress }).map((detail: DetailSection<JobDetailAddressModel>, idx: number) => {
                                 const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition } = detail
 
-                                if (!name) return <div></div>
+                                if (!name) return <div key={`field-item-${idx}`}></div>
                                 if (condition && typeof condition === 'function' && !condition(_dataAddress)) return null
 
                                 const _textShow = (getValueFromFieldName(name, _dataAddress, normalize) || '').toString();
