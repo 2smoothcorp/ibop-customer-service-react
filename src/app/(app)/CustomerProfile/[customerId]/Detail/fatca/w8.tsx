@@ -9,13 +9,15 @@ import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice";
 import { TinInfoOutput } from "@/services/rest-api/customer-service";
-import { objectToArray } from "@/utils/function";
+import { isObjectEmpty, objectToArray } from "@/utils/function";
 import { Grid } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { useParams, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { AutocompleteElement, TextFieldElement } from "react-hook-form-mui";
 import { DatePickerElement } from "react-hook-form-mui/date-pickers";
@@ -197,12 +199,18 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
     const confirmFatcaW8Input = useAppSelector(state => state.cusomterFatca.confirm?.fatcaW8Input)
 
     const setDefaultDataChange = () => {
+        console.log("setDefaultDataChange")
         setTimeout(() => {
             if (confirmFatcaW8Input) {
                 try {
                     const oldData = objectToArray({ w8: confirmFatcaW8Input });
                     oldData.map((item) => {
                         const [key, value] = item;
+                        if (key === 'w8.dateOfBirth') {
+                            setValue("w8.dateOfBirthDayjs", dayjs(value as any), {
+                                shouldDirty: false,
+                            })
+                        }
                         setValue(key as any, value, {
                             shouldDirty: true
                         })
@@ -220,7 +228,8 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             try {
                 const request = await fetch(`/api/customer-profile/w8/${customerId}`, { method: 'GET' });
                 const response: TinInfoOutput = await request.json();
-                if (response) {
+                if (!isObjectEmpty(response)) {
+                    setDefaultDataChange();
                     return response;
                 }
                 setDefaultDataChange();
@@ -230,6 +239,15 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
         }
         return null
     }
+
+    const birthDateDayjs = watch('w8.dateOfBirthDayjs')
+
+    useEffect(() => {
+        if (birthDateDayjs) {
+            const result = birthDateDayjs.format('YYYY-MM-DD');
+            setValue('w8.dateOfBirth', result as any, { shouldDirty: true })
+        }
+    }, [birthDateDayjs, setValue])
 
     const renderInput = (item: any, index: number) => {
         if (!item.name) {
@@ -275,6 +293,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                     title={item.label}
                 />
                 <InputNumber
+                    disabled={!isEditable}
                     type="percent"
                     name={item.name}
                     value={watch(item.name as any)}
@@ -303,6 +322,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                 />
                 <AutocompleteElement
                     autocompleteProps={{
+                        disabled: !isEditable,
                         fullWidth: true,
                     }}
                     textFieldProps={{
@@ -330,6 +350,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                 title={item.label}
             />
             <TextFieldElement
+                disabled={!isEditable}
                 name={item.name}
                 required={item.required}
             />

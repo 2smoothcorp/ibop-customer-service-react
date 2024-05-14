@@ -2,7 +2,6 @@
 
 import ContentLoading from "@/components/content/content-loading";
 import LabelBase from "@/components/custom/label-base";
-import { InputRadio } from "@/components/input-radio";
 import HeaderNavbar from "@/components/navbar/header-navbar";
 import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice";
@@ -13,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { TextFieldElement } from "react-hook-form-mui";
+import { RadioButtonGroup, TextFieldElement } from "react-hook-form-mui";
 
 export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaState, any, undefined> }) {
     const { watch, setValue } = useForm;
@@ -43,13 +42,13 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             isCol: true,
             defaultValue: watch('w9.appropriate'),
             options: [
-                { value: 'Individual / sole proprietor or single-member LLC', label: 'Individual / sole proprietor or single-member LLC' },
-                { value: 'C Corporation', label: 'C Corporation' },
-                { value: 'S Corporation', label: 'S Corporation' },
-                { value: 'Partnership', label: 'Partnership' },
-                { value: 'Trust / estate', label: 'Trust / estate' },
-                { value: 'Limited liability company', label: 'Limited liability company' },
-                { value: 'Other (see instructions)', label: 'Other (see instructions)' },
+                { id: 'Individual / sole proprietor or single-member LLC', label: 'Individual / sole proprietor or single-member LLC' },
+                { id: 'C Corporation', label: 'C Corporation' },
+                { id: 'S Corporation', label: 'S Corporation' },
+                { id: 'Partnership', label: 'Partnership' },
+                { id: 'Trust / estate', label: 'Trust / estate' },
+                { id: 'Limited liability company', label: 'Limited liability company' },
+                { id: 'Other (see instructions)', label: 'Other (see instructions)' },
             ],
             required: false,
         },
@@ -99,8 +98,8 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             defaultValue: '1',
             labelWidth: 300,
             options: [
-                { value: '1', label: 'Social security number' },
-                { value: '2', label: 'Employer identification number' },
+                { id: '1', label: 'Social security number' },
+                { id: '2', label: 'Employer identification number' },
             ],
             required: true,
         },
@@ -210,14 +209,19 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                                             width={item.labelWidth}
                                             title={item.label}
                                         />
-                                        <InputRadio
+                                        <RadioButtonGroup
+                                            row
+                                            name={item.name}
+                                            options={item.options || []}
+                                        />
+                                        {/* <InputRadio
                                             className="w-full flex justify-between"
                                             row
                                             name={item.name}
                                             options={item.options || []}
                                             defaultValue={item.defaultValue}
                                             onSelectOption={(value) => setValue(item.name as any, value)}
-                                        />
+                                        /> */}
                                     </Grid>
                                 }
                                 return <Grid
@@ -230,6 +234,7 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                                         title={item.label}
                                     />
                                     <TextFieldElement
+                                        disabled={!isEditable}
                                         name={item.name}
                                         required={item.required}
                                     />

@@ -30,12 +30,12 @@ export default function Fatca() {
     const { watch, setValue } = useFormAll
 
 
-    const saveData = (_) => {
+    const saveData = () => {
         setValue('w8.dateOfBirthDayjs', null, { shouldDirty: false })
         setTimeout(() => {
             const { formState: { dirtyFields }, getValues } = useFormAll
             const data = getValues()
-            // console.log(data)
+            console.log(data)
             const { americaStatus, tinInput } = dirtyFields
             if (americaStatus && americaStatus?.length > 0) {
                 const answerInput = data.americaStatus.map((item) => {
