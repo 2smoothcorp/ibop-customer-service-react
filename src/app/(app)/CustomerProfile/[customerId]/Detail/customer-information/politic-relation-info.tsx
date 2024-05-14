@@ -102,7 +102,7 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
     const politicianRelationString = watch('politicRelationInfo.politicianRelationString')
 
     useEffect(() => {
-        if (politicianRelationString === 'ture') {
+        if (politicianRelationString === 'true') {
             setValue('politicRelationInfo.politicianRelation', true, { shouldDirty: true })
         } else {
             setValue('politicRelationInfo.politicianRelation', false, { shouldDirty: true })
