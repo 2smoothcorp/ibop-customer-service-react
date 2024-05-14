@@ -1,4 +1,4 @@
-import { ComboBoxListDataResponse } from "@/services/rest-api/customer-service";
+import { ComboBox, ComboBoxListDataResponse } from "@/services/rest-api/customer-service";
 import { useQuery } from "@tanstack/react-query";
 
 const useMasterDataAORole = () => {
@@ -34,7 +34,7 @@ export const useMasterDataAORoleCustom = () => {
                     const customData = response.data.map((item) => {
                         return { ...item, value: item.rValue || '', label: `${item.rValue} - ${item.rText}` }
                     });
-                    return customData
+                    return customData as Array<ComboBox>
                 }
                 return [];
             } catch (e) {

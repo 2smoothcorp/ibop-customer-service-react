@@ -1,4 +1,4 @@
-import { ComboBoxListDataResponse } from "@/services/rest-api/customer-service";
+import { ComboBox, ComboBoxListDataResponse } from "@/services/rest-api/customer-service";
 import { useQuery } from "@tanstack/react-query";
 
 const useMasterDataPersonType = () => {
@@ -41,7 +41,7 @@ export const useMasterDataPersonTypeCustom = (labelEmpty: string = "กรุณ
                     });
                     return [{
                         id: "", value: "", label: labelEmpty,
-                    }].concat(customData)
+                    }].concat(customData) as Array<ComboBox>
                 }
                 return [];
             } catch (e) {
