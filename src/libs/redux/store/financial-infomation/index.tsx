@@ -29,7 +29,7 @@ export const financialInfomationSlice = createSlice({
             state.data = action.payload
         },
         setConfirmFinancialInfoData: (state, action: PayloadAction<FinancialInfoModel>) => {
-            state.confirm = action.payload
+            state.confirm = { ...state.confirm, ...action.payload }
         }
     }
 })

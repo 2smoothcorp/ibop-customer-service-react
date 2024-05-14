@@ -1,12 +1,17 @@
 import HeaderTitle from "@/components/navbar/header-title"
 import { useAppSelector } from "@/libs/redux/hook"
+import { ContractConfirm } from "@/libs/redux/store/customer-contract-slice"
+import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice"
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice"
 import { swal } from "@/libs/sweetalert"
+import { FinancialInfoModel } from "@/services/rest-api/customer-service"
 import { Button } from "@mui/material"
 import { useParams } from "next/navigation"
 import { useForm } from "react-hook-form"
+import FinancialInformation from "./financial-information"
+import SummaryContractEmergencyInfo from "./summary/contract-information/contract-emergency"
+import SummaryContractInformationInfo from "./summary/contract-information/contract-information"
 import SummaryFatcaInfo from "./summary/fatca"
-import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice"
 
 const SummaryInformation = () => {
 
@@ -63,17 +68,16 @@ const SummaryInformation = () => {
             */}
         </div>
 
-        {/*
+
         <div className="rounded-lg border-2 p-4 my-2">
             <SummaryContractInformationInfo data={form.customerContract.confirm as ContractConfirm} />
             <SummaryContractEmergencyInfo data={form.customerContract.confirm as ContractConfirm} />
         </div>
-        */}
 
-        {/*
         <div className="rounded-lg border-2 p-4 my-2">
-            <FinancialInformation data={form.financialInfomation as FinancialInfoModel} />
+            <FinancialInformation data={form.financialInfomation.confirm as FinancialInfoModel} isReadonly={true} showOnlyChangedFields={true} />
         </div>
+        {/*
         <div className="rounded-lg border-2 p-4 my-2">
             <BeneficiaryPage data={form.beneficiary.data as BeneficiaryInfoModel} />
         </div>
@@ -85,8 +89,11 @@ const SummaryInformation = () => {
         </div>
         */}
 
+
         <div className="rounded-lg border-2 p-4 my-2">
-            <SummaryFatcaInfo data={form.cusomterFatca as CustomerFatcaState} />
+            <div className="pl-8">
+                <SummaryFatcaInfo data={form.cusomterFatca as CustomerFatcaState} />
+            </div>
         </div>
 
         {
