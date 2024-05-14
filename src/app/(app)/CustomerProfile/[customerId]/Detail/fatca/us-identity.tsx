@@ -21,7 +21,7 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
         queryFn: () => getData(),
     })
 
-    const getData = async () => {
+    const getData = async (): Promise<QuestionAsnwer[]> => {
         const { customerId } = params
         if (customerId) {
             try {
@@ -29,37 +29,63 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                 const response: QuestionsOutput = await request.json();
                 const requestAnswers = await fetch(`/api/customer-profile/fatca/answers/${customerId}`, { method: 'GET' });
                 const responseAnswers: AnswerFACTA = await requestAnswers.json();
+                console.log('response', response)
+                console.log('responseAnswers', responseAnswers)
                 const { questions, choices } = response;
                 const { answers } = responseAnswers;
                 if (questions && answers && choices) {
                     let reulst: QuestionAsnwer[] = []
                     questions.map((question) => {
-                        const answer = answers.find((answer) => answer.questionId === question.questionId)
+                        let answer = answers.find((answer) => answer.questionId === question.questionId)
                         const answerChoice = choices[`${question.questionId}`]
 
-                        if (answer && answerChoice && question && question.questionId && answer.choiceId && question.questionType) {
-                            if (answer.answerTextTh !== 'ไม่ใช่') {
-                                if (question.questionType === 'W8')
-                                    setValue('isW8', true)
-                                if (question.questionType === 'W9')
-                                    setValue('isW9', true)
+                        if (answerChoice && question && question.questionId && question.questionType) {
+                            if (answer && answer.choiceId) {
+                                if (answer.answerTextTh !== 'ไม่ใช่') {
+                                    if (question.questionType === 'W8')
+                                        setValue('isW8', true)
+                                    if (question.questionType === 'W9')
+                                        setValue('isW9', true)
 
-                                reulst.push({
-                                    question: question,
-                                    choices: answerChoice,
-                                    questionId: question.questionId,
-                                    choiceId: answer.choiceId,
-                                    isCheck: true,
-                                })
+                                    reulst.push({
+                                        question: question,
+                                        choices: answerChoice,
+                                        questionId: question.questionId,
+                                        choiceId: answer.choiceId,
+                                        isCheck: true,
+                                    })
 
+                                } else {
+                                    reulst.push({
+                                        question: question,
+                                        choices: answerChoice,
+                                        questionId: question.questionId,
+                                        choiceId: answer.choiceId,
+                                        isCheck: false,
+                                    })
+                                }
                             } else {
-                                reulst.push({
-                                    question: question,
-                                    choices: answerChoice,
-                                    questionId: question.questionId,
-                                    choiceId: answer.choiceId,
-                                    isCheck: false,
-                                })
+                                const defaultChoice = answerChoice.find((x: Choice) => x.choiceTextTh === 'ไม่ใช่');
+                                if (defaultChoice) {
+                                    reulst.push({
+                                        question: question,
+                                        choices: answerChoice,
+                                        questionId: question.questionId,
+                                        choiceId: defaultChoice.choiceId || 0,
+                                        isCheck: false,
+                                    })
+                                } else {
+                                    const defaultFixChoice = answerChoice[1];
+                                    if (defaultFixChoice) {
+                                        reulst.push({
+                                            question: question,
+                                            choices: answerChoice,
+                                            questionId: question.questionId,
+                                            choiceId: defaultFixChoice.choiceId || 0,
+                                            isCheck: false,
+                                        })
+                                    }
+                                }
                             }
                         }
                     });
@@ -70,7 +96,7 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                 throw error
             }
         }
-        return null
+        return []
     }
 
     const reCheckStatusAll = (type: string | null | undefined): boolean => {
