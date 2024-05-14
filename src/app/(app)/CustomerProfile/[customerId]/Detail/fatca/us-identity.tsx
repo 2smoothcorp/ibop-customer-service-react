@@ -29,8 +29,6 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                 const response: QuestionsOutput = await request.json();
                 const requestAnswers = await fetch(`/api/customer-profile/fatca/answers/${customerId}`, { method: 'GET' });
                 const responseAnswers: AnswerFACTA = await requestAnswers.json();
-                console.log('response', response)
-                console.log('responseAnswers', responseAnswers)
                 const { questions, choices } = response;
                 const { answers } = responseAnswers;
                 if (questions && answers && choices) {

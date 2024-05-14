@@ -16,7 +16,7 @@ import { UseFormReturn } from "react-hook-form";
 import { RadioButtonGroup } from "react-hook-form-mui";
 
 export default function ContractInformation({ useForm }: { useForm: UseFormReturn<CustomerContractState, any, undefined> }) {
-    const { setValue, watch, trigger, resetField } = useForm
+    const { setValue, watch, trigger } = useForm
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';

@@ -57,7 +57,7 @@ export default function InputElement({
         const name = getName();
         if (type === 'date') {
             if (name === 'personalInfo.identityExpireDateDayjs') {
-                console.log('identityNeverExpire', identityNeverExpire)
+                // console.log('identityNeverExpire', identityNeverExpire)
                 if (identityNeverExpire)
                     return 'ตลอดชีพ';
                 else if (identityExpireDate === '-' || identityExpireDate === '')
