@@ -1,20 +1,24 @@
 "use client"
 
 import ContentLoading from "@/components/content/content-loading";
-import InputDate from "@/components/custom/input-date";
 import InputNumber from "@/components/custom/input-number";
 import LabelBase from "@/components/custom/label-base";
 import HeaderNavbar from "@/components/navbar/header-navbar";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
+import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice";
 import { TinInfoOutput } from "@/services/rest-api/customer-service";
+import { objectToArray } from "@/utils/function";
 import { Grid } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import { useParams, useSearchParams } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
 import { AutocompleteElement, TextFieldElement } from "react-hook-form-mui";
+import { DatePickerElement } from "react-hook-form-mui/date-pickers";
 
 export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaState, any, undefined> }) {
     const { watch, setValue, register, formState: { errors } } = useForm;
@@ -118,7 +122,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
             required: true
         },
         {
-            name: 'w8.dateOfBirth',
+            name: 'w8.dateOfBirthDayjs',
             label: '8. Date of birth (DD/MM/YYYY) (see instructions)',
             col: 12,
             labelWidth: 330,
@@ -190,6 +194,26 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
         queryFn: () => getData(),
     })
 
+    const confirmFatcaW8Input = useAppSelector(state => state.cusomterFatca.confirm?.fatcaW8Input)
+
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmFatcaW8Input) {
+                try {
+                    const oldData = objectToArray({ w8: confirmFatcaW8Input });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+        }, 100)
+    }
+
     const getData = async () => {
         const { customerId } = params
         if (customerId) {
@@ -199,6 +223,7 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                 if (response) {
                     return response;
                 }
+                setDefaultDataChange();
             } catch (error) {
                 throw error
             }
@@ -226,13 +251,16 @@ export default function W8({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
                     width={item.labelWidth}
                     title={item.label}
                 />
-                <InputDate
-                    name={item.name}
-                    defaultValue={watch(item.name as any)}
-                    maxDate={dayjs().subtract(15, 'year').format('YYYY-MM-DD')}
-                    onChange={(e) => setValue(item.name as any, e)}
-                    required
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['DatePicker']}>
+                        <DatePickerElement
+                            rules={{
+                                required: "This field is required"
+                            }}
+                            name={item.name}
+                        />
+                    </DemoContainer>
+                </LocalizationProvider>
             </Grid>
         }
         if (item.type === 'number') {

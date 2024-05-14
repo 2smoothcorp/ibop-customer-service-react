@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
-    const { trigger, setValue, watch, resetField } = useForm;
+    const { trigger, setValue, watch } = useForm;
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
@@ -320,7 +320,7 @@ export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<C
             setValue('addressInfoType1.districtCode', addressTemp.districtCode, { shouldDirty: true })
             setValue('addressInfoType1.subDistrictCode', addressTemp.subDistrictCode, { shouldDirty: true })
         }
-    }, [addressTemp, data, resetField, setValue])
+    }, [addressTemp, data, setValue])
 
     useEffect(() => {
         trigger('addressInfoType1')

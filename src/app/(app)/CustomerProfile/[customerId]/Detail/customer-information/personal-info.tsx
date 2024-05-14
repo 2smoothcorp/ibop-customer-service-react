@@ -19,8 +19,8 @@ import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { CheckboxElement } from "react-hook-form-mui";
 
-export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
-    const { setValue, watch, trigger, resetField } = useForm
+function PersonalInfo({ useForm }: { useForm: UseFormReturn<CustomerInformationState, any, undefined> }) {
+    const { setValue, watch, trigger } = useForm
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
@@ -106,7 +106,6 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                                 shouldDirty: false
                             })
                         }
-                        resetField(key as any)
                         setValue(key as any, value, {
                             shouldDirty: true,
                         })
@@ -446,3 +445,4 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
     )
 }
 
+export default PersonalInfo;
