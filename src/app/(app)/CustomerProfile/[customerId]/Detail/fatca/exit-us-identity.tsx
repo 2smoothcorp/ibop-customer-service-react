@@ -2,7 +2,8 @@ import ContentLoading from '@/components/content/content-loading';
 import InputSwitch from '@/components/custom/input-switch';
 import HeaderTitle from '@/components/navbar/header-title';
 import { useMasterDataCountriesCustom } from '@/hooks/masterDataCountries';
-import { CustomerFatcaState } from '@/libs/redux/store/customer-fatca-slice';
+import { useAppDispatch } from '@/libs/redux/hook';
+import { CustomerFatcaState, setExistUSID } from '@/libs/redux/store/customer-fatca-slice';
 import { swal } from '@/libs/sweetalert';
 import { GetTinOutput, TinInfoOutput } from '@/services/rest-api/customer-service';
 import { TextField, Tooltip, TooltipProps, styled, tooltipClasses } from '@mui/material';
@@ -62,6 +63,7 @@ export default function ExitUSIndentity({ useForm }: { useForm: UseFormReturn<Cu
     queryKey: ['exitUSIdentity', params.customerId],
     queryFn: () => getData(),
   });
+  const dispatch = useAppDispatch()
 
   const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
 
@@ -96,6 +98,7 @@ export default function ExitUSIndentity({ useForm }: { useForm: UseFormReturn<Cu
           if (response.tins) {
             const tinInfo = response.tins.map(tin => { return { ...tin, id: randomId(), isNew: false }; });
             setRows(tinInfo || []);
+            dispatch(setExistUSID(tinInfo as Array<GetTinOutput>))
           }
 
           return response;

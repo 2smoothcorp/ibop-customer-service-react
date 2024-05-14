@@ -4,7 +4,8 @@ import ContentLoading from "@/components/content/content-loading";
 import InputSwitch from "@/components/custom/input-switch";
 import HeaderTitle from "@/components/navbar/header-title";
 import HeaderTitleSub from "@/components/navbar/header-title-sub";
-import { CustomerFatcaState, QuestionAsnwer } from "@/libs/redux/store/customer-fatca-slice";
+import { useAppDispatch } from "@/libs/redux/hook";
+import { CustomerFatcaState, QuestionAsnwer, setAmericaStatus } from "@/libs/redux/store/customer-fatca-slice";
 import { AnswerFACTA, Choice, QuestionsOutput } from "@/services/rest-api/customer-service";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
@@ -15,6 +16,7 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
     const params = useParams()
+    const dispatch = useAppDispatch()
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['usIdentity', params.customerId],
@@ -64,6 +66,7 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                         }
                     });
                     setValue('americaStatus', reulst)
+                    dispatch(setAmericaStatus(reulst))
                     return reulst;
                 }
             } catch (error) {

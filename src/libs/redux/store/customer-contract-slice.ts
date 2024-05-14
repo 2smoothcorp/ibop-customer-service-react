@@ -16,7 +16,7 @@ interface ContractInformation extends DocReceiveAddressInfoModel {
     subDistrict: string;
 }
 
-interface ContractConfirm {
+export interface ContractConfirm {
     isAddressInfoType4SameType?: boolean;
     docReceiveAddressInfo?: DocReceiveAddressInfoModel;
     emergencyContactInfo?: EmergencyContactInfoModel[];

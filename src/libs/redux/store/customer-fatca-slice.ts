@@ -3,6 +3,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 // Define a type for the slice state
 export interface CustomerFatcaState {
     americaStatus: QuestionAsnwer[],
+    existUSID: GetTinOutput[],
     isW8: boolean
     isW9: boolean
     isAmerica: boolean
@@ -38,6 +39,7 @@ export interface QuestionAsnwer {
 // Define the initial state using that type
 const initialState: CustomerFatcaState = {
     americaStatus: [],
+    existUSID: [],
     isW8: false,
     isW9: false,
     isAmerica: false,
@@ -119,6 +121,13 @@ export const customerFatcaSlice = createSlice({
                 }
             }
         },
+        setAmericaStatus: (state, action: PayloadAction<QuestionAsnwer[]>) => {
+            state.americaStatus = action.payload
+        },
+        setExistUSID: (state, action: PayloadAction<GetTinOutput[]>) => {
+            state.existUSID = action.payload
+        },
+        //existUSID
     }
 })
 
@@ -127,7 +136,9 @@ export const {
     setFatcaW8Input,
     setFatcaW9Input,
     setIsFatcaIndividualSelfCertified,
-    setTinInput
+    setTinInput,
+    setAmericaStatus,
+    setExistUSID
 } = customerFatcaSlice.actions
 
 export default customerFatcaSlice.reducer
