@@ -4,9 +4,10 @@ import ContentLoading from "@/components/content/content-loading";
 import LabelBase from "@/components/custom/label-base";
 import { InputRadio } from "@/components/input-radio";
 import HeaderNavbar from "@/components/navbar/header-navbar";
+import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice";
 import { GetFatcaW9Output } from "@/services/rest-api/customer-service";
-import { isObjectEmpty } from "@/utils/function";
+import { isObjectEmpty, objectToArray } from "@/utils/function";
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
@@ -131,16 +132,38 @@ export default function W9({ useForm }: { useForm: UseFormReturn<CustomerFatcaSt
         queryFn: () => getData(),
     })
 
-    const getData = async () => {
+    const confirmFatcaW9Input = useAppSelector(state => state.cusomterFatca.confirm?.fatcaW9Input)
+
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmFatcaW9Input) {
+                try {
+                    const oldData = objectToArray({ w9: confirmFatcaW9Input });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+        }, 100)
+    }
+
+    const getData = async (): Promise<GetFatcaW9Output | null> => {
         const { customerId } = params
         if (customerId) {
             try {
                 const request = await fetch(`/api/customer-profile/w9/${customerId}`, { method: 'GET' });
                 const response: GetFatcaW9Output = await request.json();
                 if (!isObjectEmpty(response)) {
-                    setValue('w9', response)
+                    setValue('w9', response);
+                    setDefaultDataChange();
                     return response;
                 }
+                setDefaultDataChange();
             } catch (error) {
                 throw error
             }

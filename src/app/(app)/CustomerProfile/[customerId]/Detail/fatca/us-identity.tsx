@@ -4,6 +4,7 @@ import ContentLoading from "@/components/content/content-loading";
 import InputSwitch from "@/components/custom/input-switch";
 import HeaderTitle from "@/components/navbar/header-title";
 import HeaderTitleSub from "@/components/navbar/header-title-sub";
+import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerFatcaState, QuestionAsnwer } from "@/libs/redux/store/customer-fatca-slice";
 import { AnswerFACTA, Choice, QuestionsOutput } from "@/services/rest-api/customer-service";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +21,28 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
         queryKey: ['usIdentity', params.customerId],
         queryFn: () => getData(),
     })
+
+    const confirmAnswerInput = useAppSelector(state => state.cusomterFatca.americaStatus)
+
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmAnswerInput && confirmAnswerInput.length > 0) {
+                try {
+                    setValue('americaStatus', confirmAnswerInput, { shouldDirty: true })
+                    const isW9 = confirmAnswerInput.findIndex((x: QuestionAsnwer) => x.question.questionType === 'W9' && x.isCheck === true)
+                    const isW8 = confirmAnswerInput.findIndex((x: QuestionAsnwer) => x.question.questionType === 'W8' && x.isCheck === true)
+                    if (isW9 !== -1) {
+                        setValue('isW9', true, { shouldDirty: true })
+                    }
+                    if (isW8 !== -1) {
+                        setValue('isW8', true, { shouldDirty: true })
+                    }
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+        }, 100)
+    }
 
     const getData = async (): Promise<QuestionAsnwer[]> => {
         const { customerId } = params
@@ -87,9 +110,12 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                             }
                         }
                     });
+                    // console.log('reulst : ', reulst)
                     setValue('americaStatus', reulst)
+                    setDefaultDataChange()
                     return reulst;
                 }
+                setDefaultDataChange()
             } catch (error) {
                 throw error
             }
@@ -121,70 +147,78 @@ export default function USIndentity({ useForm }: { useForm: UseFormReturn<Custom
                         isBorder={false}
                     />
                     {
-                        watch('americaStatus').filter((x) => x.question.questionType === 'W9').map((item, index) => (
-                            <InputSwitch
-                                key={index}
-                                label={item.question.questionTextTh || ''}
-                                name={"question-" + item.question.questionId}
-                                defaultValue={item.isCheck}
-                                disabled={!isEditable}
-                                onChange={(x) => {
-                                    if (x) {
-                                        const choice = item.choices.find((x: Choice) => x.choiceTextTh === 'ใช่')
-                                        if (choice && choice.choiceId) {
-                                            setValue('isW9', true, { shouldDirty: true })
-                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
-                                            setValue(`americaStatus.${index}.isCheck`, true, { shouldDirty: true })
-                                        }
-                                    } else {
-                                        const choice = item.choices.find((x: Choice) => x.choiceTextTh !== 'ใช่')
-                                        if (choice && choice.choiceId) {
-                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
-                                            setValue(`americaStatus.${index}.isCheck`, false, { shouldDirty: true })
-                                            const isRecheck = reCheckStatusAll(item.question.questionType)
-                                            if (!isRecheck) {
-                                                setValue('isW9', false, { shouldDirty: true })
+                        watch('americaStatus').map((item, index) => {
+                            if (item.question.questionType === 'W9')
+                                return (
+                                    <InputSwitch
+                                        key={index}
+                                        label={item.question.questionTextTh || ''}
+                                        name={"question-" + item.question.questionId}
+                                        defaultValue={item.isCheck}
+                                        disabled={!isEditable}
+                                        onChange={(x) => {
+                                            if (x) {
+                                                const choice = item.choices.find((x: Choice) => x.choiceTextTh === 'ใช่')
+                                                if (choice && choice.choiceId) {
+                                                    setValue('isW9', true, { shouldDirty: true })
+                                                    setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
+                                                    setValue(`americaStatus.${index}.isCheck`, true, { shouldDirty: true })
+                                                }
+                                            } else {
+                                                const choice = item.choices.find((x: Choice) => x.choiceTextTh !== 'ใช่')
+                                                if (choice && choice.choiceId) {
+                                                    setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
+                                                    setValue(`americaStatus.${index}.isCheck`, false, { shouldDirty: true })
+                                                    const isRecheck = reCheckStatusAll(item.question.questionType)
+                                                    if (!isRecheck) {
+                                                        setValue('isW9', false, { shouldDirty: true })
+                                                    }
+                                                }
                                             }
-                                        }
-                                    }
-                                }}
-                            />
-                        ))
+                                        }}
+                                    />
+                                )
+                            return null
+                        })
                     }
                     <HeaderTitleSub
                         title="คำถามเพิ่มเติม"
                         isBorder={false}
                     />
                     {
-                        watch('americaStatus').filter((x) => x.question.questionType === 'W8').map((item, index) => (
-                            <InputSwitch
-                                key={index}
-                                label={item.question.questionTextTh || ''}
-                                name={"question-" + item.question.questionId}
-                                defaultValue={item.isCheck}
-                                disabled={!isEditable}
-                                onChange={(x) => {
-                                    if (x) {
-                                        const choice = item.choices.find((x: Choice) => x.choiceTextTh === 'ใช่')
-                                        if (choice && choice.choiceId) {
-                                            setValue('isW8', true, { shouldDirty: true })
-                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
-                                            setValue(`americaStatus.${index}.isCheck`, true, { shouldDirty: true })
-                                        }
-                                    } else {
-                                        const choice = item.choices.find((x: Choice) => x.choiceTextTh !== 'ใช่')
-                                        if (choice && choice.choiceId) {
-                                            setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
-                                            setValue(`americaStatus.${index}.isCheck`, false, { shouldDirty: true })
-                                            const isRecheck = reCheckStatusAll(item.question.questionType)
-                                            if (!isRecheck) {
-                                                setValue('isW8', false, { shouldDirty: true })
+                        watch('americaStatus').map((item, index) => {
+                            if (item.question.questionType === 'W8')
+                                return (
+                                    <InputSwitch
+                                        key={index}
+                                        label={item.question.questionTextTh || ''}
+                                        name={"question-" + item.question.questionId}
+                                        defaultValue={item.isCheck}
+                                        disabled={!isEditable}
+                                        onChange={(x) => {
+                                            if (x) {
+                                                const choice = item.choices.find((x: Choice) => x.choiceTextTh === 'ใช่')
+                                                if (choice && choice.choiceId) {
+                                                    setValue('isW8', true, { shouldDirty: true })
+                                                    setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
+                                                    setValue(`americaStatus.${index}.isCheck`, true, { shouldDirty: true })
+                                                }
+                                            } else {
+                                                const choice = item.choices.find((x: Choice) => x.choiceTextTh !== 'ใช่')
+                                                if (choice && choice.choiceId) {
+                                                    setValue(`americaStatus.${index}.choiceId`, choice.choiceId, { shouldDirty: true })
+                                                    setValue(`americaStatus.${index}.isCheck`, false, { shouldDirty: true })
+                                                    const isRecheck = reCheckStatusAll(item.question.questionType)
+                                                    if (!isRecheck) {
+                                                        setValue('isW8', false, { shouldDirty: true })
+                                                    }
+                                                }
                                             }
-                                        }
-                                    }
-                                }}
-                            />
-                        ))
+                                        }}
+                                    />
+                                )
+                            return null
+                        })
                     }
                 </div>
             </ContentLoading>
