@@ -160,10 +160,8 @@ export default function AddressInfoType2({ useForm }: { useForm: UseFormReturn<C
     }, [addressTemp, data, setValue])
 
     useEffect(() => {
-        if (!isLoading) {
-            trigger('addressInfoType2')
-        }
-    }, [isLoading, trigger])
+        trigger('addressInfoType2')
+    }, [isLoading, trigger, addressTemp])
 
     const inputDate: InputElementProps[] = [
         {

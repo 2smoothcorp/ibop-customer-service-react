@@ -303,10 +303,8 @@ export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<C
     }, [addressTemp, data, resetField, setValue])
 
     useEffect(() => {
-        if (!isLoading) {
-            trigger('addressInfoType1')
-        }
-    }, [isLoading, trigger])
+        trigger('addressInfoType1')
+    }, [isLoading, trigger, addressTemp])
 
     return (
         <>
