@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { AnswerInput, CustomerFatcaState, setAnswerInput, setFatcaW8Input, setFatcaW9Input, setIsFatcaIndividualSelfCertified, setTinInput } from "@/libs/redux/store/customer-fatca-slice";
+import { AnswerInput, CustomerFatcaState, setAmericaStatus, setAnswerInput, setFatcaW8Input, setFatcaW9Input, setIsFatcaIndividualSelfCertified, setTinInput } from "@/libs/redux/store/customer-fatca-slice";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { Button } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -27,45 +27,54 @@ export default function Fatca() {
     const useFormAll = useForm<CustomerFatcaState>({
         defaultValues: cusomterFatca
     })
-    const { watch } = useFormAll
+    const { watch, setValue } = useFormAll
 
 
-    const saveData = (data: CustomerFatcaState) => {
-        const { formState: { dirtyFields } } = useFormAll
-        console.log(dirtyFields)
-        const { americaStatus, isFatcaIndividualSelfCert, tinInput, w8 } = dirtyFields
-        if (americaStatus && americaStatus?.length > 0) {
-            const answerInput = data.americaStatus.map((item) => { return { questionId: item.questionId, choiceId: item.choiceId } as AnswerInput })
-            dispatch(setAnswerInput(answerInput));
-        }
-        // if (isFatcaIndividualSelfCert !== undefined) {
-        if (data.isFatcaIndividualSelfCert) {
-            dispatch(setIsFatcaIndividualSelfCertified(data.isFatcaIndividualSelfCert))
-        }
-        // }
-        if (tinInput !== undefined) {
-            if (data.tinInput) {
-                dispatch(setTinInput(data.tinInput))
+    const saveData = (_) => {
+        setValue('w8.dateOfBirthDayjs', null, { shouldDirty: false })
+        setTimeout(() => {
+            const { formState: { dirtyFields }, getValues } = useFormAll
+            const data = getValues()
+            // console.log(data)
+            const { americaStatus, tinInput } = dirtyFields
+            if (americaStatus && americaStatus?.length > 0) {
+                const answerInput = data.americaStatus.map((item) => {
+                    return {
+                        questionId: item.questionId,
+                        choiceId: item.choiceId
+                    } as AnswerInput
+                })
+                dispatch(setAmericaStatus(data.americaStatus))
+                dispatch(setAnswerInput(answerInput));
+            }
+            // if (isFatcaIndividualSelfCert !== undefined) {
+            if (data.isFatcaIndividualSelfCert) {
+                dispatch(setIsFatcaIndividualSelfCertified(data.isFatcaIndividualSelfCert))
+            }
+            // }
+            if (tinInput !== undefined) {
+                if (data.tinInput) {
+                    dispatch(setTinInput(data.tinInput))
+                }
+            }
+            if (data.isW8) {
+                if (data.w8) {
+                    dispatch(setFatcaW8Input(data.w8))
+                }
+            } else {
+                dispatch(setFatcaW8Input(null))
             }
 
-
-        }
-        if (data.isW8) {
-            if (data.w8) {
-                dispatch(setFatcaW8Input(data.w8))
+            if (data.isW9) {
+                if (data.w9) {
+                    dispatch(setFatcaW9Input(data.w9))
+                }
+            } else {
+                dispatch(setFatcaW9Input(null))
             }
-        } else {
-            dispatch(setFatcaW8Input(null))
-        }
+            dispatch(nextStep())
+        }, 100)
 
-        if (data.isW9) {
-            if (data.w9) {
-                dispatch(setFatcaW9Input(data.w9))
-            }
-        } else {
-            dispatch(setFatcaW9Input(null))
-        }
-        dispatch(nextStep())
     }
 
     return <FormContainer formContext={useFormAll} onSuccess={saveData}>

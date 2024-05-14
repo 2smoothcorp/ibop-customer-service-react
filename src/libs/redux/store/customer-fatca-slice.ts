@@ -1,5 +1,6 @@
 import { Choice, FatcaW8Input, FatcaW9Input, GetFatcaW8Output, GetFatcaW9Output, GetTinOutput, Question } from '@/services/rest-api/customer-service';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { Dayjs } from 'dayjs';
 // Define a type for the slice state
 export interface CustomerFatcaState {
     americaStatus: QuestionAsnwer[],
@@ -10,7 +11,7 @@ export interface CustomerFatcaState {
     isFatcaIndividualSelfCert: boolean | null
     tinType: string,
     w9: GetFatcaW9Output | null
-    w8: GetFatcaW8Output | null,
+    w8: GetFatcaW8OutputCustom | null,
     tinInput: GetTinOutput[] | null
     confirm: Confirm | null
 }
@@ -21,6 +22,10 @@ interface Confirm {
     fatcaW9Input: FatcaW9Input | null,
     isFatcaIndividualSelfCertified: boolean | null,
     tinInput: GetTinOutput[] | null
+}
+
+interface GetFatcaW8OutputCustom extends GetFatcaW8Output {
+    dateOfBirthDayjs: Dayjs | null
 }
 
 export interface AnswerInput {
@@ -56,6 +61,9 @@ export const customerFatcaSlice = createSlice({
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     reducers: {
+        setAmericaStatus: (state, action: PayloadAction<QuestionAsnwer[]>) => {
+            state.americaStatus = action.payload
+        },
         setAnswerInput: (state, action: PayloadAction<AnswerInput[]>) => {
             if (state.confirm) {
                 state.confirm.answerInput = action.payload
@@ -120,9 +128,6 @@ export const customerFatcaSlice = createSlice({
                     tinInput: action.payload
                 }
             }
-        },
-        setAmericaStatus: (state, action: PayloadAction<QuestionAsnwer[]>) => {
-            state.americaStatus = action.payload
         },
         setExistUSID: (state, action: PayloadAction<GetTinOutput[]>) => {
             state.existUSID = action.payload

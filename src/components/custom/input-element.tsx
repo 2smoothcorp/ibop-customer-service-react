@@ -29,6 +29,7 @@ export default function InputElement({
 }: InputElementProps) {
     const value = useWatch({ name: getName() });
     const identityNeverExpire = useWatch({ name: 'personalInfo.identityNeverExpire' });
+    const identityExpireDate = useWatch({ name: 'personalInfo.identityExpireDate' });
 
     function getName(): string {
         if (type === "text") {
@@ -56,8 +57,11 @@ export default function InputElement({
         const name = getName();
         if (type === 'date') {
             if (name === 'personalInfo.identityExpireDateDayjs') {
+                // console.log('identityNeverExpire', identityNeverExpire)
                 if (identityNeverExpire)
                     return 'ตลอดชีพ';
+                else if (identityExpireDate === '-' || identityExpireDate === '')
+                    return '-';
             }
             return dayjs(value).format('DD/MM/YYYY');
         }
@@ -83,6 +87,13 @@ export default function InputElement({
             const result = autocompleteElementProps?.options?.find((item) => item.value === value);
             if (result) {
                 return result.label;
+            }
+            return '-';
+        }
+        if (type === 'radio' && name === 'personalInfo.genderCode') {
+            const result = radioButtonGroupProps?.options?.find((item: any) => item.id === value) as { label: string, id: string };
+            if (result) {
+                return `${result.id} - ${result.label}`;
             }
             return '-';
         }
@@ -157,6 +168,7 @@ export default function InputElement({
 
     return (
         <div className={`${isLableCols1 ? "grid " + allGridCols : "flex"} items-center min-h-[46px] w-full`}>
+
             <div className={`w-1/2`}
                 style={{
                     width: labelWidth,
@@ -173,7 +185,7 @@ export default function InputElement({
                 }
             </div>
 
-            <div className={`w-1/2 flex flex-row ${isLableCols1 ? inputCol : ""}`}>
+            <div className={`w-1/2 flex flex-row gap-1 ${isLableCols1 ? inputCol : ""}`}>
                 {
                     isEditable
                         ? (

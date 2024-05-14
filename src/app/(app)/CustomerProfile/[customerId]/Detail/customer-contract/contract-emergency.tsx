@@ -1,16 +1,17 @@
 "use client"
 
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
-import InputText from "@/components/custom/input-text";
+import InputElement, { InputElementProps } from "@/components/custom/input-element";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataRelationCustom } from "@/hooks/master-data-relation";
+import { useAppSelector } from "@/libs/redux/hook";
 import { CustomerContractState } from "@/libs/redux/store/customer-contract-slice";
 import { EmergencyContactInfoModel, EmergencyContactInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { handleEmptyStringFormApi } from "@/utils/function";
+import { handleEmptyStringFormApi, objectToArray } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
+import { TextFieldElement } from "react-hook-form-mui";
 
 export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<CustomerContractState, any, undefined> }) {
     const { setValue, watch } = useForm
@@ -50,21 +51,44 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
         }
     }
 
+    const confirmEmergencyContactInfo = useAppSelector(state => state.customerContract.confirm?.emergencyContactInfo)
+
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmEmergencyContactInfo) {
+                try {
+                    const oldData = objectToArray({ emergencyContactInfo: confirmEmergencyContactInfo });
+                    // console.log('oldData', oldData)
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true,
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+        }, 100)
+    }
+
     const setDefaultData = (emergencyContactInfo: EmergencyContactInfoModel[]) => {
         for (let i = 0; i < emergencyContactInfo.length; i++) {
             const item = emergencyContactInfo[i]
-            setValue(`contractEmergency.${i}.emergencyContactId`, normalizationData('emergencyContactId', item));
-            setValue(`contractEmergency.${i}.name`, normalizationData('name', item));
-            setValue(`contractEmergency.${i}.mobile`, normalizationData('mobile', item));
-            setValue(`contractEmergency.${i}.relationship`, normalizationData('relationship', item));
-            setValue(`contractEmergency.${i}.relationshipCode`, normalizationData('relationshipCode', item));
-            setValue(`contractEmergency.${i}.relationshipOther`, normalizationData('relationshipOther', item));
+            setValue(`emergencyContactInfo.${i}.emergencyContactId`, normalizationData('emergencyContactId', item));
+            setValue(`emergencyContactInfo.${i}.name`, normalizationData('name', item));
+            setValue(`emergencyContactInfo.${i}.mobile`, normalizationData('mobile', item));
+            setValue(`emergencyContactInfo.${i}.relationship`, normalizationData('relationship', item));
+            setValue(`emergencyContactInfo.${i}.relationshipCode`, normalizationData('relationshipCode', item));
+            setValue(`emergencyContactInfo.${i}.relationshipOther`, normalizationData('relationshipOther', item));
         }
     }
 
-    const getData = async () => {
-        if (data) {
+    const getData = async (): Promise<EmergencyContactInfoModel[]> => {
+        if (data && data.length > 0) {
             setDefaultData(data)
+            setDefaultDataChange()
+            return data
         }
         const { customerId } = params
         if (customerId) {
@@ -76,16 +100,142 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
 
                     if (data && data.emergencyContactInfo) {
                         setDefaultData(data.emergencyContactInfo)
+                        setDefaultDataChange()
                         return data.emergencyContactInfo
                     }
+                    setDefaultDataChange()
                 }
             } catch (error) {
                 console.error('error', error)
                 throw error
             }
         }
-        return null
+        return []
     }
+
+    const isRequired1 = watch(`emergencyContactInfo.0.name`) !== '' || watch(`emergencyContactInfo.0.mobile`) !== '' || watch(`emergencyContactInfo.0.relationshipCode`) !== ''
+    const isRequired2 = watch(`emergencyContactInfo.1.name`) !== '' || watch(`emergencyContactInfo.1.mobile`) !== '' || watch(`emergencyContactInfo.1.relationshipCode`) !== ''
+    const isRequired3 = watch(`emergencyContactInfo.2.name`) !== '' || watch(`emergencyContactInfo.2.mobile`) !== '' || watch(`emergencyContactInfo.2.relationshipCode`) !== ''
+
+    const inputDate: InputElementProps[] = [
+        {
+            label: "ชื่อ-นามสกุล",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "emergencyContactInfo.0.name",
+                rules: {
+                    required: isRequired1 ? 'โปรดกรอกเลขที่' : false,
+                },
+            },
+        },
+        {
+            label: "โทรศัพท์มือถือ",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "emergencyContactInfo.0.mobile",
+                rules: {
+                    required: isRequired1 ? 'โปรดกรอกเลขที่' : false,
+                },
+            },
+        },
+        {
+            type: 'autocomplete',
+            label: "ความสัมพันธ์",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "emergencyContactInfo.0.relationshipCode",
+                rules: {
+                    required: isRequired1 ? 'โปรดเลือกความสัมพันธ์' : false,
+                },
+                options: relation || [],
+            },
+            rightInputComponent: watch(`emergencyContactInfo.0.relationshipCode`) === '4' && (
+                <TextFieldElement
+                    name="emergencyContactInfo.0.relationshipOther"
+                    rules={{
+                        required: 'โปรดกรอกความสัมพันธ์',
+                    }}
+                />
+            )
+        },
+        {
+            label: "ชื่อ-นามสกุล",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "emergencyContactInfo.1.name",
+                rules: {
+                    required: isRequired2 ? 'โปรดกรอกเลขที่' : false,
+                },
+            },
+        },
+        {
+            label: "โทรศัพท์มือถือ",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "emergencyContactInfo.1.mobile",
+                rules: {
+                    required: isRequired2 ? 'โปรดกรอกเลขที่' : false,
+                },
+            },
+        },
+        {
+            type: 'autocomplete',
+            label: "ความสัมพันธ์",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "emergencyContactInfo.1.relationshipCode",
+                rules: {
+                    required: isRequired2 ? 'โปรดเลือกความสัมพันธ์' : false,
+                },
+                options: relation || [],
+            },
+            rightInputComponent: watch(`emergencyContactInfo.1.relationshipCode`) === '4' && (
+                <TextFieldElement
+                    name="emergencyContactInfo.1.relationshipOther"
+                    rules={{
+                        required: 'โปรดกรอกความสัมพันธ์',
+                    }}
+                />
+            )
+        },
+        {
+            label: "ชื่อ-นามสกุล",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "emergencyContactInfo.2.name",
+                rules: {
+                    required: isRequired3 ? 'โปรดกรอกเลขที่' : false,
+                },
+            },
+        },
+        {
+            label: "โทรศัพท์มือถือ",
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "emergencyContactInfo.2.mobile",
+            },
+        },
+        {
+            type: 'autocomplete',
+            label: "ความสัมพันธ์",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "emergencyContactInfo.2.relationshipCode",
+                rules: {
+                    required: isRequired3 ? 'โปรดเลือกความสัมพันธ์' : false,
+                },
+                options: relation || [],
+            },
+            rightInputComponent: watch(`emergencyContactInfo.2.relationshipCode`) === '4' && (
+                <TextFieldElement
+                    name="emergencyContactInfo.2.relationshipOther"
+                    rules={{
+                        required: 'โปรดกรอกความสัมพันธ์',
+                    }}
+                />
+            )
+        },
+    ]
 
     return (
         <>
@@ -98,8 +248,19 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
                 error={error && error.message || undefined}
                 hight={184}
             >
-
-                {
+                <div className="grid grid-cols-3 gap-1">
+                    {
+                        inputDate.map((input, index) => {
+                            return (
+                                <InputElement
+                                    key={index}
+                                    {...input}
+                                />
+                            )
+                        })
+                    }
+                </div>
+                {/* {
                     isEditable
                         ? [0, 1, 2].map((index) => {
                             return (
@@ -172,7 +333,7 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
                                 </div>
                             )
                         })
-                }
+                } */}
 
             </ContentLoading>
 

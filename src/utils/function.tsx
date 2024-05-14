@@ -175,19 +175,23 @@ export const addressComponentToProps = ({
     name,
     required,
     input,
-    options
+    options,
+    disabled = false
 }: {
     name: string,
     required: string,
     input: ((value: any) => any) | undefined,
-    options: any[]
+    options: any[],
+    disabled?: boolean,
 }): AutocompleteElementProps => {
     return {
         name: name,
         rules: {
             required,
         },
+
         autocompleteProps: {
+            disabled,
             clearIcon: null,
             fullWidth: true,
             filterOptions,

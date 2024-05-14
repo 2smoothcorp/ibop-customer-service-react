@@ -49,7 +49,7 @@ interface SpouseInfo {
     spouseLastName: string;
 }
 
-interface AddressInfo extends AddressInfoModel {
+export interface AddressInfo extends AddressInfoModel {
     addressTemp: AddressThailandResultProps | null;
     addressType: '01' | '02' | '03' | '04',
     country: string;
@@ -208,7 +208,7 @@ export const customerInformationSlice = createSlice({
                 state.confirm = null
             } else {
                 if (state.confirm) {
-                    const oldData = current(state.confirm)
+                    let oldData = current(state.confirm)
                     state.confirm = mergeDeep({}, oldData, action.payload)
                 } else {
                     state.confirm = action.payload

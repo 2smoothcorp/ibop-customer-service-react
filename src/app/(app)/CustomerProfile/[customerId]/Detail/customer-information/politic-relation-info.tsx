@@ -25,42 +25,48 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
         queryFn: () => getData(),
     })
 
-    const normalizationData = (name: string, politicRelationInfo: PoliticRelationInfoModel): any => {
-        switch (name) {
-            case 'politicianRelation':
-                return politicRelationInfo.politicianRelation ?? false;
-            case 'politicianPosition':
-                return politicRelationInfo.politicianPosition ?? "";
+    // const normalizationData = (name: string, politicRelationInfo: PoliticRelationInfoModel): any => {
+    //     switch (name) {
+    //         case 'politicianRelation':
+    //             return politicRelationInfo.politicianRelation ?? false;
+    //         case 'politicianPosition':
+    //             return politicRelationInfo.politicianPosition ?? "";
 
-            default:
-                return '-';
-        }
-    }
+    //         default:
+    //             return '-';
+    //     }
+    // }
 
     const confirmPoliticRelationInfo = useAppSelector(state => state.customerInformation.confirm?.politicRelationInfo)
+
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmPoliticRelationInfo) {
+                try {
+                    const oldData = objectToArray({ politicRelationInfo: confirmPoliticRelationInfo });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+        }, 100)
+    }
 
     const setDefaultData = (politicRelationInfo: PoliticRelationInfoModel) => {
         setValue('politicRelationInfo.politicianRelationString', politicRelationInfo.politicianRelation ? 'true' : 'false');
         setValue('politicRelationInfo.politicianRelation', politicRelationInfo.politicianRelation || false);
         setValue('politicRelationInfo.politicianPosition', !isEmptyStringFormApi(politicRelationInfo.politicianPosition) ? politicRelationInfo.politicianPosition || '' : '');
-        if (confirmPoliticRelationInfo) {
-            try {
-                const oldData = objectToArray({ politicRelationInfo: confirmPoliticRelationInfo });
-                oldData.map((item) => {
-                    const [key, value] = item;
-                    setValue(key as any, value, {
-                        shouldDirty: true
-                    })
-                });
-            } catch (err) {
-                console.error(err)
-            }
-        }
     }
 
     const getData = async (): Promise<PoliticRelationInfoModel | null> => {
         if (data) {
-            setDefaultData(data)
+            setDefaultData(data);
+            setDefaultDataChange();
             return data
         }
         const { customerId } = params
@@ -68,13 +74,15 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
             try {
                 const request = await fetch(`/api/customer-profile/politic-relation-info/${customerId}`, { method: 'GET' });
                 const response: PoliticRelationInfoResponseDataResponse = await request.json();
-                console.log(response)
+                // console.log(response)
                 if (response.status == 200) {
                     const { data } = response;
                     if (data && data.politicRelationInfo) {
                         setDefaultData(data.politicRelationInfo)
+                        setDefaultDataChange()
                         return data.politicRelationInfo
                     }
+                    setDefaultDataChange()
                 }
             } catch (error) {
                 throw error
@@ -94,7 +102,7 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
     const politicianRelationString = watch('politicRelationInfo.politicianRelationString')
 
     useEffect(() => {
-        if (politicianRelationString === 'ture') {
+        if (politicianRelationString === 'true') {
             setValue('politicRelationInfo.politicianRelation', true, { shouldDirty: true })
         } else {
             setValue('politicRelationInfo.politicianRelation', false, { shouldDirty: true })
@@ -122,23 +130,9 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
                                 name="politicRelationInfo.politicianRelationString"
                                 row
                                 options={[
-                                    { label: "ใช่", id: 'true' },
-                                    { label: "ไม่ใช่", id: 'false' },
+                                    { label: "ใช่", id: 'true', value: 'true' },
+                                    { label: "ไม่ใช่", id: 'false', value: 'false' },
                                 ]}
-                            // transform={{
-                            //     input: (value) => value ? 'true' : 'false',
-                            //     output: (value) => value === 'true' ? true : false
-                            // }}
-                            // name={"politicianRelation"}
-                            // defaultValue={watch('politicRelationInfo.politicianRelationString') || 'false'}
-                            // list={[
-                            //     { label: "ใช่", value: 'true' },
-                            //     { label: "ไม่ใช่", value: 'false' },
-                            // ]}
-                            // onChange={(value) => {
-                            //     setValue('politicRelationInfo.politicianRelationString', value, { shouldDirty: true });
-                            //     setValue('politicRelationInfo.politicianRelation', value == 'true', { shouldDirty: true })
-                            // }}
                             />
                             : data && data.politicianRelation ? `ใช่` : "ไม่ใช่"
                     }
