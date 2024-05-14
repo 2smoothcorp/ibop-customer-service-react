@@ -1,10 +1,10 @@
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
-import { CustomerContractState } from "@/libs/redux/store/customer-contract-slice";
 import { EmergencyContactInfoModel } from "@/services/rest-api/customer-service";
 import { Property } from "csstype";
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
+import { ContractConfirm } from "../../../../../../../libs/redux/store/customer-contract-slice";
+import LabelDetail from "../components/label-detail";
 
 interface DetailSection<T> {
     name?: keyof T
@@ -56,11 +56,11 @@ const normalizationData = (name: string, data: EmergencyContactInfoModel, defaul
     }
 }
 
-export default function SummaryContractEmergencyInfo({ data }: { data: CustomerContractState }) {
+export default function SummaryContractEmergencyInfo({ data }: { data: ContractConfirm }) {
 
     const isEditable = false;
 
-    const _dataList = data.emergencyContactInfo;
+    const _dataList = data?.emergencyContactInfo;
 
     return <>
         <HeaderTitle
@@ -73,27 +73,14 @@ export default function SummaryContractEmergencyInfo({ data }: { data: CustomerC
         >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {
-                    _dataList.map(_data => {
+                    _dataList?.map(_data => {
                         return fieldList({ data: _data }).map((detail: DetailSection<EmergencyContactInfoModel>, idx: number) => {
-                            const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition, isFull, labelAlign } = detail
-
-                            if (!name) return <div key={`field-item-${idx}`}></div>
-                            if (condition && typeof condition === 'function' && !condition(_data)) return null
-
-                            const _textShow = (getValueFromFieldName(name, _data, normalize) || '').toString();
-                            //if (CustomComponent) return CustomComponent
-                            return <div key={`field-item-${idx}`} className={isFull ? `col-span-3` : ``}>
-                                <InputHorizontal
-                                    label={label || ''}
-                                    defaultValue={defaultValue}
-                                    isEditable={isEditable}
-                                    textShow={_textShow}
-                                    name={name}
-                                    isRequired={isRequired}
-                                    labelAlign={labelAlign}
-                                    isLabelFullWidth={isFull}
+                            return <React.Fragment key={`field-item-${idx}`}>
+                                <LabelDetail
+                                    {...detail}
+                                    data={_data}
                                 />
-                            </div>
+                            </React.Fragment>
                         })
                     })
                 }

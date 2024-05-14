@@ -1,9 +1,6 @@
 "use client"
 
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
-import PersonTypeDDL from "@/components/dropdownlist/person-type-ddl";
-import ReferenceTypeDDL from "@/components/dropdownlist/reference-type-ddl";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataNationCustom } from "@/hooks/master-data-nation";
 import { useMasterDataPersonTypeCustom } from "@/hooks/master-data-person-type";
@@ -11,13 +8,14 @@ import { useMasterDataReferenceCustom } from "@/hooks/master-data-reference";
 import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
-import { PersonalInfoModel } from "@/services/rest-api/customer-service";
+import { ComboBox, PersonalInfoModel } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import dayjs from "dayjs";
 import React, { ReactElement } from "react";
+import LabelDetail from "../components/label-detail";
 
-interface DetailSection {
-    name?: keyof PersonalInfoModel
+interface DetailSection<T> {
+    name?: keyof T
     label: string
     defaultValue?: string
     isRequired?: boolean
@@ -26,9 +24,19 @@ interface DetailSection {
     type?: string
     onChange?: (value: string) => void
     CustomComponent?: ReactElement
+    filterData?: (value: any) => string | undefined
 }
 
-const fieldList = ({ data }: { data: PersonalInfoModel }): Array<DetailSection> => {
+interface FieldListProps<T> {
+    data: T
+    personType: Array<ComboBox>
+    titles: Array<ComboBox>
+    reference: Array<ComboBox>
+    countries: Array<ComboBox>
+    nation: Array<ComboBox>
+}
+
+const fieldList = <T extends PersonalInfoModel>({ data, personType, titles, reference, countries, nation }: FieldListProps<T>): Array<DetailSection<T>> => {
 
     let isEditable = false;
 
@@ -37,24 +45,12 @@ const fieldList = ({ data }: { data: PersonalInfoModel }): Array<DetailSection> 
             {
                 label: 'ประเภทลูกค้า',
                 name: 'personTypeCode',
-                CustomComponent: <PersonTypeDDL
-                    isEditable={isEditable}
-                    name="personTypeCode"
-                    defaultValue={data.personTypeCode || ''}
-                //setValue={(value) => form.setValue(`personTypeCode` as any, value)}
-                //defaultValue={form.watch(`personTypeCode` as any)}
-                />
+                filterData: (value) => personType.filter(p => p.rValue == value)[0]?.rText || ''
             },
             {
                 label: 'ประเภทหลักฐานลูกค้า',
                 name: 'referenceType',
-                CustomComponent: <ReferenceTypeDDL
-                    isEditable={isEditable}
-                    name="referenceType"
-                    defaultValue={data.referenceType || ''}
-                //setValue={(value) => form.setValue(`personTypeCode` as any, value)}
-                //defaultValue={form.watch(`personTypeCode` as any)}
-                />
+                filterData: (value) => reference.filter(p => p.rValue == value)[0]?.rText || ''
             },
             {
                 label: 'เลขที่บัตร',
@@ -62,11 +58,13 @@ const fieldList = ({ data }: { data: PersonalInfoModel }): Array<DetailSection> 
             },
             {
                 label: 'ประเทศที่ออกบัตร',
-                name: 'countryCode'
+                name: 'countryCode',
+                filterData: (value) => countries.filter(p => p.rValue == value)[0]?.rText || ''
             },
             {
                 label: 'ประเทศเจ้าของสัญชาติ',
-                name: 'nationalityCode'
+                name: 'nationalityCode',
+                filterData: (value) => nation.filter(p => p.rValue == value)[0]?.rText || ''
             },
             {
                 label: 'วันที่หมดอายุบัตร (ค.ศ.)',
@@ -74,7 +72,8 @@ const fieldList = ({ data }: { data: PersonalInfoModel }): Array<DetailSection> 
             },
             {
                 label: 'คำนำหน้า',
-                name: 'titleCode'
+                name: 'titleCode',
+                filterData: (value) => titles.filter(p => p.rValue == value)[0]?.rText || ''
             },
             {
                 label: 'ชื่อ (ภาษาไทย)',
@@ -108,13 +107,20 @@ const fieldList = ({ data }: { data: PersonalInfoModel }): Array<DetailSection> 
     )
 }
 
-const getValueFromFieldName = (attributeName: string, data: PersonalInfoModel | undefined | null, normalize?: string): string | boolean => {
-    if (!data) return '-'
-    const value = data[attributeName as keyof typeof data] || '-';
+const getValueFromFieldName = (attributeName: string, data: PersonalInfoModel | undefined | null, normalize?: string, filterData?: Function): string | boolean | null => {
+    if (!data) return null;
+    if (data[attributeName as keyof typeof data] === null) {
+        return null;
+    }
+    let value = data[attributeName as keyof typeof data] || '';
+    value = filterData ? filterData(value) : value;
+    if (filterData)
+        console.log(`value`, typeof filterData, attributeName, data[attributeName as keyof typeof data], value)
     return normalize ? normalizationData(normalize, data as PersonalInfoModel, value) : value
 }
 
-const normalizationData = (name: string, personalInfo: PersonalInfoModel, defaultValue: string | boolean): string => {
+const normalizationData = (name: string, personalInfo: PersonalInfoModel, defaultValue: string | boolean): string | null => {
+    if (!personalInfo) return null;
     switch (name) {
         case 'personTypeCode':
             return handleEmptyStringFormApi(personalInfo.personTypeCode);
@@ -169,11 +175,13 @@ export default function SummaryPersonalInfo({ data }: { data: CustomerInformatio
     const isEditable = false;
 
     // master data
-    const { data: personType, isLoading: isLoadingPersonType } = useMasterDataPersonTypeCustom();
-    const { data: reference, isLoading: isLoadingReference } = useMasterDataReferenceCustom();
-    const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
-    const { data: titles, isLoading: isLoadingTitles } = useMasterDataTitlesCustom();
-    const { data: nation, isLoading: isLoadingNation } = useMasterDataNationCustom();
+    const { data: personType = [], isLoading: isLoadingPersonType } = useMasterDataPersonTypeCustom();
+    const { data: reference = [], isLoading: isLoadingReference } = useMasterDataReferenceCustom();
+    const { data: countries = [], isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
+    const { data: titles = [], isLoading: isLoadingTitles } = useMasterDataTitlesCustom();
+    const { data: nation = [], isLoading: isLoadingNation } = useMasterDataNationCustom();
+
+    console.log(data?.personalInfo)
 
     return (
         <>
@@ -187,21 +195,39 @@ export default function SummaryPersonalInfo({ data }: { data: CustomerInformatio
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {
-                        fieldList({ data: data.personalInfo }).map((detail: DetailSection, idx: number) => {
-                            const { name, label, defaultValue, isRequired, normalize, CustomComponent } = detail
-                            if (!name) return <div key={`field-item-${idx}`}></div>
-                            const _textShow = (getValueFromFieldName(name, data.personalInfo, normalize) || '').toString();
-                            //if (CustomComponent) return CustomComponent
+                        fieldList({
+                            data: data?.personalInfo,
+                            personType,
+                            titles,
+                            reference,
+                            countries,
+                            nation
+                        }).map((detail: DetailSection<PersonalInfoModel>, idx: number) => {
+
+                            return <React.Fragment key={`field-item-${idx}`}>
+                                <LabelDetail
+                                    {...detail}
+                                    data={data?.personalInfo}
+                                />
+                            </React.Fragment>
+                            /*
+                            const { name = '', label, defaultValue, isRequired, normalize, filterData, CustomComponent } = detail;
+
+                            const _textShow = (getValueFromFieldName(name, data?.personalInfo, normalize, filterData) || '');
+                            if (!name) return null//<div key={`field-item-${idx}`} className="min-h-[46px] w-full"></div>
+                            if (!_textShow) return null//<div key={`field-item-${idx}`} className="min-h-[46px] w-full"></div>
+
                             return <React.Fragment key={`field-item-${idx}`}>
                                 <InputHorizontal
                                     label={label || ''}
                                     defaultValue={defaultValue}
                                     isEditable={isEditable}
-                                    textShow={_textShow}
+                                    textShow={_textShow.toString()}
                                     name={name}
                                     isRequired={isRequired}
                                 />
                             </React.Fragment>
+                            */
                         })
                     }
                 </div>

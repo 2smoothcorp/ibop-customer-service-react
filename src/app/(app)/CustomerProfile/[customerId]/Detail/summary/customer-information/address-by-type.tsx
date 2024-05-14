@@ -1,12 +1,13 @@
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel } from "@/services/rest-api/customer-service";
+import { Property } from "csstype";
 import React, { ReactElement } from "react";
+import LabelDetail from "../components/label-detail";
 
-interface DetailSection {
-    name?: keyof AddressInfoModel
+interface DetailSection<T> {
+    name?: keyof T
     label: string
     defaultValue?: string
     isRequired?: boolean
@@ -15,10 +16,12 @@ interface DetailSection {
     type?: string
     onChange?: (value: string) => void
     CustomComponent?: ReactElement
-    condition?: (data: AddressInfoModel) => boolean
+    condition?: (data: T) => boolean
+    isFull?: boolean
+    labelAlign?: Property.TextAlign
 }
 
-const fieldList = ({ data }: { data: AddressInfoModel }): Array<DetailSection> => {
+const fieldList = <T extends AddressInfoModel>({ data }: { data: T }): Array<DetailSection<T>> => {
     return (
         [
             {
@@ -91,12 +94,6 @@ const fieldList = ({ data }: { data: AddressInfoModel }): Array<DetailSection> =
     )
 }
 
-const getValueFromFieldName = (attributeName: string, data: AddressInfoModel | undefined | null, normalize?: string): string | boolean => {
-    if (!data) return '-'
-    const value = data[attributeName as keyof typeof data] || '-';
-    return normalize ? normalizationData(normalize, data as AddressInfoModel, value) : value
-}
-
 const normalizationData = (name: string, data: AddressInfoModel, defaultValue: string | boolean): string => {
     switch (name) {
         case 'addressTypeCode':
@@ -108,9 +105,7 @@ const normalizationData = (name: string, data: AddressInfoModel, defaultValue: s
 
 export default function SummaryAddressByTypeInfo({ data }: { data: CustomerInformationState }) {
 
-    const isEditable = false;
-
-    const _data = data.addressByType;
+    const _data = data.addressInfoType1 as AddressInfoModel;
 
     return <>
         <HeaderTitle
@@ -123,22 +118,11 @@ export default function SummaryAddressByTypeInfo({ data }: { data: CustomerInfor
         >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {
-                    fieldList({ data: _data }).map((detail: DetailSection, idx: number) => {
-                        const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition } = detail
-
-                        if (!name) return <div key={`field-item-${idx}`}></div>
-                        if (condition && typeof condition === 'function' && !condition(_data)) return null
-
-                        const _textShow = (getValueFromFieldName(name, _data, normalize) || '').toString();
-                        //if (CustomComponent) return CustomComponent
+                    fieldList<AddressInfoModel>({ data: _data }).map((detail: DetailSection<AddressInfoModel>, idx: number) => {
                         return <React.Fragment key={`field-item-${idx}`}>
-                            <InputHorizontal
-                                label={label || ''}
-                                defaultValue={defaultValue}
-                                isEditable={isEditable}
-                                textShow={_textShow}
-                                name={name}
-                                isRequired={isRequired}
+                            <LabelDetail
+                                {...detail}
+                                data={_data}
                             />
                         </React.Fragment>
                     })

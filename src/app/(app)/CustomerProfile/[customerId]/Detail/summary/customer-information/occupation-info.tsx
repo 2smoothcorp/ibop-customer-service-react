@@ -1,9 +1,9 @@
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
-import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
+import { PersonalConfirm } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel, OccupationInfoModel } from "@/services/rest-api/customer-service";
 import React, { ReactElement } from "react";
+import LabelDetail from "../components/label-detail";
 
 interface DetailSection<T> {
     name?: keyof T
@@ -19,15 +19,15 @@ interface DetailSection<T> {
 }
 
 interface JobDetailAddressModel extends AddressInfoModel, OccupationInfoModel {
-    addressType?: string
+    isAddressInfoType3SameType?: string
 }
 
-const fieldList = ({ data }: { data: OccupationInfoModel }): Array<DetailSection<OccupationInfoModel>> => {
+const fieldList = ({ data }: { data: JobDetailAddressModel }): Array<DetailSection<JobDetailAddressModel>> => {
     return (
         [
             {
                 label: 'อาชีพ',
-                name: 'occupationCode'
+                name: 'occupationCode',
             },
             {
                 label: 'อาชีพโปรดระบุ',
@@ -55,7 +55,7 @@ const jobDetailFieldList = ({ data }: { data: JobDetailAddressModel }): Array<De
             },
             {
                 label: 'ที่อยู่สถานที่ทำงาน',
-                name: 'addressType'
+                name: 'isAddressInfoType3SameType'
             }
         ]
     )
@@ -149,13 +149,13 @@ const normalizationData = (name: string, data: JobDetailAddressModel, defaultVal
     }
 }
 
-export default function SummaryOccupationInfo({ data }: { data: CustomerInformationState }) {
+export default function SummaryOccupationInfo({ data }: { data: PersonalConfirm }) {
 
     const isEditable = false;
 
-    const _data = data.occupationInfo;
-    const _dataOccupation = data.occupationInfo.occupation as OccupationInfoModel;
-    const _dataAddress = data.occupationInfo.address;
+    const _data = data.occupationInfo as OccupationInfoModel;
+    const _dataAddress = data.addressInfoType3;
+
 
     return <>
         <HeaderTitle
@@ -169,47 +169,25 @@ export default function SummaryOccupationInfo({ data }: { data: CustomerInformat
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {
 
-                    fieldList({ data: _dataOccupation }).map((detail: DetailSection<OccupationInfoModel>, idx: number) => {
-                        const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition } = detail
-
-                        if (!name) return <div key={`field-item-${idx}`}></div>
-                        if (condition && typeof condition === 'function' && !condition(_dataOccupation)) return null
-
-                        const _textShow = (getValueFromFieldName(name, _dataOccupation, normalize) || '').toString();
-                        //if (CustomComponent) return CustomComponent
+                    fieldList({ data: { ..._data, isAddressInfoType3SameType: data?.isAddressInfoType3SameType } }).map((detail: DetailSection<OccupationInfoModel>, idx: number) => {
                         return <React.Fragment key={`field-item-${idx}`}>
-                            <InputHorizontal
-                                label={label || ''}
-                                defaultValue={defaultValue}
-                                isEditable={isEditable}
-                                textShow={_textShow}
-                                name={name}
-                                isRequired={isRequired}
+                            <LabelDetail
+                                {...detail}
+                                data={_data}
                             />
                         </React.Fragment>
                     })
                 }
                 {
-                    !["01", "02", "03", "04", "05", "06", '-'].includes(_dataOccupation?.occupationCode || '') ?
+                    !["01", "02", "03", "04", "05", "06", '-'].includes(_data?.occupationCode || '') ?
                         <>
                             <div></div>
                             <div></div>
-                            {jobDetailFieldList({ data: _dataAddress }).map((detail: DetailSection<JobDetailAddressModel>, idx: number) => {
-                                const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition } = detail
-
-                                if (!name) return <div key={`field-item-${idx}`}></div>
-                                if (condition && typeof condition === 'function' && !condition(_dataAddress)) return null
-
-                                const _textShow = (getValueFromFieldName(name, _dataAddress, normalize) || '').toString();
-                                //if (CustomComponent) return CustomComponent
+                            {jobDetailFieldList({ data: _data }).map((detail: DetailSection<JobDetailAddressModel>, idx: number) => {
                                 return <React.Fragment key={`field-item-${idx}`}>
-                                    <InputHorizontal
-                                        label={label || ''}
-                                        defaultValue={defaultValue}
-                                        isEditable={isEditable}
-                                        textShow={_textShow}
-                                        name={name}
-                                        isRequired={isRequired}
+                                    <LabelDetail
+                                        {...detail}
+                                        data={_data}
                                     />
                                 </React.Fragment>
                             })}
@@ -218,34 +196,23 @@ export default function SummaryOccupationInfo({ data }: { data: CustomerInformat
                         null
                 }
 
-                {
-                    _dataAddress.addressType === '03' ?
+                {/*
+                    _data?.addressType === '03' ?
                         <>
                             <div></div>
                             <div></div>
                             {jobAddress03_FieldList({ data: _dataAddress }).map((detail: DetailSection<JobDetailAddressModel>, idx: number) => {
-                                const { name, label, defaultValue, isRequired, normalize, CustomComponent, condition } = detail
-
-                                if (!name) return <div key={`field-item-${idx}`}></div>
-                                if (condition && typeof condition === 'function' && !condition(_dataAddress)) return null
-
-                                const _textShow = (getValueFromFieldName(name, _dataAddress, normalize) || '').toString();
-                                //if (CustomComponent) return CustomComponent
                                 return <React.Fragment key={`field-item-${idx}`}>
-                                    <InputHorizontal
-                                        label={label || ''}
-                                        defaultValue={defaultValue}
-                                        isEditable={isEditable}
-                                        textShow={_textShow}
-                                        name={name}
-                                        isRequired={isRequired}
+                                    <LabelDetail
+                                        {...detail}
+                                        data={_dataAddress}
                                     />
                                 </React.Fragment>
                             })}
                         </>
                         :
                         null
-                }
+                */}
             </div>
         </ContentLoading>
     </>

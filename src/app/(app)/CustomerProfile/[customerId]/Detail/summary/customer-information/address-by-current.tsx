@@ -2,34 +2,22 @@ import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel } from "@/services/rest-api/customer-service";
-import { ReactElement } from "react";
+import React from "react";
+import LabelDetail, { LabelDetailProps } from "../components/label-detail";
 
-interface DetailSection {
-    name?: keyof AddressInfoModel
-    label: string
-    defaultValue?: string
-    isRequired?: boolean
-    isEditable?: boolean
-    normalize?: string
-    type?: string
-    onChange?: (value: string) => void
-    CustomComponent?: ReactElement
-    condition?: any
-}
-
-const fieldList = ({ data }: { data: AddressInfoModel }): Array<DetailSection> => {
+const fieldList = <T extends CustomerInformationState>({ data }: { data: T }): Array<LabelDetailProps<T>> => {
     return (
         [
             {
                 label: '',
-                name: 'addressTypeCode',
+                name: 'isAddressInfoType2SameType',
                 normalize: 'addressTypeCode'
             }
         ]
     )
 }
 
-const AddressOtherfieldList = ({ data }: { data: AddressInfoModel }): Array<DetailSection> => {
+const AddressOtherfieldList = <T extends AddressInfoModel>({ data }: { data: T }): Array<LabelDetailProps<T>> => {
     return (
         [
             {
@@ -71,41 +59,35 @@ const AddressOtherfieldList = ({ data }: { data: AddressInfoModel }): Array<Deta
             {
                 label: 'ที่อยู่ 1',
                 name: 'customAddress1',
-                condition: `countryCode !== '000'`
+
             },
             {
                 label: 'ที่อยู่ 2',
                 name: 'customAddress2',
-                condition: `countryCode !== '000'`
+
             },
             {
                 label: 'ที่อยู่ 3',
                 name: 'customAddress3',
-                condition: `countryCode !== '000'`
+
             },
             {
                 label: 'จังหวัด',
                 name: 'provinceCode',
-                condition: `countryCode === '000'`
+
             },
             {
                 label: 'อำเภอ / เขต',
                 name: 'districtCode',
-                condition: `countryCode === '000'`
+
             },
             {
                 label: 'ตำบล / แขวง',
                 name: 'subDistrictCode',
-                condition: `countryCode === '000'`
+
             }
         ]
     )
-}
-
-const getValueFromFieldName = (attributeName: string, data: AddressInfoModel | undefined | null, normalize?: string): string | boolean => {
-    if (!data) return '-'
-    const value = data[attributeName as keyof typeof data] || '-';
-    return normalize ? normalizationData(normalize, data as AddressInfoModel, value) : value
 }
 
 const normalizationData = (name: string, data: AddressInfoModel, defaultValue: string | boolean): string => {
@@ -121,7 +103,7 @@ export default function SummaryAddressByCurrentInfo({ data }: { data: CustomerIn
 
     const isEditable = false;
 
-    const _data = data;
+    const _data = data.addressInfoType2 as AddressInfoModel;
 
     return <>
         <HeaderTitle
@@ -133,26 +115,16 @@ export default function SummaryAddressByCurrentInfo({ data }: { data: CustomerIn
             error={undefined}
         >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {/*
-                    fieldList({ data: _data }).map((detail: DetailSection, idx: number) => {
-                        const { name, label, defaultValue, isRequired, normalize, CustomComponent } = detail
-
-                        if (!name) return <div key={`field-item-${idx}`}></div>
-
-                        const _textShow = (getValueFromFieldName(name, _data, normalize) || '').toString();
-                        //if (CustomComponent) return CustomComponent
+                {
+                    fieldList<CustomerInformationState>({ data: data }).map((detail: LabelDetailProps<CustomerInformationState>, idx: number) => {
                         return <React.Fragment key={`field-item-${idx}`}>
-                            <InputHorizontal
-                                label={label || ''}
-                                defaultValue={defaultValue}
-                                isEditable={isEditable}
-                                textShow={_textShow}
-                                name={name}
-                                isRequired={isRequired}
+                            <LabelDetail
+                                {...detail}
+                                data={data}
                             />
                         </React.Fragment>
                     })
-                */}
+                }
                 <div></div>
                 <div></div>
                 {/*

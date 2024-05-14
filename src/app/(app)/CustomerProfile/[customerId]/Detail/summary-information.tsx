@@ -1,25 +1,12 @@
 import HeaderTitle from "@/components/navbar/header-title"
 import { useAppSelector } from "@/libs/redux/hook"
-import { CustomerAtsEDividendState } from "@/libs/redux/store/customer-ats-e-dividend-slice"
-import { CustomerContractState } from "@/libs/redux/store/customer-contract-slice"
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice"
 import { swal } from "@/libs/sweetalert"
-import { BeneficiaryInfoModel, FinancialInfoModel } from "@/services/rest-api/customer-service"
 import { Button } from "@mui/material"
 import { useParams } from "next/navigation"
 import { useForm } from "react-hook-form"
-import BeneficiaryPage from "./beneficiary"
-import FinancialInformation from "./financial-information"
-import SummaryATSInfo from "./summary/ats/table"
-import SummaryContractEmergencyInfo from "./summary/contract-information/contract-emergency"
-import SummaryContractInformationInfo from "./summary/contract-information/contract-information"
-import SummaryAddressByCurrentInfo from "./summary/customer-information/address-by-current"
-import SummaryAddressByTypeInfo from "./summary/customer-information/address-by-type"
-import SummaryOccupationInfo from "./summary/customer-information/occupation-info"
-import SummaryPersonalInfo from "./summary/customer-information/personal-info"
-import SummaryPoliticRelationInfo from "./summary/customer-information/politic-relation-info"
-import SummarySpouseInfo from "./summary/customer-information/spouse-info"
-import SummaryEDividendInfo from "./summary/e-dividend/table"
+import SummaryFatcaInfo from "./summary/fatca"
+import { CustomerFatcaState } from "@/libs/redux/store/customer-fatca-slice"
 
 const SummaryInformation = () => {
 
@@ -58,24 +45,32 @@ const SummaryInformation = () => {
         }
     }
 
+    console.log(`form.customerInformation.confirm`, form)
+
     return (<>
         <HeaderTitle
             className="gap-0"
             title="สรุปรายละเอียดที่แก้ไข"
         />
         <div className="rounded-lg border-2 p-4 my-2">
+            {/*
             <SummaryPersonalInfo data={form.customerInformation.confirm as CustomerInformationState} />
             <SummarySpouseInfo data={form.customerInformation.confirm as CustomerInformationState} />
             <SummaryAddressByTypeInfo data={form.customerInformation.confirm as CustomerInformationState} />
             <SummaryAddressByCurrentInfo data={form.customerInformation.confirm as CustomerInformationState} />
-            <SummaryOccupationInfo data={form.customerInformation.confirm as CustomerInformationState} />
+            <SummaryOccupationInfo data={form.customerInformation.confirm as PersonalConfirm} />
             <SummaryPoliticRelationInfo data={form.customerInformation.confirm as CustomerInformationState} />
+            */}
         </div>
 
+        {/*
         <div className="rounded-lg border-2 p-4 my-2">
-            <SummaryContractInformationInfo data={form.customerContract as CustomerContractState} />
-            <SummaryContractEmergencyInfo data={form.customerContract as CustomerContractState} />
+            <SummaryContractInformationInfo data={form.customerContract.confirm as ContractConfirm} />
+            <SummaryContractEmergencyInfo data={form.customerContract.confirm as ContractConfirm} />
         </div>
+        */}
+
+        {/*
         <div className="rounded-lg border-2 p-4 my-2">
             <FinancialInformation data={form.financialInfomation as FinancialInfoModel} />
         </div>
@@ -87,6 +82,11 @@ const SummaryInformation = () => {
         </div>
         <div className="rounded-lg border-2 p-4 my-2">
             <SummaryEDividendInfo data={form.customerAtsEDividend as CustomerAtsEDividendState} />
+        </div>
+        */}
+
+        <div className="rounded-lg border-2 p-4 my-2">
+            <SummaryFatcaInfo data={form.cusomterFatca as CustomerFatcaState} />
         </div>
 
         {

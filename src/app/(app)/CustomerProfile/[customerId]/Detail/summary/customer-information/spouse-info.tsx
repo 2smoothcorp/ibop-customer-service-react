@@ -1,12 +1,12 @@
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
 import HeaderTitle from "@/components/navbar/header-title";
 import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { SpouseInfoModel } from "@/services/rest-api/customer-service";
 import React, { ReactElement } from "react";
+import LabelDetail from "../components/label-detail";
 
-interface DetailSection {
-    name?: keyof SpouseInfoModel
+interface DetailSection<T> {
+    name?: keyof T
     label: string
     defaultValue?: string
     isRequired?: boolean
@@ -15,9 +15,10 @@ interface DetailSection {
     type?: string
     onChange?: (value: string) => void
     CustomComponent?: ReactElement
+    filterData?: (value: any) => string | undefined
 }
 
-const fieldList = ({ data }: { data: SpouseInfoModel }): Array<DetailSection> => {
+const fieldList = <T extends SpouseInfoModel>({ data }: { data: T }): Array<DetailSection<T>> => {
     return (
         [
             {
@@ -28,7 +29,7 @@ const fieldList = ({ data }: { data: SpouseInfoModel }): Array<DetailSection> =>
     )
 }
 
-const marriedFieldList = ({ data }: { data: SpouseInfoModel }): Array<DetailSection> => {
+const marriedFieldList = <T extends SpouseInfoModel>({ data }: { data: T }): Array<DetailSection<T>> => {
     return (
         [
             {
@@ -71,6 +72,7 @@ const normalizationData = (name: string, data: SpouseInfoModel, defaultValue: st
 export default function SummarySpouseInfo({ data }: { data: CustomerInformationState }) {
 
     const isEditable = false;
+    const _data = data?.spouseInfo as SpouseInfoModel;
 
     return <>
         <HeaderTitle
@@ -83,41 +85,25 @@ export default function SummarySpouseInfo({ data }: { data: CustomerInformationS
         >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {
-                    fieldList({ data: data.spouseInfo }).map((detail: DetailSection, idx: number) => {
-                        const { name, label, defaultValue, isRequired, normalize, CustomComponent } = detail
-                        if (!name) return <div key={`field-item-${idx}`}></div>
-                        const _textShow = (getValueFromFieldName(name, data.spouseInfo, normalize) || '').toString();
-                        //if (CustomComponent) return CustomComponent
+                    fieldList({ data: _data }).map((detail: DetailSection<SpouseInfoModel>, idx: number) => {
                         return <React.Fragment key={`field-item-${idx}`}>
-                            <InputHorizontal
-                                label={label || ''}
-                                defaultValue={defaultValue}
-                                isEditable={isEditable}
-                                textShow={_textShow}
-                                name={name}
-                                isRequired={isRequired}
+                            <LabelDetail
+                                {...detail}
+                                data={_data}
                             />
                         </React.Fragment>
                     })
                 }
                 {
-                    data.spouseInfo.familyStatus === 'สมรส'
+                    _data?.familyStatus === 'สมรส'
                         ?
                         <>
                             {
-                                marriedFieldList({ data: data.spouseInfo }).map((detail: DetailSection, idx: number) => {
-                                    const { name, label, defaultValue, isRequired, normalize, CustomComponent } = detail
-                                    if (!name) return <div key={`field-item-${idx}`}></div>
-                                    const _textShow = (getValueFromFieldName(name, data.spouseInfo, normalize) || '').toString();
-                                    //if (CustomComponent) return CustomComponent
+                                marriedFieldList({ data: _data }).map((detail: DetailSection<SpouseInfoModel>, idx: number) => {
                                     return <React.Fragment key={`field-item-${idx}`}>
-                                        <InputHorizontal
-                                            label={label || ''}
-                                            defaultValue={defaultValue}
-                                            isEditable={isEditable}
-                                            textShow={_textShow}
-                                            name={name}
-                                            isRequired={isRequired}
+                                        <LabelDetail
+                                            {...detail}
+                                            data={_data}
                                         />
                                     </React.Fragment>
                                 })
