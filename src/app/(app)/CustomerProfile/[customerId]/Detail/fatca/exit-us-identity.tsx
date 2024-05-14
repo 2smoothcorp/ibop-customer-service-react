@@ -59,7 +59,7 @@ export default function ExitUSIndentity({ useForm }: { useForm: UseFormReturn<Cu
   const searchParams = useSearchParams();
   const isEditable = searchParams.get('edit') === 'true';
   const params = useParams();
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ['exitUSIdentity', params.customerId],
     queryFn: () => getData(),
   });
@@ -330,7 +330,7 @@ export default function ExitUSIndentity({ useForm }: { useForm: UseFormReturn<Cu
         className="gap-0"
         title="ส่วนที่ 2 ท่านเป็นผู้มีถิ่นที่อยู่ทางภาษีในประเทศอื่นๆนอกจากสหรัฐอเมริกา" />
       <ContentLoading
-        isLoading={isLoading || watch('isFatcaIndividualSelfCert') === null}
+        isLoading={isLoading}
         error={error && error.message || undefined}
         hight={300}
       >
