@@ -29,25 +29,6 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
         queryFn: () => getData(),
     })
 
-    // const normalizationData = (name: string, spouseInfo: SpouseInfoModel): any => {
-    //     switch (name) {
-    //         case 'familyStatus':
-    //             return handleEmptyStringFormApi(spouseInfo.familyStatus);
-    //         case 'spouseReferenceType':
-    //             return handleEmptyStringFormApi(spouseInfo.spouseReferenceType);
-    //         case 'spouseIdentityId':
-    //             return handleEmptyStringFormApi(spouseInfo.spouseIdentityId);
-    //         case 'spouseTitle':
-    //             return !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? `${spouseInfo.spouseTitleCode} - ${spouseInfo.spouseTitleName}` : '-';
-    //         case 'spouseFirstName':
-    //             return handleEmptyStringFormApi(spouseInfo.spouseFirstName);
-    //         case 'spouseLastName':
-    //             return handleEmptyStringFormApi(spouseInfo.spouseLastName);
-    //         default:
-    //             return '-';
-    //     }
-    // }
-
     const confirmSpouseInfo = useAppSelector(state => state.customerInformation.confirm?.spouseInfo)
 
     const setDefaultDataChange = () => {
@@ -202,7 +183,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
                 error={error && error.message || undefined}
                 hight={92}
             >
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-3 gap-1">
                     {
                         inputDate.map((input, index) => {
                             if (watch('spouseInfo.familyStatus') !== 'สมรส' && index > 0) {
@@ -218,83 +199,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
 
                         })
                     }
-                    {/* <InputHorizontal
-                        label="สถานภาพ"
-                        defaultValue={watch('spouseInfo.familyStatus')}
-                        textShow={data && normalizationData('familyStatus', data) || "-"}
-                        isEditable={isEditable}
-                        // register={register}
-                        onChange={(value) => setValue('spouseInfo.familyStatus', value)}
-                        name="familyStatus"
-                        isRequired
-                        type="radio"
-                        list={[
-                            { value: "โสด", label: "โสด" },
-                            { value: "สมรส", label: "สมรส" },
-                        ]}
-                    />
-                    {
-                        watch('spouseInfo.familyStatus') === 'สมรส' && (
-                            <>
-                                <InputHorizontal
-                                    label="ประเภทหลักฐานลูกค้า"
-                                    defaultValue={watch('spouseInfo.spouseReferenceType')}
-                                    textShow={data && normalizationData('spouseReferenceType', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseReferenceType"
-                                    isRequired
-                                    type="autocomplete"
-                                    list={reference}
-                                    onChange={(value) => setValue('spouseInfo.spouseTitleCode', value, { shouldDirty: true })}
-                                    placeholder="โปรดเลือกประเภทหลักฐานลูกค้า"
-                                />
-                                <InputHorizontal
-                                    label="เลขที่บัตร"
-                                    defaultValue={watch('spouseInfo.spouseIdentityId')}
-                                    textShow={data && normalizationData('spouseIdentityId', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseIdentityId"
-                                    onChange={(value) => setValue('spouseInfo.spouseIdentityId', value, { shouldDirty: true })}
-                                    isRequired
-                                />
-                                <InputHorizontal
-                                    label="คำนำหน้า"
-                                    defaultValue={watch('spouseInfo.spouseTitleCode')}
-                                    textShow={data && normalizationData('spouseTitle', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseTitleCode"
-                                    isRequired
-                                    type="autocomplete"
-                                    list={titles}
-                                    onChange={(value) => setValue('spouseInfo.spouseTitleCode', value, { shouldDirty: true })}
-                                    placeholder="โปรดเลือกคำนำหน้า"
-                                />
-                                <InputHorizontal
-                                    label="ชื่อคู่สมรส"
-                                    defaultValue={watch('spouseInfo.spouseFirstName')}
-                                    textShow={data && normalizationData('spouseFirstName', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseFirstName"
-                                    isRequired
-                                    onChange={(value) => setValue('spouseInfo.spouseFirstName', value, { shouldDirty: true })}
-                                />
-                                <InputHorizontal
-                                    label="นามสกุลคู่สมรส"
-                                    defaultValue={watch('spouseInfo.spouseLastName')}
-                                    textShow={data && normalizationData('spouseLastName', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseLastName"
-                                    isRequired
-                                    onChange={(value) => setValue('spouseInfo.spouseLastName', value, { shouldDirty: true })}
-                                />
-                            </>
-                        )
-                    } */}
+
 
                 </div>
 

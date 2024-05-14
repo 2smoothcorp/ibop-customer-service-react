@@ -19,7 +19,6 @@ export default function InputElement({
     allGridCols = "grid-cols-8",
     inputCol = "col-span-7",
     labelAlign = "right",
-    isInputOnly = false,
     rightInputComponent,
     textFieldElementProps,
     autocompleteElementProps,
@@ -169,32 +168,28 @@ export default function InputElement({
 
     return (
         <div className={`${isLableCols1 ? "grid " + allGridCols : "flex"} items-center min-h-[46px] w-full`}>
-            {
-                !isInputOnly && (
-                    <div className={`w-1/2`}
-                        style={{
-                            width: labelWidth,
-                            textAlign: labelAlign,
-                        }}>
-                        {
-                            labelWidth
-                                ? <div
-                                    className="text-lg px-4 font-semibold tracking-wide"
-                                >{label} {getRequired()}</div>
-                                : (
-                                    <div className="text-lg px-4 font-semibold tracking-wide w-full text-right">{label} {getRequired()}</div>
-                                )
-                        }
-                    </div>
-                )
-            }
 
+            <div className={`w-1/2`}
+                style={{
+                    width: labelWidth,
+                    textAlign: labelAlign,
+                }}>
+                {
+                    labelWidth
+                        ? <div
+                            className="text-lg px-4 font-semibold tracking-wide"
+                        >{label} {getRequired()}</div>
+                        : (
+                            <div className="text-lg px-4 font-semibold tracking-wide w-full text-right">{label} {getRequired()}</div>
+                        )
+                }
+            </div>
 
-            <div className={`w-1/2 flex flex-row items-center ${isLableCols1 ? inputCol : ""} ${isInputOnly && 'w-full'}`}>
+            <div className={`w-1/2 flex flex-row gap-1 ${isLableCols1 ? inputCol : ""}`}>
                 {
                     isEditable
                         ? (
-                            label === "" && !isInputOnly
+                            label === ""
                                 ? <></>
                                 : renderInput()
                         )
@@ -222,7 +217,6 @@ export interface InputElementProps {
     defaultValue?: string;
     textShow?: string;
     labelAlign?: Property.TextAlign | undefined;
-    isInputOnly?: boolean;
     rightInputComponent?: React.ReactNode;
     textFieldElementProps?: TextFieldElementProps;
     autocompleteElementProps?: AutocompleteElementProps;

@@ -359,7 +359,7 @@ export default function AddressInfoType2({ useForm }: { useForm: UseFormReturn<C
                         ]}
                     />
                 </div>
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-3 gap-1">
                     {
                         inputDate.map((input, index) => {
                             if (

@@ -433,7 +433,7 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                     watch('occupationInfo.occupationCode') !== '' &&
                     watch('occupationInfo.occupationCode') !== '-' && (
                         <>
-                            <div className="grid grid-cols-3">
+                            <div className="grid grid-cols-3 gap-1">
                                 <InputElement
                                     isEditable={isEditable}
                                     label="สถานที่ทำงาน / สถานศึกษา"
@@ -482,7 +482,7 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                             </div>
                             {
                                 watch('isAddressInfoType3SameType') === '0' && (
-                                    <div className="grid grid-cols-3">
+                                    <div className="grid grid-cols-3 gap-1">
                                         {
                                             inputDate.map((input, index) => {
                                                 if (

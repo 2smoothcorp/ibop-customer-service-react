@@ -488,7 +488,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                 </div>
                 {
                     watch('isAddressInfoType4SameType') === '0' && (
-                        <div className="grid grid-cols-3">
+                        <div className="grid grid-cols-3 gap-1 py-4">
                             {
                                 inputDate.map((input, index) => {
                                     if (

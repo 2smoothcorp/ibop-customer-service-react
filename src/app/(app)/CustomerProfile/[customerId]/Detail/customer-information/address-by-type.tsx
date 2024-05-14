@@ -337,7 +337,7 @@ export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<C
                 error={error && error.message || undefined}
                 hight={184}
             >
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-3 gap-1">
                     {
                         inputDate.map((input, index) => {
                             if (

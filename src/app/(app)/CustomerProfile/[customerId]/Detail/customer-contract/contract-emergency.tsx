@@ -11,6 +11,7 @@ import { handleEmptyStringFormApi, objectToArray } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
+import { TextFieldElement } from "react-hook-form-mui";
 
 export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<CustomerContractState, any, undefined> }) {
     const { setValue, watch } = useForm
@@ -149,20 +150,12 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
                 options: relation || [],
             },
             rightInputComponent: watch(`emergencyContactInfo.0.relationshipCode`) === '4' && (
-                <div className="px-2">
-                    <InputElement
-                        label=""
-                        isInputOnly
-                        isEditable={isEditable}
-                        textFieldElementProps={{
-                            sx: { height: 40, width: 150 },
-                            name: "emergencyContactInfo.0.relationshipOther",
-                            rules: {
-                                required: 'โปรดกรอกความสัมพันธ์',
-                            }
-                        }}
-                    />
-                </div>
+                <TextFieldElement
+                    name="emergencyContactInfo.0.relationshipOther"
+                    rules={{
+                        required: 'โปรดกรอกความสัมพันธ์',
+                    }}
+                />
             )
         },
         {
@@ -197,20 +190,12 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
                 options: relation || [],
             },
             rightInputComponent: watch(`emergencyContactInfo.1.relationshipCode`) === '4' && (
-                <div className="px-2">
-                    <InputElement
-                        label=""
-                        isInputOnly
-                        isEditable={isEditable}
-                        textFieldElementProps={{
-                            sx: { height: 40, width: 150 },
-                            name: "emergencyContactInfo.1.relationshipOther",
-                            rules: {
-                                required: 'โปรดกรอกความสัมพันธ์',
-                            }
-                        }}
-                    />
-                </div>
+                <TextFieldElement
+                    name="emergencyContactInfo.1.relationshipOther"
+                    rules={{
+                        required: 'โปรดกรอกความสัมพันธ์',
+                    }}
+                />
             )
         },
         {
@@ -242,20 +227,12 @@ export default function ContractEmergency({ useForm }: { useForm: UseFormReturn<
                 options: relation || [],
             },
             rightInputComponent: watch(`emergencyContactInfo.2.relationshipCode`) === '4' && (
-                <div className="px-2">
-                    <InputElement
-                        label=""
-                        isInputOnly
-                        isEditable={isEditable}
-                        textFieldElementProps={{
-                            sx: { height: 40, width: 150 },
-                            name: "emergencyContactInfo.2.relationshipOther",
-                            rules: {
-                                required: 'โปรดกรอกความสัมพันธ์',
-                            }
-                        }}
-                    />
-                </div>
+                <TextFieldElement
+                    name="emergencyContactInfo.2.relationshipOther"
+                    rules={{
+                        required: 'โปรดกรอกความสัมพันธ์',
+                    }}
+                />
             )
         },
     ]

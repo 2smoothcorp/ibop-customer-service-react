@@ -429,7 +429,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                 isLoading={isLoading || isLoadingPersonType || isLoadingReference || isLoadingCountries || isLoadingTitles || isLoadingNation}
                 error={error ? error.message : undefined}
             >
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-3 gap-1">
                     {
                         inputDate.map((input, index) => {
                             return (
