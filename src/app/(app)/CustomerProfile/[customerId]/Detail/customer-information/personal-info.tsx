@@ -89,6 +89,35 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
         }
     }
 
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmPersonalInfo) {
+                try {
+                    const oldData = objectToArray({ personalInfo: confirmPersonalInfo });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        if (key === 'personalInfo.birthDate') {
+                            setValue("personalInfo.birthDateDayjs", dayjs(value as any), {
+                                shouldDirty: false,
+                            })
+                        }
+                        if (key === 'personalInfo.identityExpireDate') {
+                            setValue("personalInfo.identityExpireDateDayjs", dayjs(value as any), {
+                                shouldDirty: false
+                            })
+                        }
+                        resetField(key as any)
+                        setValue(key as any, value, {
+                            shouldDirty: true,
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+        }, 1)
+    }
+
     const setDefaultData = (personalInfo: PersonalInfoModel) => {
 
         setValue('personalInfo.personType', normalizationData('personType', personalInfo));
@@ -120,39 +149,12 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                 ? dayjs(personalInfo.birthDate || null)
                 : null,
             { shouldDirty: false });
-        setTimeout(() => {
-            if (confirmPersonalInfo) {
-                try {
-                    const oldData = objectToArray({ personalInfo: confirmPersonalInfo });
-                    oldData.map((item) => {
-                        const [key, value] = item;
-                        if (key === 'personalInfo.birthDate') {
-                            setValue("personalInfo.birthDateDayjs", dayjs(value as any), {
-                                shouldDirty: false,
-                            })
-                        }
-                        if (key === 'personalInfo.identityExpireDate') {
-                            setValue("personalInfo.identityExpireDateDayjs", dayjs(value as any), {
-                                shouldDirty: false
-                            })
-                        }
-                        resetField(key as any)
-                        setValue(key as any, value, {
-                            shouldDirty: true,
-                        })
-                    });
-                } catch (err) {
-                    console.error(err)
-                }
-            }
-        }, 1)
-
-
     }
 
     const getData = async (): Promise<PersonalInfoModel | null> => {
         if (data) {
             setDefaultData(data)
+            setDefaultDataChange()
             return data;
         }
         const { customerId } = params
@@ -164,8 +166,10 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                     const { data } = response;
                     if (data && data.personalInfo) {
                         setDefaultData(data.personalInfo)
+                        setDefaultDataChange()
                         return data.personalInfo
                     }
+                    setDefaultDataChange()
                 }
             } catch (error) {
                 throw error
@@ -194,6 +198,10 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
             label: "ประเภทหลักฐานลูกค้า",
             isEditable: isEditable,
             autocompleteElementProps: {
+                autocompleteProps: {
+                    fullWidth: true,
+                    disabled: true,
+                },
                 name: "personalInfo.referenceType",
                 rules: {
                     required: 'โปรดเลือกประเภทหลักฐานลูกค้า',
@@ -205,6 +213,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
             label: "เลขที่บัตร",
             isEditable: isEditable,
             textFieldElementProps: {
+                disabled: true,
                 name: "personalInfo.referenceID",
                 rules: {
                     required: 'โปรดระบุเลขที่บัตร',
@@ -274,6 +283,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
             label: "ชื่อ (ภาษาไทย)",
             isEditable: isEditable,
             textFieldElementProps: {
+                disabled: true,
                 name: "personalInfo.firstNameTh",
                 rules: {
                     required: 'โปรดระบุชื่อ (ภาษาไทย)',
@@ -287,6 +297,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
             label: "นามสกุล (ภาษาไทย)",
             isEditable: isEditable,
             textFieldElementProps: {
+                disabled: true,
                 name: "personalInfo.lastNameTh",
                 rules: {
                     required: 'โปรดระบุนามสกุล (ภาษาไทย)',
@@ -351,14 +362,33 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                 rules: {
                     required: 'โปรดระบุวัน/เดือน/ปีเกิด',
                 },
-                // inputProps: {
-                //     placeholder: "โปรดระบุวัน/เดือน/ปีเกิด",
-                // },
                 maxDate: dayjs().subtract(15, 'year'),
             }
         },
 
     ]
+
+    useEffect(() => {
+        if (identityNeverExpire) {
+            // if (identityNeverExpire === true) {
+            setValue('personalInfo.identityExpireDateDayjs', null, { shouldDirty: true })
+            setValue('personalInfo.identityExpireDate', '', { shouldDirty: true })
+            // }
+        }
+    }, [identityNeverExpire, setValue])
+
+    const titleCode = watch('personalInfo.titleCode')
+
+    useEffect(() => {
+        if (titleCode) {
+            if (titleCode === '103' || titleCode === '301' || titleCode === '302') {
+                setValue('personalInfo.genderCode', '0', { shouldDirty: true })
+            }
+            if (titleCode === '104' || titleCode === '105' || titleCode === '304' || titleCode === '306') {
+                setValue('personalInfo.genderCode', '1', { shouldDirty: true })
+            }
+        }
+    }, [setValue, titleCode])
 
     const birthDateDayjs = watch('personalInfo.birthDateDayjs')
 
@@ -399,7 +429,7 @@ export default function PersonalInfo({ useForm }: { useForm: UseFormReturn<Custo
                 isLoading={isLoading || isLoadingPersonType || isLoadingReference || isLoadingCountries || isLoadingTitles || isLoadingNation}
                 error={error ? error.message : undefined}
             >
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-3 gap-1">
                     {
                         inputDate.map((input, index) => {
                             return (

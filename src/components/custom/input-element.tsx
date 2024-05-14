@@ -168,6 +168,7 @@ export default function InputElement({
 
     return (
         <div className={`${isLableCols1 ? "grid " + allGridCols : "flex"} items-center min-h-[46px] w-full`}>
+
             <div className={`w-1/2`}
                 style={{
                     width: labelWidth,
@@ -184,7 +185,7 @@ export default function InputElement({
                 }
             </div>
 
-            <div className={`w-1/2 flex flex-row ${isLableCols1 ? inputCol : ""}`}>
+            <div className={`w-1/2 flex flex-row gap-1 ${isLableCols1 ? inputCol : ""}`}>
                 {
                     isEditable
                         ? (

@@ -6,7 +6,7 @@ import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataOccupationCustom } from "@/hooks/master-data-occupation";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { useAppSelector } from "@/libs/redux/hook";
-import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
+import { AddressInfo, CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel, AddressInfoResponseDataResponse, ComboBox, ComboBoxListDataResponse, OccupationInfoModel, OccupationInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { addressComponentToProps, getAddressToDistrict, getAddressToPostCode, getAddressToProvince, getAddressToSubDistrict, handleEmptyStringFormApi, isEmptyStringFormApi, objectToArray } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
@@ -29,6 +29,7 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
         queryKey: ['occupationInfo', params.customerId], queryFn: async (): Promise<OccupationInfoProps | null> => {
             if (data) {
                 setDefaultData(data);
+                setDefaultDataChange()
                 return data;
             }
             const { customerId } = params
@@ -66,6 +67,7 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                 }
             }
             setDefaultData(response);
+            setDefaultDataChange()
             return response;
         }
     })
@@ -127,6 +129,49 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
     const confirmQccupation = useAppSelector(state => state.customerInformation.confirm?.occupationInfo)
     const confirmAddressInfoType3 = useAppSelector(state => state.customerInformation.confirm?.addressInfoType3)
 
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmQccupation) {
+                try {
+                    const oldData = objectToArray({ occupationInfo: confirmQccupation });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+            if (confirmAddressInfoType3) {
+                try {
+                    const addressInfo = (confirmAddressInfoType3 as AddressInfo).addressTemp;
+                    if (addressInfo) {
+                        setValue('addressInfoType3.addressTemp', {
+                            postCode: addressInfo.postCode || '',
+                            province: addressInfo.province || '',
+                            provinceCode: addressInfo.provinceCode || '',
+                            district: addressInfo.district || '',
+                            districtCode: addressInfo.districtCode || '',
+                            subDistrict: addressInfo.subDistrict || '',
+                            subDistrictCode: addressInfo.subDistrictCode || '',
+                        }, { shouldDirty: true })
+                    }
+                    const oldData = objectToArray({ addressInfoType3: confirmAddressInfoType3 });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+        }, 1)
+    }
+
     const setDefaultData = (occupation: OccupationInfoProps) => {
         if (occupation.occupationInfo && occupation.masterDataOccupations) {
             // const result = occupation.masterDataOccupations.find((item) => item.rValue === occupation.occupationInfo?.occupationCode);
@@ -168,32 +213,6 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                 subDistrict: occupation.addressInfoType3.subDistrictNameTh || '',
                 subDistrictCode: occupation.addressInfoType3.subDistrictCode || '',
             })
-        }
-        if (confirmQccupation) {
-            try {
-                const oldData = objectToArray({ occupationInfo: confirmQccupation });
-                oldData.map((item) => {
-                    const [key, value] = item;
-                    setValue(key as any, value, {
-                        shouldDirty: true
-                    })
-                });
-            } catch (err) {
-                console.error(err)
-            }
-        }
-        if (confirmAddressInfoType3) {
-            try {
-                const oldData = objectToArray({ addressInfoType3: confirmAddressInfoType3 });
-                oldData.map((item) => {
-                    const [key, value] = item;
-                    setValue(key as any, value, {
-                        shouldDirty: true
-                    })
-                });
-            } catch (err) {
-                console.error(err)
-            }
         }
     }
 
@@ -364,11 +383,11 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
     const occupationCode = watch('occupationInfo.occupationCode')
 
     useEffect(() => {
-        if (trigger && occupationCode) {
-            trigger('occupationInfo')
-            trigger('addressInfoType3')
-        }
-    }, [isLoading, trigger, occupationCode])
+        // if (trigger && occupationCode) {
+        trigger('occupationInfo')
+        trigger('addressInfoType3')
+        // }
+    }, [isLoading, trigger, occupationCode, addressTemp])
 
     return (
         <>
@@ -414,7 +433,7 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                     watch('occupationInfo.occupationCode') !== '' &&
                     watch('occupationInfo.occupationCode') !== '-' && (
                         <>
-                            <div className="grid grid-cols-3">
+                            <div className="grid grid-cols-3 gap-1">
                                 <InputElement
                                     isEditable={isEditable}
                                     label="สถานที่ทำงาน / สถานศึกษา"
@@ -463,7 +482,7 @@ export default function OccupationInfo({ useForm }: { useForm: UseFormReturn<Cus
                             </div>
                             {
                                 watch('isAddressInfoType3SameType') === '0' && (
-                                    <div className="grid grid-cols-3">
+                                    <div className="grid grid-cols-3 gap-1">
                                         {
                                             inputDate.map((input, index) => {
                                                 if (

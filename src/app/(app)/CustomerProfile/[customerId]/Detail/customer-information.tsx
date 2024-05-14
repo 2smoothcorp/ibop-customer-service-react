@@ -4,7 +4,6 @@ import { nextStep } from "@/libs/redux/store/customer-profile-slice";
 import { dirtyValues } from "@/utils/function";
 import { Button } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FormContainer } from "react-hook-form-mui";
 import AddressByCurrent from "./customer-information/address-by-current";
@@ -29,42 +28,15 @@ export default function CustomerInformation() {
         defaultValues: customerInformation,
         mode: 'onChange'
     })
-    const { setValue, getValues, watch } = useFormAll
 
-    // handler 
-
-    const identityNeverExpire = watch('personalInfo.identityNeverExpire')
-
-    useEffect(() => {
-        if (identityNeverExpire) {
-            // if (identityNeverExpire === true) {
-            setValue('personalInfo.identityExpireDateDayjs', null, { shouldDirty: true })
-            setValue('personalInfo.identityExpireDate', '', { shouldDirty: true })
-            // }
-        }
-    }, [identityNeverExpire, setValue])
-
-    const titleCode = watch('personalInfo.titleCode')
-
-    useEffect(() => {
-        if (titleCode) {
-            if (titleCode === '103' || titleCode === '301' || titleCode === '302') {
-                setValue('personalInfo.genderCode', '0', { shouldDirty: true })
-            }
-            if (titleCode === '104' || titleCode === '105' || titleCode === '304' || titleCode === '306') {
-                setValue('personalInfo.genderCode', '1', { shouldDirty: true })
-            }
-        }
-    }, [setValue, titleCode])
+    const { setValue } = useFormAll
 
     const saveData = (data: CustomerInformationState) => {
         setValue('personalInfo.identityExpireDateDayjs', null, { shouldDirty: false })
         setValue('personalInfo.birthDateDayjs', null, { shouldDirty: false })
         setTimeout(() => {
-            const { dirtyFields } = useFormAll.formState
-            // console.log(dirtyFields)
+            const { getValues, formState: { dirtyFields } } = useFormAll
             const dirtyData = dirtyValues(dirtyFields, getValues())
-
             if (dirtyData) {
                 const result = dirtyData as PersonalConfirm
                 // console.log("dirtyData: ", result)

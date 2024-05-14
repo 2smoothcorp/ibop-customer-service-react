@@ -2,25 +2,26 @@
 
 import ContentLabel from "@/components/content/content-label";
 import ContentLoading from "@/components/content/content-loading";
-import InputHorizontal from "@/components/custom/input-horizontal";
-import InputRadio from "@/components/custom/input-radio";
+import InputElement, { InputElementProps } from "@/components/custom/input-element";
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
-import { CustomerContractState } from "@/libs/redux/store/customer-contract-slice";
+import { useAppSelector } from "@/libs/redux/hook";
+import { CustomerContractState, DocReceiveAddressInfo } from "@/libs/redux/store/customer-contract-slice";
 import { DocReceiveAddressInfoModel, DocReceiveAddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
-import { AddressBySearchModeProps, AddressBySearchProps, getAddressBySearch, handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
+import { addressComponentToProps, getAddressToDistrict, getAddressToPostCode, getAddressToProvince, getAddressToSubDistrict, handleEmptyStringFormApi, isEmptyStringFormApi, objectToArray } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { RadioButtonGroup } from "react-hook-form-mui";
 
 export default function ContractInformation({ useForm }: { useForm: UseFormReturn<CustomerContractState, any, undefined> }) {
-    const { setValue, watch } = useForm
+    const { setValue, watch, trigger, resetField } = useForm
     const params = useParams()
     const searchParams = useSearchParams()
     const isEditable = searchParams.get('edit') === 'true';
-    const [thailandAddress, setThailandAddress] = useState<AddressBySearchProps[]>([]);
-    const [address, setAddress] = useState<AddressBySearchProps | undefined>();
+    // const [thailandAddress, setThailandAddress] = useState<AddressBySearchProps[]>([]);
+    // const [address, setAddress] = useState<AddressBySearchProps | undefined>();
 
     const { data: countries, isLoading: isLoadingCountries } = useMasterDataCountriesCustom();
 
@@ -29,10 +30,10 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
         queryFn: () => getData(),
     })
 
-    const getAddress = async (search: string, mode: AddressBySearchModeProps) => {
-        const list = getAddressBySearch(search, mode);
-        setThailandAddress(list);
-    }
+    // const getAddress = async (search: string, mode: AddressBySearchModeProps) => {
+    //     const list = getAddressBySearch(search, mode);
+    //     setThailandAddress(list);
+    // }
 
     const normalizationData = (name: string, addressInfo: DocReceiveAddressInfoModel): any => {
         switch (name) {
@@ -90,30 +91,70 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
         }
     }
 
-    const setDefaultData = (addressInfo: DocReceiveAddressInfoModel) => {
-        setValue('docReceiveAddressInfo.docReceiveChannel', handleEmptyStringFormApi(addressInfo.docReceiveChannel));
-        setValue('docReceiveAddressInfo.docReceiveAddressType', handleEmptyStringFormApi(addressInfo.docReceiveAddressType));
-        setValue('docReceiveAddressInfo.addressNo', normalizationData('addressNo', addressInfo));
-        setValue('docReceiveAddressInfo.moo', normalizationData('moo', addressInfo));
-        setValue('docReceiveAddressInfo.buildingOrVillage', normalizationData('buildingOrVillage', addressInfo));
-        setValue('docReceiveAddressInfo.roomNo', normalizationData('roomNo', addressInfo));
-        setValue('docReceiveAddressInfo.floor', normalizationData('floor', addressInfo));
-        setValue('docReceiveAddressInfo.soi', normalizationData('soi', addressInfo));
-        setValue('docReceiveAddressInfo.street', normalizationData('street', addressInfo));
-        setValue('docReceiveAddressInfo.countryCode', normalizationData('countryCode', addressInfo));
-        setValue('docReceiveAddressInfo.country', normalizationData('country', addressInfo));
-        setValue('docReceiveAddressInfo.zipCode', normalizationData('zipCode', addressInfo));
-        setValue('docReceiveAddressInfo.province', normalizationData('province', addressInfo));
-        setValue('docReceiveAddressInfo.district', normalizationData('district', addressInfo));
-        setValue('docReceiveAddressInfo.subDistrict', normalizationData('subDistrict', addressInfo));
-        setValue('docReceiveAddressInfo.mobileNo', normalizationData('mobileNo', addressInfo));
-        setValue('docReceiveAddressInfo.officeNo', normalizationData('officeNo', addressInfo));
-        setValue('docReceiveAddressInfo.email', normalizationData('email', addressInfo));
-        setValue('docReceiveAddressInfo.customAddress1', normalizationData('customAddress1', addressInfo));
-        setValue('docReceiveAddressInfo.customAddress2', normalizationData('customAddress2', addressInfo));
-        setValue('docReceiveAddressInfo.customAddress3', normalizationData('customAddress3', addressInfo));
-        setAddress({
-            value: {
+    const confirmDocReceiveAddressInfo = useAppSelector(state => state.customerContract.confirm?.docReceiveAddressInfo)
+    const confirmIsAddressInfoType4SameType = useAppSelector(state => state.customerContract.confirm?.isAddressInfoType4SameType)
+
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmDocReceiveAddressInfo) {
+                try {
+                    const addressInfo = (confirmDocReceiveAddressInfo as DocReceiveAddressInfo).addressTemp;
+                    if (addressInfo) {
+                        setValue('docReceiveAddressInfo.addressTemp', {
+                            postCode: addressInfo.postCode || '',
+                            province: addressInfo.province || '',
+                            provinceCode: addressInfo.provinceCode || '',
+                            district: addressInfo.district || '',
+                            districtCode: addressInfo.districtCode || '',
+                            subDistrict: addressInfo.subDistrict || '',
+                            subDistrictCode: addressInfo.subDistrictCode || '',
+                        }, { shouldDirty: true })
+                    }
+                    const oldData = objectToArray({ docReceiveAddressInfo: confirmDocReceiveAddressInfo });
+                    // console.log('oldData', oldData)
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true,
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+            if (confirmIsAddressInfoType4SameType) {
+                setValue('isAddressInfoType4SameType', confirmIsAddressInfoType4SameType, { shouldDirty: true });
+            }
+        }, 100)
+    }
+
+    const setDefaultData = (addressInfo: DocReceiveAddressInfoModel | null) => {
+        if (addressInfo) {
+            if (addressInfo.docReceiveAddressType !== '04') {
+                setValue('isAddressInfoType4SameType', '0', { shouldDirty: true });
+            }
+            setValue('docReceiveAddressInfo.docReceiveChannel', handleEmptyStringFormApi(addressInfo.docReceiveChannel));
+            setValue('docReceiveAddressInfo.docReceiveAddressType', handleEmptyStringFormApi(addressInfo.docReceiveAddressType));
+            setValue('docReceiveAddressInfo.addressNo', normalizationData('addressNo', addressInfo));
+            setValue('docReceiveAddressInfo.moo', normalizationData('moo', addressInfo));
+            setValue('docReceiveAddressInfo.buildingOrVillage', normalizationData('buildingOrVillage', addressInfo));
+            setValue('docReceiveAddressInfo.roomNo', normalizationData('roomNo', addressInfo));
+            setValue('docReceiveAddressInfo.floor', normalizationData('floor', addressInfo));
+            setValue('docReceiveAddressInfo.soi', normalizationData('soi', addressInfo));
+            setValue('docReceiveAddressInfo.street', normalizationData('street', addressInfo));
+            setValue('docReceiveAddressInfo.countryCode', normalizationData('countryCode', addressInfo));
+            setValue('docReceiveAddressInfo.country', normalizationData('country', addressInfo));
+            setValue('docReceiveAddressInfo.zipCode', normalizationData('zipCode', addressInfo));
+            setValue('docReceiveAddressInfo.province', normalizationData('province', addressInfo));
+            setValue('docReceiveAddressInfo.district', normalizationData('district', addressInfo));
+            setValue('docReceiveAddressInfo.subDistrict', normalizationData('subDistrict', addressInfo));
+            setValue('docReceiveAddressInfo.mobileNo', normalizationData('mobileNo', addressInfo));
+            setValue('docReceiveAddressInfo.officeNo', normalizationData('officeNo', addressInfo));
+            setValue('docReceiveAddressInfo.email', normalizationData('email', addressInfo));
+            setValue('docReceiveAddressInfo.customAddress1', normalizationData('customAddress1', addressInfo));
+            setValue('docReceiveAddressInfo.customAddress2', normalizationData('customAddress2', addressInfo));
+            setValue('docReceiveAddressInfo.customAddress3', normalizationData('customAddress3', addressInfo));
+            setValue('docReceiveAddressInfo.addressTemp', {
                 postCode: addressInfo.zipCode || '',
                 province: addressInfo.provinceNameTh || '',
                 provinceCode: addressInfo.provinceCode || '',
@@ -121,19 +162,19 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                 districtCode: addressInfo.districtCode || '',
                 subDistrict: addressInfo.subDistrictNameTh || '',
                 subDistrictCode: addressInfo.subDistrictCode || '',
-            },
-            label: `${addressInfo.subDistrictNameTh} > ${addressInfo.districtNameTh} > ${addressInfo.provinceNameTh} > ${addressInfo.zipCode}`
-        })
+            })
+        } else {
+            setValue('docReceiveAddressInfo.docReceiveChannel', 'EMAIL', { shouldDirty: true });
+            setValue('isAddressInfoType4SameType', '0', { shouldDirty: true });
+        }
+
     }
 
-    const getData = async () => {
-        if (!watch('docReceiveAddressInfo.addressNo')) {
-            const list = getAddressBySearch('', 'postCode');
-            if (list.length > 0)
-                setAddress(list[0])
-        }
+    const getData = async (): Promise<DocReceiveAddressInfoModel | null> => {
         if (data) {
             setDefaultData(data)
+            setDefaultDataChange()
+            return data
         }
         const { customerId } = params
         if (customerId) {
@@ -145,10 +186,12 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                 if (response.status == 200) {
                     const { data } = response;
                     if (data && data.addressInfoModel) {
-                        // console.log(data.addressInfoModel)
                         setDefaultData(data.addressInfoModel)
+                        setDefaultDataChange()
                         return data.addressInfoModel
                     }
+                    setDefaultData(null)
+                    setDefaultDataChange()
                 }
             } catch (error) {
                 console.error('error', error)
@@ -158,12 +201,206 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
         return null
     }
 
-    const setAddresHook = (address: AddressBySearchProps) => {
-        setValue('docReceiveAddressInfo.zipCode', address.value.postCode, { "shouldDirty": true });
-        setValue('docReceiveAddressInfo.provinceCode', address.value.provinceCode, { "shouldDirty": true });
-        setValue('docReceiveAddressInfo.districtCode', address.value.districtCode, { "shouldDirty": true });
-        setValue('docReceiveAddressInfo.subDistrictCode', address.value.subDistrictCode, { "shouldDirty": true });
-    }
+    const addressTemp = watch('docReceiveAddressInfo.addressTemp')
+    const isAddressInfoType4SameType = watch('isAddressInfoType4SameType')
+
+    useEffect(() => {
+        if (addressTemp && data && data.zipCode !== addressTemp.postCode) {
+            setValue('docReceiveAddressInfo.zipCode', addressTemp.postCode, { shouldDirty: true })
+            setValue('docReceiveAddressInfo.provinceCode', addressTemp.provinceCode, { shouldDirty: true })
+            setValue('docReceiveAddressInfo.districtCode', addressTemp.districtCode, { shouldDirty: true })
+            setValue('docReceiveAddressInfo.subDistrictCode', addressTemp.subDistrictCode, { shouldDirty: true })
+        }
+    }, [addressTemp, data, setValue])
+
+    useEffect(() => {
+        trigger('docReceiveAddressInfo')
+    }, [isLoading, trigger, addressTemp, isAddressInfoType4SameType])
+
+    const inputDate: InputElementProps[] = [
+        {
+            label: 'เลขที่',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.addressNo",
+                rules: {
+                    required: 'โปรดกรอกเลขที่',
+                },
+            },
+        },
+        {
+            label: 'หมู่ที่',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.moo",
+            },
+        },
+        {
+            label: 'หมู่บ้าน / อาคาร',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.buildingOrVillage",
+            },
+        },
+        {
+            label: 'เลขที่ห้อง',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.roomNo",
+            },
+        },
+        {
+            label: 'ชั้น',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.floor",
+            },
+        },
+        {
+            label: 'ตรอก / ซอย',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.soi",
+            },
+        },
+        {
+            label: 'ถนน',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.street",
+            },
+        },
+        {
+            type: "autocomplete",
+            label: "ประเทศ",
+            isEditable: isEditable,
+            autocompleteElementProps: {
+                name: "docReceiveAddressInfo.countryCode",
+                rules: {
+                    required: 'โปรดเลือกประเทศ',
+                },
+                options: countries || [],
+            }
+        },
+        {
+            type: "autocomplete",
+            label: "รหัสไปรษณีย์",
+            isEditable: isEditable,
+            autocompleteElementProps: addressComponentToProps({
+                name: "docReceiveAddressInfo.addressTemp",
+                required: 'โปรดเลือกรหัสไปรษณีย์',
+                input: (value) => {
+                    if (!value) return '';
+                    return value.postCode;
+                },
+                options: getAddressToPostCode() || [],
+            })
+        },
+        {
+            type: "autocomplete",
+            label: "จังหวัด",
+            isEditable: isEditable,
+            autocompleteElementProps: addressComponentToProps({
+                name: "docReceiveAddressInfo.addressTemp",
+                required: 'โปรดเลือกจังหวัด',
+                input: (value) => {
+                    if (!value) return '';
+                    return value.province;
+                },
+                options: getAddressToProvince() || [],
+            })
+        },
+        {
+            type: "autocomplete",
+            label: "อำเภอ",
+            isEditable: isEditable,
+            autocompleteElementProps: addressComponentToProps({
+                name: "docReceiveAddressInfo.addressTemp",
+                required: 'โปรดเลือกอำเภอ',
+                input: (value) => {
+                    if (!value) return '';
+                    return value.district;
+                },
+                options: getAddressToDistrict() || [],
+            })
+        },
+        {
+            type: "autocomplete",
+            label: "ตำบล",
+            isEditable: isEditable,
+            autocompleteElementProps: addressComponentToProps({
+                name: "docReceiveAddressInfo.addressTemp",
+                required: 'โปรดเลือกจังหวัด',
+                input: (value) => {
+                    if (!value) return '';
+                    return value.subDistrict;
+                },
+                options: getAddressToSubDistrict() || [],
+            })
+        },
+        {
+            label: 'ที่อยู่ 1',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.customAddress1",
+                rules: {
+                    required: 'โปรดกรอกที่อยู่ 1',
+                },
+            },
+        },
+        {
+            label: 'ที่อยู่ 2',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.customAddress2",
+                rules: {
+                    required: 'โปรดกรอกที่อยู่ 2',
+                },
+            },
+        },
+        {
+            label: 'ที่อยู่ 3',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.customAddress3",
+                rules: {
+                    required: 'โปรดกรอกที่อยู่ 3',
+                },
+            },
+        },
+        {
+            label: 'เบอร์โทรศัพท์มือถือ',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                disabled: true,
+                name: "docReceiveAddressInfo.mobileNo",
+                // rules: {
+                //     required: 'โปรดกรอกเบอร์โทรศัพท์มือถือ',
+                // },
+            },
+        },
+        {
+            label: 'เบอร์โทรศัพท์ที่ทำงาน',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                name: "docReceiveAddressInfo.officeNo",
+                // rules: {
+                //     required: 'โปรดกรอกเบอร์โทรศัพท์ที่ทำงาน',
+                // },
+            },
+        },
+        {
+            label: 'อีเมล',
+            isEditable: isEditable,
+            textFieldElementProps: {
+                disabled: true,
+                name: "docReceiveAddressInfo.email",
+                // rules: {
+                //     required: 'โปรดกรอกอีเมล',
+                // },
+            },
+        },
+    ]
 
     return (
         <>
@@ -182,15 +419,24 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                     >
                         {
                             isEditable ? (
-                                <InputRadio
-                                    name={"politicianRelation"}
-                                    defaultValue={watch('docReceiveAddressInfo.docReceiveChannel') || 'EMAIL'}
-                                    list={[
-                                        { label: "อีเมล", value: 'EMAIL' },
-                                        { label: "ไปรษณีย์", value: 'POST' },
+                                <RadioButtonGroup
+                                    row
+                                    disabled={!isEditable}
+                                    name="docReceiveAddressInfo.docReceiveChannel"
+                                    options={[
+                                        { label: "อีเมล", value: 'EMAIL', id: 'EMAIL' },
+                                        { label: "ไปรษณีย์", value: 'POST', id: 'POST' },
                                     ]}
-                                    onChange={(value) => setValue('docReceiveAddressInfo.docReceiveChannel', value, { shouldDirty: true })}
                                 />
+                                // <InputRadio
+                                //     name={"politicianRelation"}
+                                //     defaultValue={watch('docReceiveAddressInfo.docReceiveChannel') || 'EMAIL'}
+                                //     list={[
+                                //         { label: "อีเมล", value: 'EMAIL' },
+                                //         { label: "ไปรษณีย์", value: 'POST' },
+                                //     ]}
+                                //     onChange={(value) => setValue('docReceiveAddressInfo.docReceiveChannel', value, { shouldDirty: true })}
+                                // />
                             ) : data && normalizationData('docReceiveChannel', data) || "-"
                         }
                     </ContentLabel>
@@ -199,7 +445,22 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                     <ContentLabel
                         label="ที่อยู่ติดต่อทางไปรษณีย์กรณีบริษัทส่งเอกสารอื่นๆ รวมถึงเอกสารจากนายทะเบียนหลักทรัพย์/ศูนย์รับฝากหลักทรัพย์ฯ ที่ต้องติดต่อทางไปรษณีย์ (กรุณาระบุข้อความให้ครบถ้วนแม้ว่าท่านจะได้ระบุวิธีการรับเอกสารทางอีเมล)"
                     >
-                        <InputRadio
+                        <RadioButtonGroup
+                            row
+                            disabled={!isEditable}
+                            name="isAddressInfoType4SameType"
+                            options={[
+                                { label: "ตามประเภทหลักฐาน", value: '1', id: '1' },
+                                { label: "ตามที่อยู่ปัจจุบัน", value: '2', id: '2' },
+                                { label: "ตามที่อยู่สถานที่ทำงาน", value: '3', id: '3' },
+                                { label: "อื่นๆ (โปรดระบุข้อมูลด้านล่างนี้)", value: '0', id: '0', defaultChecked: true }
+                            ]}
+                            rules={{
+                                required: 'โปรดเลือกประเภทที่อยู่'
+                            }}
+
+                        />
+                        {/* <InputRadio
                             disabled={!isEditable}
                             name={"politicianRelation"}
                             defaultValue={watch('docReceiveAddressInfo.docReceiveAddressType') || '04'}
@@ -222,13 +483,30 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                 }
                                 setValue('docReceiveAddressInfo.docReceiveAddressType', value)
                             }}
-                        />
+                        /> */}
                     </ContentLabel>
                 </div>
                 {
-                    watch('docReceiveAddressInfo.docReceiveAddressType') === '04' && (
-                        <div className="grid grid-cols-3">
-                            <InputHorizontal
+                    watch('isAddressInfoType4SameType') === '0' && (
+                        <div className="grid grid-cols-3 gap-1 py-4">
+                            {
+                                inputDate.map((input, index) => {
+                                    if (
+                                        (watch('docReceiveAddressInfo.countryCode') === '000' && [12, 13, 14].includes(index)) ||
+                                        (watch('docReceiveAddressInfo.countryCode') !== '000' && [9, 10, 11].includes(index))
+                                    ) {
+                                        return null
+                                    } else {
+                                        return (
+                                            <InputElement
+                                                key={index}
+                                                {...input}
+                                            />
+                                        )
+                                    }
+                                })
+                            }
+                            {/* <InputHorizontal
                                 label="เลขที่"
                                 defaultValue={watch("docReceiveAddressInfo.addressNo")}
                                 textShow={data && normalizationData('addressNo', data) || "-"}
@@ -451,6 +729,7 @@ export default function ContractInformation({ useForm }: { useForm: UseFormRetur
                                 isRequired
                                 onChange={(value) => setValue('docReceiveAddressInfo.email', value, { shouldDirty: true })}
                             />
+                            */}
                         </div>
                     )
                 }

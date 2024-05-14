@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { CustomerContractState, setDataContractConfirm, setDataCustomerContract } from "@/libs/redux/store/customer-contract-slice";
+import { ContractConfirm, CustomerContractState, setDataContractConfirm } from "@/libs/redux/store/customer-contract-slice";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { dirtyValues } from "@/utils/function";
 import { Button } from "@mui/material";
@@ -17,18 +17,22 @@ export default function CustomerContract() {
     const customerContract = useAppSelector(state => state.customerContract)
 
     const useFormAll = useForm<CustomerContractState>({
-        defaultValues: customerContract
+        defaultValues: customerContract,
+        mode: 'onChange'
     })
 
+
     const saveData = (data: CustomerContractState) => {
-        const { formState: { dirtyFields }, getValues } = useFormAll
-        const dirtyData = dirtyValues(dirtyFields, getValues())
-        dispatch(setDataCustomerContract(data))
-        console.log(dirtyData)
-        if (dirtyData) {
-            dispatch(setDataContractConfirm(dirtyData))
-        }
-        dispatch(nextStep())
+        setTimeout(() => {
+            const { getValues, formState: { dirtyFields } } = useFormAll
+            const dirtyData = dirtyValues(dirtyFields, getValues())
+            if (dirtyData) {
+                const result = dirtyData as ContractConfirm
+                // console.log("dirtyData: ", result)
+                dispatch(setDataContractConfirm(result))
+            }
+            dispatch(nextStep())
+        }, 300)
     }
 
     return (

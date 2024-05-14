@@ -1,31 +1,26 @@
 import { DocReceiveAddressInfoModel, EmergencyContactInfoModel } from '@/services/rest-api/customer-service';
+import { AddressThailandResultProps } from '@/utils/function';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 // Define a type for the slice state
 export interface CustomerContractState {
-    isAddressInfoType4SameType: 0 | 1 | 2 | 3,
-    docReceiveAddressInfo: ContractInformation,
+    isAddressInfoType4SameType: string,
+    docReceiveAddressInfo: DocReceiveAddressInfo,
     emergencyContactInfo: EmergencyContactInfoModel[],
     confirm: ContractConfirm | null
 }
 
-interface ContractInformation extends DocReceiveAddressInfoModel {
-    country: string;
-    province: string;
-    district: string;
-    subDistrict: string;
-}
-
-interface ContractConfirm {
-    isAddressInfoType4SameType?: boolean;
+export interface ContractConfirm {
+    isAddressInfoType4SameType: string;
     docReceiveAddressInfo?: DocReceiveAddressInfoModel;
     emergencyContactInfo?: EmergencyContactInfoModel[];
 }
 
 // Define the initial state using that type
 const initialState: CustomerContractState = {
-    isAddressInfoType4SameType: 0,
+    isAddressInfoType4SameType: '0',
     docReceiveAddressInfo: {
+        addressTemp: null,
         docReceiveChannel: "",
         docReceiveAddressType: "01",
         addressNo: "",
@@ -78,6 +73,14 @@ const initialState: CustomerContractState = {
         },
     ],
     confirm: null
+}
+
+export interface DocReceiveAddressInfo extends DocReceiveAddressInfoModel {
+    addressTemp: AddressThailandResultProps | null,
+    country: string;
+    province: string;
+    district: string;
+    subDistrict: string;
 }
 
 export const customerContractSlice = createSlice({

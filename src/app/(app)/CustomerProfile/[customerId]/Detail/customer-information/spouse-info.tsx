@@ -29,52 +29,47 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
         queryFn: () => getData(),
     })
 
-    // const normalizationData = (name: string, spouseInfo: SpouseInfoModel): any => {
-    //     switch (name) {
-    //         case 'familyStatus':
-    //             return handleEmptyStringFormApi(spouseInfo.familyStatus);
-    //         case 'spouseReferenceType':
-    //             return handleEmptyStringFormApi(spouseInfo.spouseReferenceType);
-    //         case 'spouseIdentityId':
-    //             return handleEmptyStringFormApi(spouseInfo.spouseIdentityId);
-    //         case 'spouseTitle':
-    //             return !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? `${spouseInfo.spouseTitleCode} - ${spouseInfo.spouseTitleName}` : '-';
-    //         case 'spouseFirstName':
-    //             return handleEmptyStringFormApi(spouseInfo.spouseFirstName);
-    //         case 'spouseLastName':
-    //             return handleEmptyStringFormApi(spouseInfo.spouseLastName);
-    //         default:
-    //             return '-';
-    //     }
-    // }
-
     const confirmSpouseInfo = useAppSelector(state => state.customerInformation.confirm?.spouseInfo)
 
-    const setDefaultData = (spouseInfo: SpouseInfoModel) => {
-        setValue('spouseInfo.familyStatus', !isEmptyStringFormApi(spouseInfo.familyStatus) ? spouseInfo.familyStatus || '' : '');
-        setValue('spouseInfo.spouseReferenceType', !isEmptyStringFormApi(spouseInfo.spouseReferenceType) ? spouseInfo.spouseReferenceType || '' : '');
-        setValue('spouseInfo.spouseIdentityId', !isEmptyStringFormApi(spouseInfo.spouseIdentityId) ? spouseInfo.spouseIdentityId || '' : '');
-        setValue('spouseInfo.spouseTitleCode', !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? spouseInfo.spouseTitleCode || '' : '');
-        setValue('spouseInfo.spouseFirstName', !isEmptyStringFormApi(spouseInfo.spouseFirstName) ? spouseInfo.spouseFirstName || '' : '');
-        setValue('spouseInfo.spouseLastName', !isEmptyStringFormApi(spouseInfo.spouseLastName) ? spouseInfo.spouseLastName || '' : '');
-        if (confirmSpouseInfo) {
-            try {
-                const oldData = objectToArray({ spouseInfo: confirmSpouseInfo });
-                oldData.map((item) => {
-                    const [key, value] = item;
-                    setValue(key as any, value, {
-                        shouldDirty: true
-                    })
-                });
-            } catch (err) {
-                console.error(err)
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmSpouseInfo) {
+                try {
+                    const oldData = objectToArray({ spouseInfo: confirmSpouseInfo });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
             }
+        }, 100)
+    }
+
+    const setDefaultData = (spouseInfo: SpouseInfoModel | null) => {
+        if (spouseInfo) {
+            if (spouseInfo.familyStatus !== 'โสด' && spouseInfo.familyStatus !== 'สมรส') {
+                setValue('spouseInfo.familyStatus', 'โสด', { shouldDirty: true });
+            } else {
+                setValue('spouseInfo.familyStatus', !isEmptyStringFormApi(spouseInfo.familyStatus) ? spouseInfo.familyStatus || '' : '');
+            }
+            setValue('spouseInfo.spouseReferenceType', !isEmptyStringFormApi(spouseInfo.spouseReferenceType) ? spouseInfo.spouseReferenceType || '' : '');
+            setValue('spouseInfo.spouseIdentityId', !isEmptyStringFormApi(spouseInfo.spouseIdentityId) ? spouseInfo.spouseIdentityId || '' : '');
+            setValue('spouseInfo.spouseTitleCode', !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? spouseInfo.spouseTitleCode || '' : '');
+            setValue('spouseInfo.spouseFirstName', !isEmptyStringFormApi(spouseInfo.spouseFirstName) ? spouseInfo.spouseFirstName || '' : '');
+            setValue('spouseInfo.spouseLastName', !isEmptyStringFormApi(spouseInfo.spouseLastName) ? spouseInfo.spouseLastName || '' : '');
+        } else {
+            setValue('spouseInfo.familyStatus', 'โสด', { shouldDirty: true });
         }
     }
 
     const getData = async (): Promise<SpouseInfoModel | null> => {
         if (data) {
             setDefaultData(data)
+            setDefaultDataChange();
             return data
         }
         const { customerId } = params
@@ -86,8 +81,11 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
                     const { data } = response;
                     if (data && data.spouseInfo) {
                         setDefaultData(data.spouseInfo)
+                        setDefaultDataChange();
                         return data.spouseInfo
                     }
+                    setDefaultData(null)
+                    setDefaultDataChange();
                 }
             } catch (error) {
                 throw error
@@ -185,7 +183,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
                 error={error && error.message || undefined}
                 hight={92}
             >
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-3 gap-1">
                     {
                         inputDate.map((input, index) => {
                             if (watch('spouseInfo.familyStatus') !== 'สมรส' && index > 0) {
@@ -201,83 +199,7 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
 
                         })
                     }
-                    {/* <InputHorizontal
-                        label="สถานภาพ"
-                        defaultValue={watch('spouseInfo.familyStatus')}
-                        textShow={data && normalizationData('familyStatus', data) || "-"}
-                        isEditable={isEditable}
-                        // register={register}
-                        onChange={(value) => setValue('spouseInfo.familyStatus', value)}
-                        name="familyStatus"
-                        isRequired
-                        type="radio"
-                        list={[
-                            { value: "โสด", label: "โสด" },
-                            { value: "สมรส", label: "สมรส" },
-                        ]}
-                    />
-                    {
-                        watch('spouseInfo.familyStatus') === 'สมรส' && (
-                            <>
-                                <InputHorizontal
-                                    label="ประเภทหลักฐานลูกค้า"
-                                    defaultValue={watch('spouseInfo.spouseReferenceType')}
-                                    textShow={data && normalizationData('spouseReferenceType', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseReferenceType"
-                                    isRequired
-                                    type="autocomplete"
-                                    list={reference}
-                                    onChange={(value) => setValue('spouseInfo.spouseTitleCode', value, { shouldDirty: true })}
-                                    placeholder="โปรดเลือกประเภทหลักฐานลูกค้า"
-                                />
-                                <InputHorizontal
-                                    label="เลขที่บัตร"
-                                    defaultValue={watch('spouseInfo.spouseIdentityId')}
-                                    textShow={data && normalizationData('spouseIdentityId', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseIdentityId"
-                                    onChange={(value) => setValue('spouseInfo.spouseIdentityId', value, { shouldDirty: true })}
-                                    isRequired
-                                />
-                                <InputHorizontal
-                                    label="คำนำหน้า"
-                                    defaultValue={watch('spouseInfo.spouseTitleCode')}
-                                    textShow={data && normalizationData('spouseTitle', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseTitleCode"
-                                    isRequired
-                                    type="autocomplete"
-                                    list={titles}
-                                    onChange={(value) => setValue('spouseInfo.spouseTitleCode', value, { shouldDirty: true })}
-                                    placeholder="โปรดเลือกคำนำหน้า"
-                                />
-                                <InputHorizontal
-                                    label="ชื่อคู่สมรส"
-                                    defaultValue={watch('spouseInfo.spouseFirstName')}
-                                    textShow={data && normalizationData('spouseFirstName', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseFirstName"
-                                    isRequired
-                                    onChange={(value) => setValue('spouseInfo.spouseFirstName', value, { shouldDirty: true })}
-                                />
-                                <InputHorizontal
-                                    label="นามสกุลคู่สมรส"
-                                    defaultValue={watch('spouseInfo.spouseLastName')}
-                                    textShow={data && normalizationData('spouseLastName', data) || "-"}
-                                    isEditable={isEditable}
-                                    // register={register}
-                                    name="spouseLastName"
-                                    isRequired
-                                    onChange={(value) => setValue('spouseInfo.spouseLastName', value, { shouldDirty: true })}
-                                />
-                            </>
-                        )
-                    } */}
+
 
                 </div>
 

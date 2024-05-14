@@ -49,7 +49,7 @@ interface SpouseInfo {
     spouseLastName: string;
 }
 
-interface AddressInfo extends AddressInfoModel {
+export interface AddressInfo extends AddressInfoModel {
     addressTemp: AddressThailandResultProps | null;
     addressType: '01' | '02' | '03' | '04',
     country: string;
