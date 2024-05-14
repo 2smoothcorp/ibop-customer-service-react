@@ -50,31 +50,45 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
 
     const confirmSpouseInfo = useAppSelector(state => state.customerInformation.confirm?.spouseInfo)
 
-    const setDefaultData = (spouseInfo: SpouseInfoModel) => {
-        setValue('spouseInfo.familyStatus', !isEmptyStringFormApi(spouseInfo.familyStatus) ? spouseInfo.familyStatus || '' : '');
-        setValue('spouseInfo.spouseReferenceType', !isEmptyStringFormApi(spouseInfo.spouseReferenceType) ? spouseInfo.spouseReferenceType || '' : '');
-        setValue('spouseInfo.spouseIdentityId', !isEmptyStringFormApi(spouseInfo.spouseIdentityId) ? spouseInfo.spouseIdentityId || '' : '');
-        setValue('spouseInfo.spouseTitleCode', !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? spouseInfo.spouseTitleCode || '' : '');
-        setValue('spouseInfo.spouseFirstName', !isEmptyStringFormApi(spouseInfo.spouseFirstName) ? spouseInfo.spouseFirstName || '' : '');
-        setValue('spouseInfo.spouseLastName', !isEmptyStringFormApi(spouseInfo.spouseLastName) ? spouseInfo.spouseLastName || '' : '');
-        if (confirmSpouseInfo) {
-            try {
-                const oldData = objectToArray({ spouseInfo: confirmSpouseInfo });
-                oldData.map((item) => {
-                    const [key, value] = item;
-                    setValue(key as any, value, {
-                        shouldDirty: true
-                    })
-                });
-            } catch (err) {
-                console.error(err)
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmSpouseInfo) {
+                try {
+                    const oldData = objectToArray({ spouseInfo: confirmSpouseInfo });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
             }
+        }, 100)
+    }
+
+    const setDefaultData = (spouseInfo: SpouseInfoModel | null) => {
+        if (spouseInfo) {
+            if (spouseInfo.familyStatus !== 'โสด' && spouseInfo.familyStatus !== 'สมรส') {
+                setValue('spouseInfo.familyStatus', 'โสด', { shouldDirty: true });
+            } else {
+                setValue('spouseInfo.familyStatus', !isEmptyStringFormApi(spouseInfo.familyStatus) ? spouseInfo.familyStatus || '' : '');
+            }
+            setValue('spouseInfo.spouseReferenceType', !isEmptyStringFormApi(spouseInfo.spouseReferenceType) ? spouseInfo.spouseReferenceType || '' : '');
+            setValue('spouseInfo.spouseIdentityId', !isEmptyStringFormApi(spouseInfo.spouseIdentityId) ? spouseInfo.spouseIdentityId || '' : '');
+            setValue('spouseInfo.spouseTitleCode', !isEmptyStringFormApi(spouseInfo.spouseTitleCode) ? spouseInfo.spouseTitleCode || '' : '');
+            setValue('spouseInfo.spouseFirstName', !isEmptyStringFormApi(spouseInfo.spouseFirstName) ? spouseInfo.spouseFirstName || '' : '');
+            setValue('spouseInfo.spouseLastName', !isEmptyStringFormApi(spouseInfo.spouseLastName) ? spouseInfo.spouseLastName || '' : '');
+        } else {
+            setValue('spouseInfo.familyStatus', 'โสด', { shouldDirty: true });
         }
     }
 
     const getData = async (): Promise<SpouseInfoModel | null> => {
         if (data) {
             setDefaultData(data)
+            setDefaultDataChange();
             return data
         }
         const { customerId } = params
@@ -86,8 +100,11 @@ export default function SpouseInfo({ useForm }: { useForm: UseFormReturn<Custome
                     const { data } = response;
                     if (data && data.spouseInfo) {
                         setDefaultData(data.spouseInfo)
+                        setDefaultDataChange();
                         return data.spouseInfo
                     }
+                    setDefaultData(null)
+                    setDefaultDataChange();
                 }
             } catch (error) {
                 throw error

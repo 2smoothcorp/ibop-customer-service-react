@@ -25,24 +25,21 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
         queryFn: () => getData(),
     })
 
-    const normalizationData = (name: string, politicRelationInfo: PoliticRelationInfoModel): any => {
-        switch (name) {
-            case 'politicianRelation':
-                return politicRelationInfo.politicianRelation ?? false;
-            case 'politicianPosition':
-                return politicRelationInfo.politicianPosition ?? "";
+    // const normalizationData = (name: string, politicRelationInfo: PoliticRelationInfoModel): any => {
+    //     switch (name) {
+    //         case 'politicianRelation':
+    //             return politicRelationInfo.politicianRelation ?? false;
+    //         case 'politicianPosition':
+    //             return politicRelationInfo.politicianPosition ?? "";
 
-            default:
-                return '-';
-        }
-    }
+    //         default:
+    //             return '-';
+    //     }
+    // }
 
     const confirmPoliticRelationInfo = useAppSelector(state => state.customerInformation.confirm?.politicRelationInfo)
 
-    const setDefaultData = (politicRelationInfo: PoliticRelationInfoModel) => {
-        setValue('politicRelationInfo.politicianRelationString', politicRelationInfo.politicianRelation ? 'true' : 'false');
-        setValue('politicRelationInfo.politicianRelation', politicRelationInfo.politicianRelation || false);
-        setValue('politicRelationInfo.politicianPosition', !isEmptyStringFormApi(politicRelationInfo.politicianPosition) ? politicRelationInfo.politicianPosition || '' : '');
+    const setDefaultDataChange = () => {
         setTimeout(() => {
             if (confirmPoliticRelationInfo) {
                 try {
@@ -60,9 +57,16 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
         }, 100)
     }
 
+    const setDefaultData = (politicRelationInfo: PoliticRelationInfoModel) => {
+        setValue('politicRelationInfo.politicianRelationString', politicRelationInfo.politicianRelation ? 'true' : 'false');
+        setValue('politicRelationInfo.politicianRelation', politicRelationInfo.politicianRelation || false);
+        setValue('politicRelationInfo.politicianPosition', !isEmptyStringFormApi(politicRelationInfo.politicianPosition) ? politicRelationInfo.politicianPosition || '' : '');
+    }
+
     const getData = async (): Promise<PoliticRelationInfoModel | null> => {
         if (data) {
-            setDefaultData(data)
+            setDefaultData(data);
+            setDefaultDataChange();
             return data
         }
         const { customerId } = params
@@ -75,8 +79,10 @@ export default function PoliticRelationInfo({ useForm }: { useForm: UseFormRetur
                     const { data } = response;
                     if (data && data.politicRelationInfo) {
                         setDefaultData(data.politicRelationInfo)
+                        setDefaultDataChange()
                         return data.politicRelationInfo
                     }
+                    setDefaultDataChange()
                 }
             } catch (error) {
                 throw error

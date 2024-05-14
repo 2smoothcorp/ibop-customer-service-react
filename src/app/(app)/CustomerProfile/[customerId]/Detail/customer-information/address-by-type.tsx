@@ -6,7 +6,7 @@ import InputElement, { InputElementProps } from "@/components/custom/input-eleme
 import HeaderTitle from "@/components/navbar/header-title";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
 import { useAppSelector } from "@/libs/redux/hook";
-import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
+import { AddressInfo, CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel, AddressInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { addressComponentToProps, getAddressToDistrict, getAddressToPostCode, getAddressToProvince, getAddressToSubDistrict, handleEmptyStringFormApi, isEmptyStringFormApi, objectToArray } from "@/utils/function";
 import { useQuery } from "@tanstack/react-query";
@@ -71,6 +71,36 @@ export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<C
 
     const confirmAddressInfoType1 = useAppSelector(state => state.customerInformation.confirm?.addressInfoType1)
 
+    const setDefaultDataChange = () => {
+        setTimeout(() => {
+            if (confirmAddressInfoType1) {
+                try {
+                    const addressInfo = (confirmAddressInfoType1 as AddressInfo).addressTemp;
+                    if (addressInfo) {
+                        setValue('addressInfoType1.addressTemp', {
+                            postCode: addressInfo.postCode || '',
+                            province: addressInfo.province || '',
+                            provinceCode: addressInfo.provinceCode || '',
+                            district: addressInfo.district || '',
+                            districtCode: addressInfo.districtCode || '',
+                            subDistrict: addressInfo.subDistrict || '',
+                            subDistrictCode: addressInfo.subDistrictCode || '',
+                        }, { shouldDirty: true })
+                    }
+                    const oldData = objectToArray({ addressInfoType1: confirmAddressInfoType1 });
+                    oldData.map((item) => {
+                        const [key, value] = item;
+                        setValue(key as any, value, {
+                            shouldDirty: true
+                        })
+                    });
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+        }, 1);
+    }
+
     const setDefaultData = (addressInfo: AddressInfoModel) => {
         setValue('addressInfoType1.addressNo', isEmptyStringFormApi(addressInfo.addressNo) ? '' : addressInfo.addressNo || '');
         setValue('addressInfoType1.moo', isEmptyStringFormApi(addressInfo.moo) ? '' : addressInfo.moo || '');
@@ -96,24 +126,12 @@ export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<C
             subDistrict: addressInfo.subDistrictNameTh || '',
             subDistrictCode: addressInfo.subDistrictCode || '',
         })
-        if (confirmAddressInfoType1) {
-            try {
-                const oldData = objectToArray({ addressInfoType1: confirmAddressInfoType1 });
-                oldData.map((item) => {
-                    const [key, value] = item;
-                    setValue(key as any, value, {
-                        shouldDirty: true
-                    })
-                });
-            } catch (err) {
-                console.error(err)
-            }
-        }
     }
 
     const getData = async (): Promise<AddressInfoModel | null> => {
         if (data) {
             setDefaultData(data)
+            setDefaultDataChange()
             return data
         }
         const { customerId } = params
@@ -126,8 +144,10 @@ export default function AddressInfoType1({ useForm }: { useForm: UseFormReturn<C
 
                     if (data && data.addressInfoModel) {
                         setDefaultData(data.addressInfoModel)
+                        setDefaultDataChange()
                         return data.addressInfoModel
                     }
+                    setDefaultDataChange()
                 }
             } catch (error) {
                 console.error('error', error)
