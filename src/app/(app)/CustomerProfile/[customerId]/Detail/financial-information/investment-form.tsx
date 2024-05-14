@@ -8,10 +8,11 @@ export interface InvestmentSectionProps {
     isEditable?: boolean
     data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
+    showOnlyChangedFields?: boolean
 }
 
 const InvestmentSection = (props: InvestmentSectionProps) => {
-    const { isEditable = true, data, form } = props
+    const { isEditable = true, data, form, showOnlyChangedFields } = props
 
     const masterDataCountries = useMasterDataCountries();
 
@@ -23,6 +24,8 @@ const InvestmentSection = (props: InvestmentSectionProps) => {
         }
         return _text
     }
+
+    if (showOnlyChangedFields && !data?.investmentFundCode) return null;
 
     return (<div className={isEditable ? "flex flex-nowrap" : ""}>
         <LabelText

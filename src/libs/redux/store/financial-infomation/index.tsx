@@ -1,8 +1,14 @@
 import { FinancialInfoModel, FinancialInfoRequest } from '@/services/rest-api/customer-service';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+export interface FinancialInfoState {
+    data?: FinancialInfoRequest | null
+    confirm?: FinancialInfoRequest | null
+}
 
-const initialState: FinancialInfoRequest = {
+const initialState: FinancialInfoState = {
+    data: null,
+    confirm: null
     /*
     assetValue: 0,
     incomeRateCode: '',
@@ -20,20 +26,17 @@ export const financialInfomationSlice = createSlice({
     initialState,
     reducers: {
         setFinancialInfoData: (state, action: PayloadAction<FinancialInfoModel>) => {
-            state.assetValue = action.payload.assetValue
-            state.incomeRateCode = action.payload.incomeRateCode
-            state.incomeSourceCode = action.payload.incomeSourceCode
-            state.incomeSourceOther = action.payload.incomeSourceOther
-            state.investmentFundCode = action.payload.investmentFundCode
-            state.investmentPurposeCode = action.payload.investmentPurposeCode
-            state.investmentPurposeOther = action.payload.investmentPurposeOther
-            state.investmentYear = action.payload.investmentYear
+            state.data = action.payload
+        },
+        setConfirmFinancialInfoData: (state, action: PayloadAction<FinancialInfoModel>) => {
+            state.confirm = action.payload
         }
     }
 })
 
 export const {
-    setFinancialInfoData
+    setFinancialInfoData,
+    setConfirmFinancialInfoData
 } = financialInfomationSlice.actions;
 
 export default financialInfomationSlice.reducer

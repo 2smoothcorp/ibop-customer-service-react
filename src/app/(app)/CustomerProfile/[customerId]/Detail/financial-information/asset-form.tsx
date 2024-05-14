@@ -9,11 +9,14 @@ export interface AssetFormProps {
     isEditable?: boolean
     data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
+    showOnlyChangedFields?: boolean
 }
 
 const AssetForm = (props: AssetFormProps) => {
-    const { isEditable = true, data, form } = props
+    const { isEditable = true, data, form, showOnlyChangedFields } = props
 
+    if (showOnlyChangedFields && !data?.assetValue) return null;
+    
     return (<div className={isEditable ? "flex flex-nowrap" : ""}>
         <LabelText
             label="มูลค่าทรัพย์สิน (บาท) Asset Value (Baht)"

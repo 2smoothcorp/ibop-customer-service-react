@@ -9,10 +9,13 @@ export interface InvestmentYearFormProps {
     isEditable?: boolean
     data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
+    showOnlyChangedFields?: boolean
 }
 
 const InvestmentYearForm = (props: InvestmentYearFormProps) => {
-    const { isEditable = true, data, form } = props
+    const { isEditable = true, data, form, showOnlyChangedFields } = props
+
+    if (showOnlyChangedFields && !data?.investmentYear) return null;
 
     return (<div className={isEditable ? "flex flex-nowrap" : ""}>
         <LabelText
@@ -29,7 +32,7 @@ const InvestmentYearForm = (props: InvestmentYearFormProps) => {
                         defaultValue={form.watch('investmentYear') || 0}
                         disabled={false}
                         required={true}
-                        onChange={(value) => form.setValue("investmentYear", parseInt(value.toString()))}
+                        onChange={(value) => form.setValue("investmentYear", parseInt(value.toString()), { shouldDirty: true })}
                     />
                 </div>
                 :

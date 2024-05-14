@@ -8,10 +8,11 @@ export interface IncomeRateFormProps {
     isEditable?: boolean
     data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
+    showOnlyChangedFields?: boolean
 }
 
 const IncomeRateForm = (props: IncomeRateFormProps) => {
-    const { isEditable = true, data, form } = props
+    const { isEditable = true, data, form, showOnlyChangedFields } = props
 
     const masterDataIncomeRate = useMasterDataIncomeRateCustom();
 
@@ -23,6 +24,8 @@ const IncomeRateForm = (props: IncomeRateFormProps) => {
         }
         return _text
     }
+
+    if (showOnlyChangedFields && !data?.incomeRateCode) return null;
 
     return (<div className={isEditable ? "flex flex-nowrap" : ""}>
         <LabelText

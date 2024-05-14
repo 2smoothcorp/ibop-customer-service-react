@@ -10,11 +10,12 @@ export interface IncomeSourceFormProps {
     data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
     onChangeCheckBox?: (fieldName: string, value: string, isChecked: boolean) => void
+    showOnlyChangedFields?: boolean
 }
 
 const IncomeSourceForm = (props: IncomeSourceFormProps) => {
 
-    const { isEditable = true, data, form, onChangeCheckBox } = props;
+    const { isEditable = true, data, form, onChangeCheckBox, showOnlyChangedFields } = props;
 
     const masterDataIncomeSource = useMasterDataIncomeSource();
     const { data: incomeSources = [] } = masterDataIncomeSource;
@@ -42,7 +43,7 @@ const IncomeSourceForm = (props: IncomeSourceFormProps) => {
                     <div className="text-lg px-10 tracking-wide">{data?.incomeSourceOther}</div> : null
             }
             {
-                (data?.incomeSourceCode || []).length === 0 && !data?.incomeSourceOther ?
+                (data?.incomeSourceCode || []).length === 0 && !data?.incomeSourceOther && !showOnlyChangedFields ?
                     <div className="text-lg px-10 tracking-wide">-</div> : null
             }
         </>
@@ -82,6 +83,8 @@ const IncomeSourceForm = (props: IncomeSourceFormProps) => {
             </div>
         </>)
     }
+
+    if (!(data?.incomeSourceCode && showOnlyChangedFields) && !isEditable) return null
 
     return (
         <>

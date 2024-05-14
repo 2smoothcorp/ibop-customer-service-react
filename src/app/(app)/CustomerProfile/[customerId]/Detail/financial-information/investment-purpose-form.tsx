@@ -10,14 +10,15 @@ export interface PurposeFormProps {
     data: FinancialInfoModel | undefined | null
     form: UseFormReturn<FinancialInfoModel>
     onChangeCheckBox?: (fieldName: string, value: string, isChecked: boolean) => void
+    showOnlyChangedFields?: boolean
 }
 
 const PurposeForm = (props: PurposeFormProps) => {
 
-    const { isEditable = true, data, form, onChangeCheckBox } = props;
+    const { isEditable = true, data, form, onChangeCheckBox, showOnlyChangedFields } = props;
 
     const masterDataInvestmentPurpose = useMasterDataInvestmentPurpose();
-    const { data: purposes } = masterDataInvestmentPurpose;
+    const { data: purposes, isLoading } = masterDataInvestmentPurpose;
     purposes?.sort((a, b) => Number(a?.rSort || '') - Number(b?.rSort || ''));
 
     const isPurposeExist = (value: string = '') => {
@@ -55,7 +56,7 @@ const PurposeForm = (props: PurposeFormProps) => {
                         labelWidth="max-content"
                         labelAlign="left"
                         disabled={!isPurposeOther()}
-                        onChange={(v) => form.setValue('investmentPurposeOther', v)}
+                        onChange={(v) => form.setValue('investmentPurposeOther', v, { shouldDirty: true })}
                     />
                 </div>
             </div>
@@ -63,6 +64,7 @@ const PurposeForm = (props: PurposeFormProps) => {
     }
 
     const viewMode = () => {
+
         return (<>
             {
                 (data?.investmentPurposeCode || []).map((purpose: string, idx: number) => {
@@ -76,7 +78,7 @@ const PurposeForm = (props: PurposeFormProps) => {
                     <div className="text-lg px-10 tracking-wide">{data?.investmentPurposeOther}</div> : null
             }
             {
-                (data?.investmentPurposeCode || []).length === 0 && !data?.investmentPurposeOther ?
+                (data?.investmentPurposeCode || []).length === 0 && !data?.investmentPurposeOther && !showOnlyChangedFields ?
                     <div className="text-lg px-10 tracking-wide">-</div> : null
             }
         </>)
@@ -86,10 +88,12 @@ const PurposeForm = (props: PurposeFormProps) => {
         return isEditable ? editMode() : viewMode()
     }
 
+    if (!(data?.investmentPurposeCode && showOnlyChangedFields) && !isEditable) return null;
+
     return <>
         <LabelText label="วัตถุประสงค์การลงทุน (เลือกได้มากกว่า 1 ข้อ) Investment Objective (You can select more than 1 item)" isFullWidth={true} isRequired={true} isEditable={true} />
         {getDetailSection()}
-    </>
+    </ >
 }
 
 export default PurposeForm;
