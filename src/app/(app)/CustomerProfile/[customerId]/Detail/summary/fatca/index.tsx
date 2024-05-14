@@ -61,7 +61,7 @@ const normalizationData = (name: string, data: EmergencyContactInfoModel, defaul
 export default function SummaryFatcaInfo({ data }: { data: CustomerFatcaState }) {
 
     const { americaStatus = [], tinType } = data
-    const { answerInput = [], fatcaW8Input = {}, fatcaW9Input = {}, tinInput = [] } = data?.confirm || {}
+    const { answerInput = [], isFatcaIndividualSelfCertified, fatcaW8Input = {}, fatcaW9Input = {}, tinInput = [] } = data?.confirm || {}
 
     const W9Questions = americaStatus.filter((q) => q.question.questionType === 'W9').map(q => q.questionId) || []
     const W8Questions = americaStatus.filter((q) => q.question.questionType === 'W8').map(q => q.questionId) || []
@@ -72,23 +72,23 @@ export default function SummaryFatcaInfo({ data }: { data: CustomerFatcaState })
             className="gap-0"
             title="ส่วนที่ 1 สถานะความเป็นบุคคลอเมริกัน"
         />
-        <div className="block pl-8">
+        <div className="block pl-8 my-4">
             {
-                answerInput ?
+                answerInput && answerInput?.length > 0 ?
                     <>
                         <HeaderTitleSub
                             title="บุคคลอเมริกัน"
                             isBorder={false}
                         />
                         {
-                            answerInput?.filter(a => W9Questions.includes(a.questionId)).map((ans) => {
+                            answerInput?.filter(a => W9Questions.includes(a.questionId)).map((ans, idx: number) => {
                                 const question: Array<any> = americaStatus.filter(a => a.questionId === ans.questionId) || []
                                 if (!question && question?.length === 0) return null;
                                 const choice = question[0].choices.filter((c) => c.choiceId === ans.choiceId) || []
 
-                                return <div>
-                                    {question[0].question.questionTextTh}
-                                    {choice[0]?.choiceTextTh}
+                                return <div key={`answer-${idx}`} className="my-2">
+                                    <span className="pr-4">{choice[0]?.choiceTextTh}</span>
+                                    <span> {question[0].question.questionTextTh}</span>
                                 </div>
                             })
                         }
@@ -98,14 +98,14 @@ export default function SummaryFatcaInfo({ data }: { data: CustomerFatcaState })
                             isBorder={false}
                         />
                         {
-                            answerInput?.filter(a => W8Questions.includes(a.questionId)).map((ans) => {
+                            answerInput?.filter(a => W8Questions.includes(a.questionId)).map((ans, idx: number) => {
                                 const question: Array<any> = americaStatus.filter(a => a.questionId === ans.questionId) || []
                                 if (!question && question?.length === 0) return null;
                                 const choice = question[0].choices.filter((c) => c.choiceId === ans.choiceId) || []
 
-                                return <div>
-                                    {question[0].question.questionTextTh}
-                                    {choice[0]?.choiceTextTh}
+                                return <div key={`answer-${idx}`} className="my-2">
+                                    <span className="pr-4">{choice[0]?.choiceTextTh}</span>
+                                    <span> {question[0].question.questionTextTh}</span>
                                 </div>
                             })
                         }
@@ -115,11 +115,36 @@ export default function SummaryFatcaInfo({ data }: { data: CustomerFatcaState })
 
         </div>
 
+        <HeaderTitle
+            className="gap-0"
+            title="ส่วนที่ 2 ท่านเป็นผู้มีถิ่นที่อยู่ทางภาษีในประเทศอื่นๆนอกจากสหรัฐอเมริกา"
+        />
+        {
+            isFatcaIndividualSelfCertified ?
+                <div>
+
+                    <span className="pr-4">{isFatcaIndividualSelfCertified ? `ใช่` : `ไม่ใช่`}</span>
+                    <span> {`สถานะ FATCA`}</span>
+                </div>
+                :
+                <></>
+        }
         <SummaryExistUSIDTableInfo
             data={tinInput || []}
         />
 
-        <SummaryW9 {...fatcaW9Input} tinType={tinType} />
-        <SummaryW8 {...fatcaW8Input} />
+        {
+            fatcaW9Input && Object.keys(fatcaW9Input).length > 0 ?
+                <SummaryW9 {...fatcaW9Input} tinType={tinType} />
+                :
+                null
+        }
+
+        {
+            fatcaW8Input && Object.keys(fatcaW8Input).length > 0 ?
+                <SummaryW8 {...fatcaW8Input} />
+                :
+                null
+        }
     </>)
 }

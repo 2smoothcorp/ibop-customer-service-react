@@ -4,7 +4,8 @@ import Typography from "@mui/material/Typography";
 
 
 export default function HeaderNavbar({
-    title
+    title,
+    className
 }: HeaderNavbarProps) {
     return (
         <AppBar
@@ -12,6 +13,7 @@ export default function HeaderNavbar({
             sx={{
                 backgroundColor: "#1F346B",
             }}
+            className={`${className}`}
         >
             <Toolbar>
                 <Typography component="span" className="font-db-helvethaica text-[30px] tracking-wide">
@@ -24,5 +26,6 @@ export default function HeaderNavbar({
 
 interface HeaderNavbarProps {
     title: string;
+    className?: string;
 }
 

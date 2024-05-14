@@ -114,6 +114,7 @@ const SummaryW9 = (props: SummaryW9Props) => {
     return <>
         <HeaderNavbar
             title="Request for Taxpayer Identification Number and Certification (W-9)"
+            className="mt-4"
         />
         <Grid container spacing={2} padding={5} marginTop={0} paddingTop={2}>
             {
