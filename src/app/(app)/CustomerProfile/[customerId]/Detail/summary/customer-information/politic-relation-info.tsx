@@ -1,6 +1,6 @@
 import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
-import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
+import { PersonalConfirm } from "@/libs/redux/store/customer-information-slice";
 import { PoliticRelationInfoModel } from "@/services/rest-api/customer-service";
 import React from "react";
 import LabelDetail, { LabelDetailProps } from "../components/label-detail";
@@ -34,7 +34,7 @@ const normalizationData = (name: string, data: PoliticRelationInfoModel, default
     }
 }
 
-export default function SummaryPoliticRelationInfo({ data }: { data: CustomerInformationState }) {
+export default function SummaryPoliticRelationInfo({ data }: { data: PersonalConfirm }) {
 
     const isEditable = false;
 

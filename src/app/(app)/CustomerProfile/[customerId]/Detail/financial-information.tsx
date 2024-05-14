@@ -38,7 +38,6 @@ const FinancialInformation = (props: FinancialInformationProps) => {
     const masterDataIncomeSource = useMasterDataIncomeSource();
     const masterDataIncomeRate = useMasterDataIncomeRateCustom();
 
-
     const isEditable = searchParams.get('edit') === 'true' && !props?.isReadonly;
 
     const financialInfomation = useAppSelector(state => state.financialInfomation)

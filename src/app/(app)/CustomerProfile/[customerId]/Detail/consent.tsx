@@ -7,9 +7,11 @@
 import ContentLoading from '@/components/content/content-loading';
 import HeaderTitle from '@/components/navbar/header-title';
 import { useAppDispatch } from '@/libs/redux/hook';
+import { setConfimConsentData, setConsentData } from '@/libs/redux/store/consent';
 import { nextStep, prevStep } from '@/libs/redux/store/customer-profile-slice';
 import type {
     ConsentAnsweredOutputDataResponse,
+    ConsentDataDetailSave,
     ConsentQuestionOutputDataResponse
 } from '@/services/rest-api/customer-service';
 import { Button, FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
@@ -205,7 +207,14 @@ const Consent = (): ReactElement => {
     }
 
     const onSubmit = (e: any) => {
-        //const { getValues } = useFormAll
+        const _values = consentOptionList;
+
+        const consentDataDetails: Array<ConsentDataDetailSave> = _values.map(v => ({ consentId: v.consentId, isAccepted: v.answer }))
+        const dirtyDetails: Array<ConsentDataDetailSave> = _values.filter(v => v.dirty).map(v => ({ consentId: v.consentId, isAccepted: v.answer }))
+        dispatch(setConsentData({
+            consentDataDetails
+        }))
+        dispatch(setConfimConsentData({ consentDataDetails: dirtyDetails }))
         dispatch(nextStep())
     }
 

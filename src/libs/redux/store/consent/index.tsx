@@ -2,11 +2,13 @@ import { ConsentInfoRequest } from '@/services/rest-api/customer-service';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export interface ConsentState {
-    data: ConsentInfoRequest
+    data: ConsentInfoRequest | null
+    confirm: ConsentInfoRequest | null
 }
 
 const initialState: ConsentState = {
-    data: {}
+    data: null,
+    confirm: null
 }
 
 export const ConsentSlice = createSlice({
@@ -15,12 +17,16 @@ export const ConsentSlice = createSlice({
     reducers: {
         setConsentData: (state, action: PayloadAction<ConsentInfoRequest>) => {
             state.data = { ...action.payload }
+        },
+        setConfimConsentData: (state, action: PayloadAction<ConsentInfoRequest>) => {
+            state.confirm = { ...state.confirm, ...action.payload }
         }
     }
 })
 
 export const {
-    setConsentData
+    setConsentData,
+    setConfimConsentData
 } = ConsentSlice.actions;
 
 export default ConsentSlice.reducer

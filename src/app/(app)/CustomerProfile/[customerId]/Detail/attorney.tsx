@@ -11,7 +11,7 @@ import TitleDDL from "@/components/dropdownlist/title-ddl";
 import HeaderTitle from "@/components/navbar/header-title";
 import useMasterDataProduct from "@/hooks/masterDataProduct";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { setAttorneyData } from "@/libs/redux/store/attorney";
+import { AttorneyState, setAttorneyData } from "@/libs/redux/store/attorney";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { AttorneyInfoModel, AttorneyInfoResponse, AttorneyInfoResponseDataResponse } from "@/services/rest-api/customer-service";
 import { ApiResponse } from "@/type/api";
@@ -198,35 +198,24 @@ const normalizationData = (attributeName: string, data: AttorneyInfoModel | unde
     }
 }
 
-const AttorneySection = () => {
+export interface AttorneySectionProps {
+    data?: AttorneyState
+    isReadonly?: boolean
+    showOnlyChangedFields?: boolean
+}
+
+const AttorneySection = (props: AttorneySectionProps) => {
 
     const searchParams = useSearchParams()
     const params = useParams()
     const router = useRouter()
     const dispatch = useAppDispatch()
 
-    const isEditable = searchParams.get('edit') === 'true';
-
-    const attorney = useAppSelector(state => state.attorney.data)
+    const isEditable = searchParams.get('edit') === 'true' && !props?.isReadonly;
 
     const masterDataProduct = useMasterDataProduct();
 
-
-    const useFormAll = useForm<{ attorneyInfo: Array<AttorneyInfoModel>, isAttorney?: boolean }>({
-        defaultValues: {
-            isAttorney: attorney.length ? true : false,
-            attorneyInfo: [...attorney] || []
-        }
-    })
-
-    const form = useFormAll;
-    const { register, setValue, watch, control, handleSubmit, getValues } = form
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: "attorneyInfo"
-    })
-
-    const { data, isLoading, error } = useQuery({
+    const { data: responseData, isLoading, error } = useQuery({
         queryKey: ['attorneyInfo', params.customerId],
         queryFn: async function () {
             try {
@@ -243,6 +232,24 @@ const AttorneySection = () => {
             } finally {
             }
         }
+    })
+    const _data = responseData?.data?.attorneyInfo
+
+    const attorney = useAppSelector(state => state.attorney)
+    const data: AttorneyInfoModel[] | undefined | null = props?.showOnlyChangedFields ? props?.data?.confirm : (attorney.data || _data);
+    const useFormAll = useForm<{ attorneyInfo: Array<AttorneyInfoModel>, isAttorney?: boolean }>({
+        defaultValues: {
+            isAttorney: data?.length ? true : false,
+            attorneyInfo: [...data || []]
+        }
+    })
+
+    const form = useFormAll;
+    const { register, setValue, watch, control, handleSubmit, getValues } = form
+
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "attorneyInfo"
     })
 
     const addAttroney = () => {
@@ -318,8 +325,16 @@ const AttorneySection = () => {
     }
 
     const onSubmit = (e: any) => {
-        const { getValues } = useFormAll
+        const { getValues, formState: { dirtyFields } } = useFormAll
         const { isAttorney, attorneyInfo } = getValues()
+        /*
+        const values = getValues()
+        const _dirtyValues: any = {}
+        for (let key in dirtyFields) {
+            _dirtyValues[key as keyof AttorneyInfoModel] = attorneyInfo[key as keyof AttorneyInfoModel]
+        }
+        */
+
         if (isAttorney) {
             dispatch(setAttorneyData(attorneyInfo))
         } else {
@@ -352,7 +367,7 @@ const AttorneySection = () => {
                                 { value: "Y", label: 'มี (โปรดระบุด้านล่าง)' }
                             ]} />
                         :
-                        (data?.data?.attorneyInfo || []).length === 0 ? 'ไม่มี' : 'มี'
+                        (data || []).length === 0 ? 'ไม่มี' : 'มี'
                 }
             </ContentLabel>
             {
@@ -369,7 +384,7 @@ const AttorneySection = () => {
                                     {
                                         attorneySectionList({ form, isEditable, index, fieldName: `attorneyInfo` }).map((attorneySection: DetailSection, idx: number) => {
                                             const { name, label, defaultValue, isRequired, normalize, CustomComponent } = attorneySection;
-                                            const _dataInfo = (name?.toString() === 'referenceId' ? data?.data : attorneyInfo) || undefined;
+                                            const _dataInfo = (name?.toString() === 'referenceId' ? responseData?.data : attorneyInfo) || undefined;
                                             const value = getValueFromFieldName(name || '', _dataInfo, normalize)
                                             const _fieldName = `attorneyInfo.${index}.${name}`;
 

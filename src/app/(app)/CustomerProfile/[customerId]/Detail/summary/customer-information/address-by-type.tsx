@@ -1,6 +1,6 @@
 import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
-import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
+import { PersonalConfirm } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel } from "@/services/rest-api/customer-service";
 import { Property } from "csstype";
 import React, { ReactElement } from "react";
@@ -103,7 +103,7 @@ const normalizationData = (name: string, data: AddressInfoModel, defaultValue: s
     }
 }
 
-export default function SummaryAddressByTypeInfo({ data }: { data: CustomerInformationState }) {
+export default function SummaryAddressByTypeInfo({ data }: { data: PersonalConfirm }) {
 
     const _data = data.addressInfoType1 as AddressInfoModel;
 

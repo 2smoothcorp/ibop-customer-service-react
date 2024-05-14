@@ -1,6 +1,6 @@
 import HeaderTitle from "@/components/navbar/header-title";
 import Table from "@/components/table/table";
-import { CustomerAtsEDividendState } from "@/libs/redux/store/customer-ats-e-dividend-slice";
+import { CustomerAtsEDividendConfirm } from "@/libs/redux/store/customer-ats-e-dividend-slice";
 import { BankInfoModel } from "@/services/rest-api/customer-service";
 import { GridColDef } from "@mui/x-data-grid";
 
@@ -47,21 +47,21 @@ const columns: GridColDef<BankInfoModel>[] = [
     },
 ];
 
-export default function SummaryEDividendInfo({ data }: { data: CustomerAtsEDividendState }) {
+export default function SummaryEDividendInfo({ data }: { data: CustomerAtsEDividendConfirm }) {
     return <>
         <HeaderTitle
             className="gap-0"
             title="บัญชีธนาคารสำหรับดอกเบี้ย และเงินปันผล Bank account to receive e-Dividend / Interest"
         />
         {
-            data?.eDividend?.length > 0 ?
+            data.eDividendInfo && data?.eDividendInfo?.length > 0 ?
                 <>
 
                     <div className="h-2" />
                     <Table<BankInfoModel>
                         columns={columns}
-                        rows={data.eDividend || []}
-                        totalItems={data.eDividend.length || 0}
+                        rows={data.eDividendInfo || []}
+                        totalItems={data.eDividendInfo.length || 0}
                         // totalPages={kycInfo.data?.totalPages || 0}
                         isLoading={false}
                         paginationModel={{ page: 1, pageSize: 10 }}

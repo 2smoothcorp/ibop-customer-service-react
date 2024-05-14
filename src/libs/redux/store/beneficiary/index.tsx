@@ -2,11 +2,13 @@ import { BeneficiaryInfoModel, BeneficiaryInfoRequest } from '@/services/rest-ap
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export interface BeneficiaryState {
-    data: BeneficiaryInfoRequest
+    data?: BeneficiaryInfoRequest | null
+    confirm?: BeneficiaryInfoRequest | null
 }
 
 const initialState: BeneficiaryState = {
-    data: {}
+    data: null,
+    confirm: null
 }
 
 export const beneficiarySlice = createSlice({
@@ -15,12 +17,16 @@ export const beneficiarySlice = createSlice({
     reducers: {
         setBeneficiaryData: (state, action: PayloadAction<BeneficiaryInfoModel>) => {
             state.data = { ...action.payload }
+        },
+        setConfirmBeneficiaryData: (state, action: PayloadAction<BeneficiaryInfoModel>) => {
+            state.data = { ...state.confirm, ...action.payload }
         }
     }
 })
 
 export const {
-    setBeneficiaryData
+    setBeneficiaryData,
+    setConfirmBeneficiaryData
 } = beneficiarySlice.actions;
 
 export default beneficiarySlice.reducer

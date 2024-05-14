@@ -6,7 +6,7 @@ import InputRadio from "@/components/custom/input-radio";
 import HeaderTitle from "@/components/navbar/header-title";
 import HeaderTitleSub from "@/components/navbar/header-title-sub";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/hook";
-import { setBeneficiaryData } from "@/libs/redux/store/beneficiary";
+import { BeneficiaryState, setBeneficiaryData, setConfirmBeneficiaryData } from "@/libs/redux/store/beneficiary";
 import { nextStep, prevStep } from "@/libs/redux/store/customer-profile-slice";
 import { BeneficiaryInfoModel, BeneficiaryInfoResponseDataResponse } from "@/services/rest-api/customer-service/models";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
@@ -121,7 +121,9 @@ const normalizationData = (attributeName: string, data: BeneficiaryInfoModel | u
 }
 
 export interface BeneficiaryPageProps {
-    data?: BeneficiaryInfoModel
+    data?: BeneficiaryState
+    isReadonly?: boolean
+    showOnlyChangedFields?: boolean
 }
 
 const BeneficiaryPage = (props: BeneficiaryPageProps) => {
@@ -131,16 +133,9 @@ const BeneficiaryPage = (props: BeneficiaryPageProps) => {
     const router = useRouter()
     const dispatch = useAppDispatch()
 
-    const isEditable = searchParams.get('edit') === 'true' && !props?.data;
+    const isEditable = searchParams.get('edit') === 'true' && !props?.isReadonly;
 
-    const beneficiary = useAppSelector(state => state.beneficiary.data)
-
-    const useFormAll = useForm<BeneficiaryInfoModel>({
-        defaultValues: { ...beneficiary }
-    })
-
-    const form = useFormAll;
-    const { setValue, getValues, watch } = form
+    const beneficiary = useAppSelector(state => state.beneficiary)
 
     const { data: _data, isLoading, error } = useQuery({
         queryKey: ['financialInfo', params.customerId],
@@ -156,10 +151,14 @@ const BeneficiaryPage = (props: BeneficiaryPageProps) => {
                         form.setValue(key as any, response.data?.beneficiaryInfo[key as keyof BeneficiaryInfoModel])
                     }
 
-                    return {
+                    const _response = {
                         isOwner: Object.keys(response.data).length === 0,
                         ...response.data.beneficiaryInfo
                     }
+
+                    dispatch(setBeneficiaryData(_response))
+
+                    return _response
                 }
 
                 if (Object.keys(response?.data || {}).length === 0) {
@@ -176,7 +175,13 @@ const BeneficiaryPage = (props: BeneficiaryPageProps) => {
         }
     })
 
-    const data: BeneficiaryInfoModel | undefined | null = props?.data || _data;
+    const data: BeneficiaryInfoModel | undefined | null = props?.showOnlyChangedFields ? props?.data?.confirm : (beneficiary.data || _data);
+    const beneficiaryForm = useForm<BeneficiaryInfoModel>({
+        defaultValues: { ...data as BeneficiaryInfoModel },
+        mode: 'onChange'
+    })
+    const form = beneficiaryForm;
+    const { setValue, getValues, watch } = form
 
     const Address = AddressComponent({
         isEditable: isEditable,
@@ -229,9 +234,16 @@ const BeneficiaryPage = (props: BeneficiaryPageProps) => {
     }
 
     const onSubmit = () => {
-        const { getValues } = useFormAll
+        const { getValues, formState: { dirtyFields } } = beneficiaryForm
 
-        dispatch(setBeneficiaryData(getValues()))
+        const values = getValues()
+        const _dirtyValues: any = {}
+        for (let key in dirtyFields) {
+            _dirtyValues[key as keyof BeneficiaryInfoModel] = values[key as keyof BeneficiaryInfoModel]
+        }
+
+        dispatch(setBeneficiaryData(values))
+        dispatch(setConfirmBeneficiaryData(_dirtyValues as BeneficiaryInfoModel))
         dispatch(nextStep())
     }
 

@@ -1,7 +1,6 @@
 "use client"
 
 import AddressComponent from "@/components/address";
-import InputHorizontal from "@/components/custom/input-horizontal";
 import InputRadio from "@/components/custom/input-radio";
 import HeaderTitle from "@/components/navbar/header-title";
 import HeaderTitleSub from "@/components/navbar/header-title-sub";
@@ -12,13 +11,15 @@ import { BeneficiaryInfoModel, BeneficiaryInfoResponseDataResponse } from "@/ser
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import { Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { Property } from "csstype";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { ReactElement } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
+import LabelDetail from "../components/label-detail";
 import PersonForm from "./beneficiary/person-form";
 
-interface DetailSection {
-    name: keyof BeneficiaryInfoModel
+interface DetailSection<T> {
+    name?: keyof T
     label: string
     defaultValue?: string
     isRequired?: boolean
@@ -27,9 +28,12 @@ interface DetailSection {
     type?: string
     onChange?: (value: string) => void
     CustomComponent?: ReactElement
+    condition?: (data: T) => boolean
+    isFull?: boolean
+    labelAlign?: Property.TextAlign
 }
 
-const fieldList = ({ form }: { form: UseFormReturn<BeneficiaryInfoModel> }): Array<DetailSection> => (
+const fieldList = ({ form }: { form: UseFormReturn<BeneficiaryInfoModel> }): Array<DetailSection<BeneficiaryInfoModel>> => (
 
     [
         {
@@ -276,19 +280,11 @@ const BeneficiaryPage = (props: BeneficiaryPageProps) => {
                     />
                     <div className="grid grid-cols-3">
                         {
-                            fieldList({ form }).map((detail: DetailSection, idx: number) => {
-                                const { name, label, isRequired, normalize } = detail
-                                const _value = getValueFromFieldName(name, data, normalize);
-                                const textShow = watch(name)?.toString();
+                            fieldList({ form }).map((detail: DetailSection<BeneficiaryInfoModel>, idx: number) => {
                                 return <React.Fragment key={`field-item-${idx}`}>
-                                    <InputHorizontal
-                                        label={label}
-                                        defaultValue={getValues(name || '')?.toString()}
-                                        isEditable={isEditable}
-                                        textShow={textShow}
-                                        name={name}
-                                        isRequired={isRequired}
-                                        onChange={(value) => setValue(name, value, { shouldDirty: true })}
+                                    <LabelDetail
+                                        {...detail}
+                                        data={data}
                                     />
                                 </React.Fragment>
                             })

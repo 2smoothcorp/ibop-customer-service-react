@@ -7,7 +7,7 @@ import { useMasterDataPersonTypeCustom } from "@/hooks/master-data-person-type";
 import { useMasterDataReferenceCustom } from "@/hooks/master-data-reference";
 import { useMasterDataTitlesCustom } from "@/hooks/master-data-titles";
 import { useMasterDataCountriesCustom } from "@/hooks/masterDataCountries";
-import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
+import { PersonalConfirm } from "@/libs/redux/store/customer-information-slice";
 import { ComboBox, PersonalInfoModel } from "@/services/rest-api/customer-service";
 import { handleEmptyStringFormApi, isEmptyStringFormApi } from "@/utils/function";
 import dayjs from "dayjs";
@@ -28,7 +28,7 @@ interface DetailSection<T> {
 }
 
 interface FieldListProps<T> {
-    data: T
+    data?: T
     personType: Array<ComboBox>
     titles: Array<ComboBox>
     reference: Array<ComboBox>
@@ -170,7 +170,7 @@ const normalizationData = (name: string, personalInfo: PersonalInfoModel, defaul
     }
 }
 
-export default function SummaryPersonalInfo({ data }: { data: CustomerInformationState }) {
+export default function SummaryPersonalInfo({ data }: { data: PersonalConfirm }) {
 
     const isEditable = false;
 

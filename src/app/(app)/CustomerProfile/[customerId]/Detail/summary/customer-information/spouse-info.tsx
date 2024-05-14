@@ -1,6 +1,6 @@
 import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
-import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
+import { PersonalConfirm } from "@/libs/redux/store/customer-information-slice";
 import { SpouseInfoModel } from "@/services/rest-api/customer-service";
 import React, { ReactElement } from "react";
 import LabelDetail from "../components/label-detail";
@@ -18,7 +18,7 @@ interface DetailSection<T> {
     filterData?: (value: any) => string | undefined
 }
 
-const fieldList = <T extends SpouseInfoModel>({ data }: { data: T }): Array<DetailSection<T>> => {
+const fieldList = <T extends SpouseInfoModel>({ data }: { data?: T }): Array<DetailSection<T>> => {
     return (
         [
             {
@@ -29,7 +29,7 @@ const fieldList = <T extends SpouseInfoModel>({ data }: { data: T }): Array<Deta
     )
 }
 
-const marriedFieldList = <T extends SpouseInfoModel>({ data }: { data: T }): Array<DetailSection<T>> => {
+const marriedFieldList = <T extends SpouseInfoModel>({ data }: { data?: T }): Array<DetailSection<T>> => {
     return (
         [
             {
@@ -69,7 +69,7 @@ const normalizationData = (name: string, data: SpouseInfoModel, defaultValue: st
     }
 }
 
-export default function SummarySpouseInfo({ data }: { data: CustomerInformationState }) {
+export default function SummarySpouseInfo({ data }: { data: PersonalConfirm }) {
 
     const isEditable = false;
     const _data = data?.spouseInfo as SpouseInfoModel;

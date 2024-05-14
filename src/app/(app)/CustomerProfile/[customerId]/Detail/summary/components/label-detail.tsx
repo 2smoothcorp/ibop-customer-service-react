@@ -30,7 +30,7 @@ export interface LabelDetailProps<T> {
     type?: string;
     onChange?: (value: string) => void;
     CustomComponent?: ReactElement;
-    condition?: (data: T) => boolean
+    condition?: (data?: T) => boolean
     filterData?: (value: any) => string | undefined;
     isFullRow?: boolean;
     labelAlign?: Property.TextAlign | undefined;

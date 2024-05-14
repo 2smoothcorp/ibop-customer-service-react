@@ -1,11 +1,11 @@
 import ContentLoading from "@/components/content/content-loading";
 import HeaderTitle from "@/components/navbar/header-title";
-import { CustomerInformationState } from "@/libs/redux/store/customer-information-slice";
+import { PersonalConfirm } from "@/libs/redux/store/customer-information-slice";
 import { AddressInfoModel } from "@/services/rest-api/customer-service";
 import React from "react";
 import LabelDetail, { LabelDetailProps } from "../components/label-detail";
 
-const fieldList = <T extends CustomerInformationState>({ data }: { data: T }): Array<LabelDetailProps<T>> => {
+const fieldList = <T extends PersonalConfirm>({ data }: { data: T }): Array<LabelDetailProps<T>> => {
     return (
         [
             {
@@ -99,7 +99,7 @@ const normalizationData = (name: string, data: AddressInfoModel, defaultValue: s
     }
 }
 
-export default function SummaryAddressByCurrentInfo({ data }: { data: CustomerInformationState }) {
+export default function SummaryAddressByCurrentInfo({ data }: { data: PersonalConfirm }) {
 
     const isEditable = false;
 
@@ -116,7 +116,7 @@ export default function SummaryAddressByCurrentInfo({ data }: { data: CustomerIn
         >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {
-                    fieldList<CustomerInformationState>({ data: data }).map((detail: LabelDetailProps<CustomerInformationState>, idx: number) => {
+                    fieldList<PersonalConfirm>({ data: data }).map((detail: LabelDetailProps<PersonalConfirm>, idx: number) => {
                         return <React.Fragment key={`field-item-${idx}`}>
                             <LabelDetail
                                 {...detail}

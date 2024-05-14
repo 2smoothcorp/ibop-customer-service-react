@@ -6,10 +6,10 @@ export interface CustomerAtsEDividendState {
     idRowsMainAts: number,
     eDividend: BankInfoModel[],
     idRowsMainEDividend: number,
-    confirm: Confirm | null
+    confirm: CustomerAtsEDividendConfirm | null
 }
 
-interface Confirm {
+export interface CustomerAtsEDividendConfirm {
     atsInfo: BankInfoModel[] | null,
     eDividendInfo: BankInfoModel[] | null,
 }

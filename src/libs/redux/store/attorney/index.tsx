@@ -2,11 +2,13 @@ import { AttorneyInfoModel } from '@/services/rest-api/customer-service';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export interface AttorneyState {
-    data: Array<AttorneyInfoModel>
+    data: Array<AttorneyInfoModel> | null
+    confirm: Array<AttorneyInfoModel> | null
 }
 
 const initialState: AttorneyState = {
-    data: []
+    data: null,
+    confirm: null
 }
 
 export const AttorneySlice = createSlice({
@@ -15,12 +17,16 @@ export const AttorneySlice = createSlice({
     reducers: {
         setAttorneyData: (state, action: PayloadAction<Array<AttorneyInfoModel>>) => {
             state.data = action.payload
+        },
+        setConfirmAttorneyData: (state, action: PayloadAction<Array<AttorneyInfoModel>>) => {
+            state.confirm = { ...state.confirm, ...action.payload }
         }
     }
 })
 
 export const {
-    setAttorneyData
+    setAttorneyData,
+    setConfirmAttorneyData
 } = AttorneySlice.actions;
 
 export default AttorneySlice.reducer
